@@ -4,28 +4,68 @@ import interfaces.Messagable;
 import java.util.*;
 
 
+/**
+ * The Message class represents a message sent from one user to another, including details such as the sender, receiver,
+ * content, date, and file name for storage. It implements the Messagable interface, allowing for interaction with
+ * message content, date, sender, receiver, and file storage paths.
+ */
 public class Message implements Messagable {
     User sender;
     User receiver;
     String fileName;
+    String content;
     Date date;
 
-    public Message(User sender, User receiver, Date date) {
+    /**
+     * Constructs a new Message with specified sender, receiver, date, and content.
+     * The file name for storage is automatically generated based on the sender and receiver names.
+     *
+     * @param sender   The user sending the message
+     * @param receiver The user receiving the message
+     * @param date     The date and time the message was sent
+     * @param content  The text content of the message
+     */
+    public Message(User sender, User receiver, Date date, String content) {
         this.sender = sender;
         this.receiver = receiver;
         this.date = date;
+        this.content = content;
         if (sender.getName().compareTo(receiver.getName()) < 0) {
             fileName = sender.getName() + "@" + receiver.getName();
         } else {
             fileName = receiver.getName() + "@" + sender.getName();
         }
     }
-    public Message(){
 
+    /**
+     * Default constructor for the Message class, initializes an empty message with no content, sender, or receiver.
+     */
+    public Message() {}
+
+    /**
+     * Retrieves the content of this message.
+     *
+     * @return The content of the message as a String
+     */
+    @Override
+    public String getContent() {
+        return this.content;
     }
 
     /**
-     * @return The file path that the message is stored within
+     * Sets the content of this message to the specified text.
+     *
+     * @param content The new content of the message
+     */
+    @Override
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    /**
+     * Retrieves the file name used to store the message, based on the sender and receiver names.
+     *
+     * @return The file path or name where the message is stored
      */
     @Override
     public String getFileName() {
@@ -33,7 +73,9 @@ public class Message implements Messagable {
     }
 
     /**
-     * sets the filename (path) of the place where the message is stored to a new filename
+     * Sets a new file name for storing the message.
+     *
+     * @param fileName The new file name or path where the message will be stored
      */
     @Override
     public void setFileName(String fileName) {
@@ -41,16 +83,35 @@ public class Message implements Messagable {
     }
 
     /**
-     * Pushes the message to the file of [filename] with the proper separators in place
-     *
+     * Pushes the message data to a database, using the file name for storage.
+     * The method applies separators to structure the message data consistently.
      */
     @Override
     public void pushToDatabase() {
-
+        // Implement storage logic here
     }
 
     /**
-     * @return the User object representing the sender of the message
+     * Provides a formatted string representation of the message, designed for storage in a text file.
+     *
+     * The structure of the formatted message is as follows:
+     * 1) Message separator
+     * 2) Date sent
+     * 3) Sender's name
+     * 4) Message content
+     * 5) Conversation end string (30 characters)
+     *
+     * @return A String representing the formatted message for the database
+     */
+    public String toString() {
+        return MESSAGE_SEP + "\n" + date.toString() + "\n" +
+                sender.getName() + "\n" + content + "\n" + CONVO_END;
+    }
+
+    /**
+     * Retrieves the User object representing the sender of the message.
+     *
+     * @return The sender of the message as a User object
      */
     @Override
     public User getSender() {
@@ -58,7 +119,9 @@ public class Message implements Messagable {
     }
 
     /**
-     * @param user
+     * Sets the sender of the message to the specified user.
+     *
+     * @param user The new sender as a User object
      */
     @Override
     public void setSender(User user) {
@@ -66,7 +129,9 @@ public class Message implements Messagable {
     }
 
     /**
-     * @return the receiver who received the message
+     * Retrieves the User object representing the receiver of the message.
+     *
+     * @return The receiver of the message as a User object
      */
     @Override
     public User getReceiver() {
@@ -74,7 +139,9 @@ public class Message implements Messagable {
     }
 
     /**
-     * @param user sets the receiver to a new user
+     * Sets the receiver of the message to the specified user.
+     *
+     * @param user The new receiver as a User object
      */
     @Override
     public void setReceiver(User user) {
@@ -82,7 +149,9 @@ public class Message implements Messagable {
     }
 
     /**
-     * @return date of the message
+     * Retrieves the date when the message was sent.
+     *
+     * @return The date of the message as a Date object
      */
     @Override
     public Date getDate() {
@@ -90,11 +159,12 @@ public class Message implements Messagable {
     }
 
     /**
-     * @param date sets the date that the message was sent to custom date
+     * Sets the date when the message was sent.
+     *
+     * @param date The new date for the message
      */
     @Override
     public void setDate(Date date) {
         this.date = date;
     }
-
 }
