@@ -13,7 +13,6 @@ public class Message implements Messagable {
         this.sender = sender;
         this.receiver = receiver;
         this.date = date;
-
     }
     @Override
     public String getFileName() {
