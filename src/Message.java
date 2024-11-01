@@ -1,6 +1,6 @@
 package src;
 import interfaces.Messagable;
-
+import java.io.*;
 import java.util.*;
 
 
@@ -88,7 +88,26 @@ public class Message implements Messagable {
      */
     @Override
     public void pushToDatabase() {
-        // Implement storage logic here
+        ArrayList<String> a = new ArrayList<>();
+        try (BufferedReader b= new BufferedReader(new FileReader(fileName));) {
+            while (true) {
+                String s = b.readLine();
+                if (s.equals(CONVO_END)) {
+                    continue;
+                }
+                a.add(s);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try (PrintWriter p= new PrintWriter(new FileWriter(fileName));) {
+            for (String s : a) {
+                p.println(a);
+            }
+            p.println(this.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
