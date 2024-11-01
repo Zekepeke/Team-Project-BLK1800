@@ -1,5 +1,4 @@
 package interfaces;
 
-public interface TestCase {
-
+public class TestCase {
 }
