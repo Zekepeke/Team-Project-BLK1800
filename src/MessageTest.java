@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -17,18 +18,24 @@ public class MessageTest {
     private static Message message;
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUpClass() {
         sender = new User("Alice", "ohNoBoat123!");
         receiver = new User("Bob","bigBoat123!");
         date = new Date();
         message = new Message(sender, receiver, date, "Hello, Bob!");
     }
+    @AfterAll
+    static void tearDownClass() {
 
+    }
     @Test
     public void testConstructorAndFileName() {
+        sender = new User("Alice", "ohNoBoat123!");
+        receiver = new User("Bob","bigBoat123!");
+        date = new Date();
+        message = new Message(sender, receiver, date, "Hello, Bob!");
         // Test file name generation based on sender and receiver names
-        assertEquals("Alice@Bob", message.getFileName());
-
+        assertEquals("Alice-Bob", message.getFileName());
         // Test message content, sender, receiver, and date
         assertEquals("Hello, Bob!", message.getContent());
         assertEquals(sender, message.getSender());
@@ -81,7 +88,7 @@ public class MessageTest {
     @Test
     public void testPushToDatabase() throws IOException {
         // Temporarily set the file name to the temp directory path
-        File file = new File("testFile.txt");
+        File file = new File("alic-bob.txt");
         message.setFileName(file.getAbsolutePath());
 
         // Write initial message to file

@@ -67,7 +67,7 @@ public class User implements UserBased {
      * @return The user's name.
      */
     @Override
-    public String getName() {
+    public synchronized String getName() {
         return name;
     }
 
@@ -77,7 +77,7 @@ public class User implements UserBased {
      * @param name The new name for the user.
      */
     @Override
-    public void setName(String name) {
+    public synchronized void setName(String name) {
         this.name = name;
     }
 
@@ -87,7 +87,7 @@ public class User implements UserBased {
      * @return An ArrayList of friends.
      */
     @Override
-    public ArrayList<User> getFriends() {
+    public synchronized ArrayList<User> getFriends() {
         return friends;
     }
 
@@ -97,7 +97,7 @@ public class User implements UserBased {
      * @param friends An ArrayList of users who are friends with this user.
      */
     @Override
-    public void setFriends(ArrayList<User> friends) {
+    public synchronized void setFriends(ArrayList<User> friends) {
         this.friends = friends;
     }
 
@@ -107,7 +107,7 @@ public class User implements UserBased {
      * @return An ArrayList of blocked users.
      */
     @Override
-    public ArrayList<User> getBlocked() {
+    public synchronized ArrayList<User> getBlocked() {
         return blocked;
     }
 
@@ -117,7 +117,7 @@ public class User implements UserBased {
      * @param blocked An ArrayList of users who are blocked by this user.
      */
     @Override
-    public void setBlocked(ArrayList<User> blocked) {
+    public synchronized void setBlocked(ArrayList<User> blocked) {
         this.blocked = blocked;
     }
 
@@ -127,7 +127,7 @@ public class User implements UserBased {
      * @param blockedUser The user to be blocked.
      */
     @Override
-    public void block(User blockedUser) {
+    public synchronized void block(User blockedUser) {
         blocked.add(blockedUser);
     }
 
@@ -138,7 +138,7 @@ public class User implements UserBased {
      * @return true if the user was successfully unblocked, false otherwise.
      */
     @Override
-    public boolean unblock(User unblocked) {
+    public synchronized boolean unblock(User unblocked) {
         if (blocked.contains(unblocked)) {
             blocked.remove(unblocked);
             return true;
@@ -152,7 +152,7 @@ public class User implements UserBased {
      * @return The bio of the user.
      */
     @Override
-    public String getBio() {
+    public synchronized String getBio() {
         return bio;
     }
 
@@ -162,7 +162,7 @@ public class User implements UserBased {
      * @param bio The new bio for the user, limited to 150 characters.
      */
     @Override
-    public void setBio(String bio) {
+    public synchronized void setBio(String bio) {
         this.bio = bio;
     }
 
@@ -172,7 +172,7 @@ public class User implements UserBased {
      * @return The user's password.
      */
     @Override
-    public String getPassword() {
+    public synchronized String getPassword() {
         return password;
     }
 
@@ -182,7 +182,7 @@ public class User implements UserBased {
      * @param password The new password for the user.
      */
     @Override
-    public void setPassword(String password) {
+    public synchronized void setPassword(String password) {
         this.password = password;
     }
 
@@ -193,7 +193,7 @@ public class User implements UserBased {
      * @return true if the friend request was accepted, false otherwise.
      */
     @Override
-    public boolean acceptFriendRequest(User potentialFriend) {
+    public synchronized boolean acceptFriendRequest(User potentialFriend) {
         if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend)) {
             friends.add(potentialFriend);
             return true;
@@ -209,7 +209,7 @@ public class User implements UserBased {
      * @return true if the friend request was successfully sent, false if the user is already a friend or blocked.
      */
     @Override
-    public boolean sendFriendRequest(User potentialFriend) {
+    public synchronized boolean sendFriendRequest(User potentialFriend) {
         if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend)) {
             friends.add(potentialFriend);
             return true;
@@ -223,7 +223,7 @@ public class User implements UserBased {
      * @return The number of friends.
      */
     @Override
-    public int getNumberOfFriends() {
+    public synchronized int getNumberOfFriends() {
         return friends.size();
     }
 
@@ -233,7 +233,7 @@ public class User implements UserBased {
      * @return The number of blocked users.
      */
     @Override
-    public int getNumberOfBlocked() {
+    public synchronized int getNumberOfBlocked() {
         return blocked.size();
     }
 }

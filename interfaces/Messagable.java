@@ -13,12 +13,13 @@ public interface Messagable {
     /**
      * A unique separator used in formatted messages to delineate message sections.
      */
-    String MESSAGE_SEP = "Hyvp1VlujMNPHY9nySd25fxaluLUrI";
-
+//    String MESSAGE_SEP = "Hyvp1VlujMNPHY9nySd25fxaluLUrI";
+    String MESSAGE_SEP = "MESSAGE_SEP";
     /**
      * A unique string marking the end of a conversation, ensuring structured formatting in stored messages.
      */
-    String CONVO_END = "NIIztzeaegR12UzH1ra01BhKjQbHMH";
+//    String CONVO_END = "NIIztzeaegR12UzH1ra01BhKjQbHMH";
+    String CONVO_END = "CONVO_END";
 
     /**
      * Generates a formatted string representation of the message for storage.

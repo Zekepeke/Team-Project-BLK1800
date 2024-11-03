@@ -31,9 +31,9 @@ public class Message implements Messagable {
         this.date = date;
         this.content = content;
         if (sender.getName().compareTo(receiver.getName()) < 0) {
-            fileName = sender.getName() + "@" + receiver.getName();
+            fileName = sender.getName() + "-" + receiver.getName();
         } else {
-            fileName = receiver.getName() + "@" + sender.getName();
+            fileName = receiver.getName() + "-" + sender.getName();
         }
     }
 
@@ -48,7 +48,7 @@ public class Message implements Messagable {
      * @return The content of the message as a String
      */
     @Override
-    public String getContent() {
+    public synchronized String getContent() {
         return this.content;
     }
 
@@ -58,7 +58,7 @@ public class Message implements Messagable {
      * @param content The new content of the message
      */
     @Override
-    public void setContent(String content) {
+    public synchronized void setContent(String content) {
         this.content = content;
     }
 
@@ -68,7 +68,7 @@ public class Message implements Messagable {
      * @return The file path or name where the message is stored
      */
     @Override
-    public String getFileName() {
+    public synchronized String getFileName() {
         return fileName;
     }
 
@@ -78,7 +78,7 @@ public class Message implements Messagable {
      * @param fileName The new file name or path where the message will be stored
      */
     @Override
-    public void setFileName(String fileName) {
+    public synchronized void setFileName(String fileName) {
         this.fileName = fileName;
     }
 
@@ -87,11 +87,14 @@ public class Message implements Messagable {
      * The method applies separators to structure the message data consistently.
      */
     @Override
-    public void pushToDatabase() {
+    public synchronized void pushToDatabase() {
         ArrayList<String> a = new ArrayList<>();
         try (BufferedReader b= new BufferedReader(new FileReader(fileName));) {
             while (true) {
                 String s = b.readLine();
+                if (s == null){
+                    break;
+                }
                 if (s.equals(CONVO_END)) {
                     continue;
                 }
@@ -122,7 +125,7 @@ public class Message implements Messagable {
      *
      * @return A String representing the formatted message for the database
      */
-    public String toString() {
+    public synchronized String toString() {
         return MESSAGE_SEP + "\n" + date.toString() + "\n" +
                 sender.getName() + "\n" + content + "\n" + CONVO_END;
     }
@@ -133,7 +136,7 @@ public class Message implements Messagable {
      * @return The sender of the message as a User object
      */
     @Override
-    public User getSender() {
+    public synchronized User getSender() {
         return this.sender;
     }
 
@@ -143,7 +146,7 @@ public class Message implements Messagable {
      * @param user The new sender as a User object
      */
     @Override
-    public void setSender(User user) {
+    public synchronized void setSender(User user) {
         this.sender = user;
     }
 
@@ -153,7 +156,7 @@ public class Message implements Messagable {
      * @return The receiver of the message as a User object
      */
     @Override
-    public User getReceiver() {
+    public synchronized User getReceiver() {
         return this.receiver;
     }
 
@@ -163,7 +166,7 @@ public class Message implements Messagable {
      * @param user The new receiver as a User object
      */
     @Override
-    public void setReceiver(User user) {
+    public synchronized void setReceiver(User user) {
         this.receiver = user;
     }
 
@@ -173,7 +176,7 @@ public class Message implements Messagable {
      * @return The date of the message as a Date object
      */
     @Override
-    public Date getDate() {
+    public synchronized Date getDate() {
         return date;
     }
 
@@ -183,7 +186,7 @@ public class Message implements Messagable {
      * @param date The new date for the message
      */
     @Override
-    public void setDate(Date date) {
+    public synchronized void setDate(Date date) {
         this.date = date;
     }
 }
