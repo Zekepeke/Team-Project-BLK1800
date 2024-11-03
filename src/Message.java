@@ -35,6 +35,7 @@ public class Message implements Messagable {
         } else {
             fileName = receiver.getName() + "-" + sender.getName();
         }
+        fileName += ".txt";
     }
 
     /**
@@ -105,7 +106,7 @@ public class Message implements Messagable {
         }
         try (PrintWriter p= new PrintWriter(new FileWriter(fileName));) {
             for (String s : a) {
-                p.println(a);
+                p.println(s);
             }
             p.println(this.toString());
         } catch (IOException e) {
