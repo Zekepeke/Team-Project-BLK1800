@@ -38,6 +38,8 @@ public class User implements UserBased {
         this.bio = bio;
         this.password = password;
         this.friends = new ArrayList<>();
+        this.friendRequestsIn = new ArrayList<>();
+        this.friendRequestsOut = new ArrayList<>();
         this.blocked = new ArrayList<>();
     }
 
@@ -60,6 +62,8 @@ public class User implements UserBased {
         this.bio = "";
         this.password = password;
         this.friends = new ArrayList<>();
+        this.friendRequestsIn = new ArrayList<>();
+        this.friendRequestsOut = new ArrayList<>();
         this.blocked = new ArrayList<>();
     }
 
@@ -230,7 +234,7 @@ public class User implements UserBased {
      */
     @Override
     public synchronized boolean acceptFriendRequest(User potentialFriend) {
-        if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend)) {
+        if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend) && friendRequestsIn.contains(potentialFriend)) {
             friends.add(potentialFriend);
             return true;
         }
@@ -247,7 +251,7 @@ public class User implements UserBased {
     @Override
     public synchronized boolean sendFriendRequest(User potentialFriend) {
         if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend)) {
-            friends.add(potentialFriend);
+            friendRequestsOut.add(potentialFriend);
             return true;
         }
         return false;

@@ -10,11 +10,13 @@ import java.util.*;
  * message content, date, sender, receiver, and file storage paths.
  */
 public class Message implements Messagable {
-    User sender;
-    User receiver;
-    String fileName;
-    String content;
-    Date date;
+    private User sender;
+    private User receiver;
+    private String fileName;
+    private String content;
+    private Date date;
+    private static ArrayList<String> messageFiles = new ArrayList<>();
+    private static ArrayList<Boolean> locks = new ArrayList<>();
 
     /**
      * Constructs a new Message with specified sender, receiver, date, and content.
@@ -30,18 +32,19 @@ public class Message implements Messagable {
         this.receiver = receiver;
         this.date = date;
         this.content = content;
+
+
         if (sender.getName().compareTo(receiver.getName()) < 0) {
             fileName = sender.getName() + "-" + receiver.getName();
         } else {
             fileName = receiver.getName() + "-" + sender.getName();
         }
         fileName = MESSAGE_DATABASE + "/" + fileName + ".txt";
+        synchronized (locks) {
+            locks.add(false);
+            messageFiles.add(this.getFileName());
+        }
     }
-
-    /**
-     * Default constructor for the Message class, initializes an empty message with no content, sender, or receiver.
-     */
-    public Message() {}
 
     /**
      * Retrieves the content of this message.
@@ -49,7 +52,7 @@ public class Message implements Messagable {
      * @return The content of the message as a String
      */
     @Override
-    public synchronized String getContent() {
+    public  String getContent() {
         return this.content;
     }
 
@@ -59,7 +62,7 @@ public class Message implements Messagable {
      * @param content The new content of the message
      */
     @Override
-    public synchronized void setContent(String content) {
+    public  void setContent(String content) {
         this.content = content;
     }
 
@@ -69,7 +72,7 @@ public class Message implements Messagable {
      * @return The file path or name where the message is stored
      */
     @Override
-    public synchronized String getFileName() {
+    public  String getFileName() {
         return fileName;
     }
 
@@ -79,7 +82,15 @@ public class Message implements Messagable {
      * @param fileName The new file name or path where the message will be stored
      */
     @Override
-    public synchronized void setFileName(String fileName) {
+    public void setFileName(String fileName) {
+        synchronized (locks) {
+            int k = messageFiles.indexOf(this.getFileName());
+            if (k == -1) {
+                System.out.println("Oh no!");
+            } else{
+                messageFiles.set(k, this.getFileName());
+            }
+        }
         this.fileName = fileName;
     }
 
@@ -88,7 +99,7 @@ public class Message implements Messagable {
      * The method applies separators to structure the message data consistently.
      */
     @Override
-    public synchronized void pushToDatabase() {
+    public void pushToDatabase() {
         ArrayList<String> a = new ArrayList<>();
         try (BufferedReader b= new BufferedReader(new FileReader(fileName));) {
             while (true) {
@@ -104,7 +115,15 @@ public class Message implements Messagable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try (PrintWriter p= new PrintWriter(new FileWriter(fileName));) {
+        synchronized (locks) {
+            int k = messageFiles.indexOf(this);
+            if (k != -1 && !locks.get(k)) {
+                locks.set(k,true);
+            } else {
+                System.out.println("Conversation not found!");
+            }
+        }
+        try (PrintWriter p = new PrintWriter(new FileWriter(fileName));) {
             for (String s : a) {
                 p.println(s);
             }
@@ -112,6 +131,7 @@ public class Message implements Messagable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     /**
@@ -126,7 +146,7 @@ public class Message implements Messagable {
      *
      * @return A String representing the formatted message for the database
      */
-    public synchronized String toString() {
+    public  String toString() {
         return MESSAGE_SEP + "\n" + date.toString() + "\n" +
                 sender.getName() + "\n" + content + "\n" + CONVO_END;
     }
@@ -137,7 +157,7 @@ public class Message implements Messagable {
      * @return The sender of the message as a User object
      */
     @Override
-    public synchronized User getSender() {
+    public  User getSender() {
         return this.sender;
     }
 
@@ -147,7 +167,7 @@ public class Message implements Messagable {
      * @param user The new sender as a User object
      */
     @Override
-    public synchronized void setSender(User user) {
+    public  void setSender(User user) {
         this.sender = user;
     }
 
@@ -157,7 +177,7 @@ public class Message implements Messagable {
      * @return The receiver of the message as a User object
      */
     @Override
-    public synchronized User getReceiver() {
+    public  User getReceiver() {
         return this.receiver;
     }
 
@@ -167,7 +187,7 @@ public class Message implements Messagable {
      * @param user The new receiver as a User object
      */
     @Override
-    public synchronized void setReceiver(User user) {
+    public  void setReceiver(User user) {
         this.receiver = user;
     }
 
@@ -177,7 +197,7 @@ public class Message implements Messagable {
      * @return The date of the message as a Date object
      */
     @Override
-    public synchronized Date getDate() {
+    public  Date getDate() {
         return date;
     }
 
@@ -187,7 +207,7 @@ public class Message implements Messagable {
      * @param date The new date for the message
      */
     @Override
-    public synchronized void setDate(Date date) {
+    public  void setDate(Date date) {
         this.date = date;
     }
 }
