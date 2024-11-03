@@ -21,12 +21,12 @@ functioning Social Media Platform.
 
 ## Submission Details
 
-| Team Member | Submission Details |
-|-------------|----|
-| Zeke Linares  | N/A|
-| DY Park   |        N/A |
-| Kai Liu   | N/A |
-| Advait Duggi   | N/A |
+| Team Member | Submission Details              |
+|-------------|---------------------------------|
+| Zeke Linares  | Submitted Report on Brightspace |
+| DY Park   | Submitted Vocareum              |
+| Kai Liu   | N/A                             |
+| Advait Duggi   | N/A                             |
 
 ## Class Descriptions
 
