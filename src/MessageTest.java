@@ -24,7 +24,7 @@ public class MessageTest {
         message = new Message(sender, receiver, date, "Hello, Bob!");
     }
     @AfterAll
-    static void tearDownClass() {
+    public static void tearDownClass() {
         File f = new File(message.getFileName());
         f.delete();
     }
@@ -35,7 +35,7 @@ public class MessageTest {
         date = new Date();
         message = new Message(sender, receiver, date, "Hello, Bob!");
         // Test file name generation based on sender and receiver names
-        assertEquals("Alice-Bob.txt", message.getFileName());
+        assertEquals("MESSAGE_DATABASE/Alice-Bob.txt", message.getFileName());
         // Test message content, sender, receiver, and date
         assertEquals("Hello, Bob!", message.getContent());
         assertEquals(sender, message.getSender());
@@ -51,7 +51,7 @@ public class MessageTest {
     @Test
     public void testGetFileName() {
 
-        assertEquals(message.getFileName(), "Alice-Bob.txt");
+        assertEquals(message.getFileName(), "MESSAGE_DATABASE/Alice-Bob.txt");
     }
     @Test
     public void testSetFileName() {
@@ -91,7 +91,7 @@ public class MessageTest {
 
     @Test
     public void testPushToDatabase() throws IOException {
-        try( PrintWriter p = new PrintWriter(new FileWriter("Alice-Bob.txt"));){
+        try( PrintWriter p = new PrintWriter(new FileWriter("MESSAGE_DATABASE/Alice-Bob.txt"));){
             p.printf("");
         } catch (IOException e){
             System.out.println("Oh no!!");
@@ -102,17 +102,21 @@ public class MessageTest {
         System.out.println(message);
         // Write initial message to file
         message.pushToDatabase();
+        receiver = new User("Alice", "ohNoBoat123!");
+        sender = new User("Bob","bigBoat123!");
+        date = new Date();
+        message = new Message(sender, receiver, date, "Hello, Alice!");
         message.pushToDatabase();
         // Verify file contents
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             assertEquals(Message.MESSAGE_SEP, reader.readLine());
             assertEquals(date.toString(), reader.readLine());
-            assertEquals(sender.getName(), reader.readLine());
+            assertEquals(receiver.getName(), reader.readLine());
             assertEquals("Hello, Bob!", reader.readLine());
             assertEquals(Message.MESSAGE_SEP, reader.readLine());
             assertEquals(date.toString(), reader.readLine());
             assertEquals(sender.getName(), reader.readLine());
-            assertEquals("Hello, Bob!", reader.readLine());
+            assertEquals("Hello, Alice!", reader.readLine());
             assertEquals(Message.CONVO_END, reader.readLine());
         }
 

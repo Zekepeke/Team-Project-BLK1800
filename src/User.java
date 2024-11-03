@@ -12,6 +12,8 @@ public class User implements UserBased {
 
     private String name;
     private ArrayList<User> friends;
+    private ArrayList<User> friendRequestsIn;
+    private ArrayList<User> friendRequestsOut;
     private ArrayList<User> blocked;
     private String bio;
     private String password;
@@ -100,7 +102,41 @@ public class User implements UserBased {
     public synchronized void setFriends(ArrayList<User> friends) {
         this.friends = friends;
     }
+    /**
+     * Retrieves the list of incoming friend requests.
+     *
+     * @return an ArrayList of {@code User} objects representing incoming friend requests.
+     */
+    public ArrayList<User> getFriendRequestsIn() {
+        return friendRequestsIn;
+    }
 
+    /**
+     * Sets the list of incoming friend requests.
+     *
+     * @param friendRequestsIn an ArrayList of {@code User} objects to set as incoming friend requests.
+     */
+    public void setFriendRequestsIn(ArrayList<User> friendRequestsIn) {
+        this.friendRequestsIn = friendRequestsIn;
+    }
+
+    /**
+     * Retrieves the list of outgoing friend requests.
+     *
+     * @return an ArrayList of {@code User} objects representing outgoing friend requests.
+     */
+    public ArrayList<User> getFriendRequestsOut() {
+        return friendRequestsOut;
+    }
+
+    /**
+     * Sets the list of outgoing friend requests.
+     *
+     * @param friendRequestsOut an ArrayList of {@code User} objects to set as outgoing friend requests.
+     */
+    public void setFriendRequestsOut(ArrayList<User> friendRequestsOut) {
+        this.friendRequestsOut = friendRequestsOut;
+    }
     /**
      * Retrieves the list of blocked users for this user.
      *

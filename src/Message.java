@@ -35,7 +35,7 @@ public class Message implements Messagable {
         } else {
             fileName = receiver.getName() + "-" + sender.getName();
         }
-        fileName += ".txt";
+        fileName = MESSAGE_DATABASE + "/" + fileName + ".txt";
     }
 
     /**

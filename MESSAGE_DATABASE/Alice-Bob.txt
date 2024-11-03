@@ -1,0 +1,9 @@
+MESSAGE_SEP
+Sun Nov 03 18:01:33 EST 2024
+Alice
+Hello, Bob!
+MESSAGE_SEP
+Sun Nov 03 18:01:33 EST 2024
+Bob
+Hello, Alice!
+CONVO_END

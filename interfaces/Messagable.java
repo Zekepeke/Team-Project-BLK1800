@@ -15,6 +15,7 @@ public interface Messagable {
      */
 //    String MESSAGE_SEP = "Hyvp1VlujMNPHY9nySd25fxaluLUrI";
     String MESSAGE_SEP = "MESSAGE_SEP";
+    String MESSAGE_DATABASE = "MESSAGE_DATABASE";
     /**
      * A unique string marking the end of a conversation, ensuring structured formatting in stored messages.
      */
