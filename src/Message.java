@@ -52,7 +52,7 @@ public class Message implements Messagable {
      * @return The content of the message as a String
      */
     @Override
-    public  String getContent() {
+    public String getContent() {
         return this.content;
     }
 
@@ -62,7 +62,7 @@ public class Message implements Messagable {
      * @param content The new content of the message
      */
     @Override
-    public  void setContent(String content) {
+    public void setContent(String content) {
         this.content = content;
     }
 
@@ -72,7 +72,7 @@ public class Message implements Messagable {
      * @return The file path or name where the message is stored
      */
     @Override
-    public  String getFileName() {
+    public String getFileName() {
         return fileName;
     }
 
@@ -146,7 +146,7 @@ public class Message implements Messagable {
      *
      * @return A String representing the formatted message for the database
      */
-    public  String toString() {
+    public String toString() {
         return MESSAGE_SEP + "\n" + date.toString() + "\n" +
                 sender.getName() + "\n" + content + "\n" + CONVO_END;
     }
@@ -157,7 +157,7 @@ public class Message implements Messagable {
      * @return The sender of the message as a User object
      */
     @Override
-    public  User getSender() {
+    public User getSender() {
         return this.sender;
     }
 
@@ -167,7 +167,7 @@ public class Message implements Messagable {
      * @param user The new sender as a User object
      */
     @Override
-    public  void setSender(User user) {
+    public void setSender(User user) {
         this.sender = user;
     }
 
@@ -177,7 +177,7 @@ public class Message implements Messagable {
      * @return The receiver of the message as a User object
      */
     @Override
-    public  User getReceiver() {
+    public User getReceiver() {
         return this.receiver;
     }
 
@@ -187,7 +187,7 @@ public class Message implements Messagable {
      * @param user The new receiver as a User object
      */
     @Override
-    public  void setReceiver(User user) {
+    public void setReceiver(User user) {
         this.receiver = user;
     }
 
@@ -197,7 +197,7 @@ public class Message implements Messagable {
      * @return The date of the message as a Date object
      */
     @Override
-    public  Date getDate() {
+    public Date getDate() {
         return date;
     }
 
@@ -207,7 +207,7 @@ public class Message implements Messagable {
      * @param date The new date for the message
      */
     @Override
-    public  void setDate(Date date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 }
