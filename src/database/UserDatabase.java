@@ -1,3 +1,12 @@
+/**
+ * Team Project Phase - 01
+ * 
+ * @author DY
+ * @author Zeke
+ * @author Kai
+ * @author Advait
+ * @version 2024-11-03
+ */
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
