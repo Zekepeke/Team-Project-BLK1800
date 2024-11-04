@@ -134,9 +134,12 @@ class UserTest {
     void testPushToDatabase() {
         System.out.println(user2.sendFriendRequest(user1));
         System.out.println(user2.sendFriendRequest(user1));
+        user3.sendFriendRequest(user1);
+        user3.sendFriendRequest(user2);
+        user2.block(user3);
         System.out.println(user1.acceptFriendRequest(user2));
         System.out.println(user1.getFriendRequestsOut().size());
         user1.pushToDatabase();
-
+        user2.pushToDatabase();
     }
 }

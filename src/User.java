@@ -273,6 +273,7 @@ public class User implements UserBased {
             friends.add(potentialFriend);
             friendRequestsIn.remove(potentialFriend);
             potentialFriend.getFriendRequestsIn().remove(this);
+            potentialFriend.getFriendRequestsOut().remove(this);
             potentialFriend.addFriend(this);
             return true;
         }
@@ -316,7 +317,8 @@ public class User implements UserBased {
     public int getNumberOfBlocked() {
         return blocked.size();
     }
-    private String getUsernames(ArrayList<User> a){
+    @Override
+    public String getUsernames(ArrayList<User> a){
         String l = "";
         for (User k: a){
             l+=k.getName() + " ";
@@ -333,6 +335,7 @@ public class User implements UserBased {
     @Override
     public String toString() {
         return name + "\n" +
+                password + "\n" +
                 bio + "\n" +
                 getUsernames(friends) + "\n" +
                 getUsernames(friendRequestsIn) + "\n" +
@@ -354,14 +357,7 @@ public class User implements UserBased {
         return true;
     }
 
-    /**
-     * Retrieves the number of blocked users for this user.
-     *
-     * @return The number of blocked users.
-     */
-    public int getNumberUsers() {
-        return usernames.size();
-    }
+
 
 
 }
