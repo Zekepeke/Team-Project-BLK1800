@@ -23,8 +23,8 @@ functioning Social Media Platform.
 
 | Team Member | Submission Details              |
 |-------------|---------------------------------|
-| Zeke Linares  | Submitted Report on Brightspace |
-| DY Park   | Submitted Vocareum              |
+| Zeke Linares  | Submitted Vocareum phase 1   |
+| DY Park   | N/A         |
 | Kai Liu   | N/A                             |
 | Advait Duggi   | N/A                             |
 
