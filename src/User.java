@@ -1,6 +1,5 @@
 package src;
 
-import Exceptions.InvalidUsernameException;
 import interfaces.UserBased;
 import java.util.ArrayList;
 import java.io.*;
@@ -118,6 +117,7 @@ public class User implements UserBased {
      *
      * @return an ArrayList of {@code User} objects representing incoming friend requests.
      */
+    @Override
     public ArrayList<User> getFriendRequestsIn() {
         return friendRequestsIn;
     }
@@ -127,6 +127,7 @@ public class User implements UserBased {
      *
      * @param friendRequestsIn an ArrayList of {@code User} objects to set as incoming friend requests.
      */
+    @Override
     public void setFriendRequestsIn(ArrayList<User> friendRequestsIn) {
         this.friendRequestsIn = friendRequestsIn;
     }
@@ -136,6 +137,7 @@ public class User implements UserBased {
      *
      * @return an ArrayList of {@code User} objects representing outgoing friend requests.
      */
+    @Override
     public ArrayList<User> getFriendRequestsOut() {
         return friendRequestsOut;
     }
@@ -145,6 +147,7 @@ public class User implements UserBased {
      *
      * @param friendRequestsOut an ArrayList of {@code User} objects to set as outgoing friend requests.
      */
+    @Override
     public void setFriendRequestsOut(ArrayList<User> friendRequestsOut) {
         this.friendRequestsOut = friendRequestsOut;
     }
@@ -312,6 +315,7 @@ public class User implements UserBased {
      *
      * @return The number of blocked users.
      */
+    @Override
     public int getNumberUsers() {
         return usernames.size();
     }
