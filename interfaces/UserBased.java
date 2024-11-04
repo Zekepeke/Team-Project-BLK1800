@@ -38,6 +38,10 @@ public interface UserBased {
     public String getPassword();
     public void setPassword(String password);
 
+    void addFriend(User potentialFriend);
+
+    boolean addIncomingRequest(User potentialFriend);
+
     // This is for accepting or declining a friendRequestMade from another user
     public boolean acceptFriendRequest(User potentialFriend);
 

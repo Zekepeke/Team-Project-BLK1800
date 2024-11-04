@@ -1,6 +1,5 @@
 package src;
 
-import Exceptions.InvalidUsernameException;
 import interfaces.UserBased;
 import java.util.ArrayList;
 import java.io.*;
@@ -32,8 +31,9 @@ public class User implements UserBased {
         if (usernames.contains(name)) {
             System.out.println("Username is already in use");
             this.name = null;
+        } else{
+            usernames.add(name);
         }
-        usernames.add(name);
         try {
             File f = new File(name + ".txt");
             f.createNewFile();
@@ -232,7 +232,30 @@ public class User implements UserBased {
     public void setPassword(String password) {
         this.password = password;
     }
-
+    /**
+     * Accepts a friend request from the specified user if they are not already a friend or blocked.
+     *
+     * @param potentialFriend The user who is sending the friend request.
+     * @return true if the friend request was accepted, false otherwise.
+     */
+    @Override
+    public void addFriend(User potentialFriend) {
+        friends.add(potentialFriend);
+    }
+    /**
+     * Accepts a friend request from the specified user if they are not already a friend or blocked.
+     *
+     * @param potentialFriend The user who is sending the friend request.
+     * @return true if the friend request was accepted, false otherwise.
+     */
+    @Override
+    public boolean addIncomingRequest(User potentialFriend) {
+        if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend) && !friendRequestsIn.contains(potentialFriend)) {
+            friendRequestsIn.add(potentialFriend);
+            return true;
+        }
+        return false;
+    }
     /**
      * Accepts a friend request from the specified user if they are not already a friend or blocked.
      *
@@ -243,6 +266,7 @@ public class User implements UserBased {
     public boolean acceptFriendRequest(User potentialFriend) {
         if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend) && friendRequestsIn.contains(potentialFriend)) {
             friends.add(potentialFriend);
+            potentialFriend.addFriend(this);
             return true;
         }
         return false;
@@ -259,6 +283,8 @@ public class User implements UserBased {
     public boolean sendFriendRequest(User potentialFriend) {
         if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend)) {
             friendRequestsOut.add(potentialFriend);
+            potentialFriend.addIncomingRequest(this);
+
             return true;
         }
         return false;
@@ -287,9 +313,9 @@ public class User implements UserBased {
     public String toString() {
         return name + "\n" +
                 bio + "\n" +
-                friends + "\n" +
-                friendRequestsIn + "\n" +
-                friendRequestsOut + "\n" +
+                friends.toString() + "\n" +
+                friendRequestsIn.toString() + "\n" +
+                friendRequestsOut.toString() + "\n" +
                 blocked;
     }
     /**
@@ -298,7 +324,7 @@ public class User implements UserBased {
      */
     @Override
     public boolean pushToDatabase() {
-        try(PrintWriter p = new PrintWriter(new FileWriter(name + ".txt"))){
+        try(PrintWriter p = new PrintWriter(new FileWriter(USER_DATABASE + "/" + name + ".txt"))){
             p.println(this.toString());
         } catch (Exception e) {
             System.out.println("Bad IO Exception");

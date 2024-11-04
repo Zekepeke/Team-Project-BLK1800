@@ -130,4 +130,11 @@ class UserTest {
         assertEquals(1, user1.getFriendRequestsOut().size());
         assertEquals(user2, user1.getFriendRequestsOut().get(0));
     }
+    @Test
+    void testPushToDatabase() {
+        System.out.println(user2.sendFriendRequest(user1));
+        System.out.println(user1.acceptFriendRequest(user2));
+        user1.pushToDatabase();
+
+    }
 }
