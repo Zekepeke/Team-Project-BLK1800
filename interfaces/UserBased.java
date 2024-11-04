@@ -16,7 +16,7 @@ import java.util.ArrayList;
  *
  */
 public interface UserBased {
-
+    String USER_DATABASE = "USER_DATABASE";
     // Users name for the app should be lowercase letters or numbers and without specials charcters
     public String getName();
     public void setName(String name);
@@ -49,6 +49,7 @@ public interface UserBased {
     public int getNumberOfFriends();
     public int getNumberOfBlocked();
 
+    public boolean pushToDatabase();
 
 
 

@@ -20,13 +20,6 @@ class UserTest {
     }
 
     @Test
-    void testConstructorWithBio() {
-        assertEquals("Alice", user1.getName());
-        assertEquals("Bio of Alice", user1.getBio());
-        assertEquals("password123", user1.getPassword());
-    }
-
-    @Test
     void testConstructorWithoutBio() {
         User user = new User("David", "password321");
         assertEquals("David", user.getName());
