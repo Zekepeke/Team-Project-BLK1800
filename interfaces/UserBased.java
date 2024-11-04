@@ -1,5 +1,5 @@
 package interfaces;
-
+import src.User;
 import java.util.ArrayList;
 /**
  * UserBased
@@ -16,20 +16,20 @@ import java.util.ArrayList;
  *
  */
 public interface UserBased {
-
+    String USER_DATABASE = "USER_DATABASE";
     // Users name for the app should be lowercase letters or numbers and without specials charcters
     public String getName();
     public void setName(String name);
 
     // A list of friends of this user
-    public ArrayList<String> getFriends();
-    public void setFriends(ArrayList<String> friends);
-
+    public ArrayList<User> getFriends();
+    public void setFriends(ArrayList<User> friends);
 
     // An ArrayList of blocked users made by this user
-    public ArrayList<String> getBlocked();
-    public void setBlocked(ArrayList<String> blocked);
-
+    public ArrayList<User> getBlocked();
+    public void setBlocked(ArrayList<User> blocked);
+    public void block(User blocked);
+    public boolean unblock(User unblocked);
     // Bio's should be less than or equal to 150 characters
     public String getBio();
     public void setBio(String bio);
@@ -39,18 +39,17 @@ public interface UserBased {
     public void setPassword(String password);
 
     // This is for accepting or declining a friendRequestMade from another user
-    public boolean acceptFriendRequest();
+    public boolean acceptFriendRequest(User potentialFriend);
 
     // Sends a friend request to a potential new friend
-    public boolean sendFriendRequest(String potentialFriend);
+    public boolean sendFriendRequest(User potentialFriend);
 
 
     // Should return the number of friends
     public int getNumberOfFriends();
+    public int getNumberOfBlocked();
 
-    public void setNumberOfFriends(int numberOfFriends);
-
-
+    public boolean pushToDatabase();
 
 
 

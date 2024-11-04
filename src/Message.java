@@ -10,11 +10,13 @@ import java.util.*;
  * message content, date, sender, receiver, and file storage paths.
  */
 public class Message implements Messagable {
-    User sender;
-    User receiver;
-    String fileName;
-    String content;
-    Date date;
+    private User sender;
+    private User receiver;
+    private String fileName;
+    private String content;
+    private Date date;
+    private static ArrayList<String> messageFiles = new ArrayList<>();
+    private static ArrayList<Boolean> locks = new ArrayList<>();
 
     /**
      * Constructs a new Message with specified sender, receiver, date, and content.
@@ -30,17 +32,19 @@ public class Message implements Messagable {
         this.receiver = receiver;
         this.date = date;
         this.content = content;
+
+
         if (sender.getName().compareTo(receiver.getName()) < 0) {
-            fileName = sender.getName() + "@" + receiver.getName();
+            fileName = sender.getName() + "-" + receiver.getName();
         } else {
-            fileName = receiver.getName() + "@" + sender.getName();
+            fileName = receiver.getName() + "-" + sender.getName();
+        }
+        fileName = MESSAGE_DATABASE + "/" + fileName + ".txt";
+        synchronized (locks) {
+            locks.add(false);
+            messageFiles.add(this.getFileName());
         }
     }
-
-    /**
-     * Default constructor for the Message class, initializes an empty message with no content, sender, or receiver.
-     */
-    public Message() {}
 
     /**
      * Retrieves the content of this message.
@@ -79,6 +83,14 @@ public class Message implements Messagable {
      */
     @Override
     public void setFileName(String fileName) {
+        synchronized (locks) {
+            int k = messageFiles.indexOf(this.getFileName());
+            if (k == -1) {
+                System.out.println("Oh no!");
+            } else{
+                messageFiles.set(k, this.getFileName());
+            }
+        }
         this.fileName = fileName;
     }
 
@@ -92,6 +104,9 @@ public class Message implements Messagable {
         try (BufferedReader b= new BufferedReader(new FileReader(fileName));) {
             while (true) {
                 String s = b.readLine();
+                if (s == null){
+                    break;
+                }
                 if (s.equals(CONVO_END)) {
                     continue;
                 }
@@ -100,14 +115,23 @@ public class Message implements Messagable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try (PrintWriter p= new PrintWriter(new FileWriter(fileName));) {
+        synchronized (locks) {
+            int k = messageFiles.indexOf(this.getFileName());
+            if (k != -1 && !locks.get(k)) {
+                locks.set(k,true);
+            } else {
+                System.out.println("Conversation not found!");
+            }
+        }
+        try (PrintWriter p = new PrintWriter(new FileWriter(fileName));) {
             for (String s : a) {
-                p.println(a);
+                p.println(s);
             }
             p.println(this.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     /**
