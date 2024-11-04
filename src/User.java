@@ -28,12 +28,12 @@ public class User implements UserBased {
      */
     public User(String name, String bio, String password) {
         this.name = name;
-        if (usernames.contains(name)) {
-            System.out.println("Username is already in use");
-            this.name = null;
-        } else{
-            usernames.add(name);
-        }
+//        if (usernames.contains(name)) {
+//            System.out.println("Username is already in use");
+//            this.name = null;
+//        } else{
+//            usernames.add(name);
+//        }
         try {
             File f = new File(name + ".txt");
             f.createNewFile();
@@ -118,6 +118,7 @@ public class User implements UserBased {
      *
      * @return an ArrayList of {@code User} objects representing incoming friend requests.
      */
+    @Override
     public ArrayList<User> getFriendRequestsIn() {
         return friendRequestsIn;
     }
@@ -127,6 +128,7 @@ public class User implements UserBased {
      *
      * @param friendRequestsIn an ArrayList of {@code User} objects to set as incoming friend requests.
      */
+    @Override
     public void setFriendRequestsIn(ArrayList<User> friendRequestsIn) {
         this.friendRequestsIn = friendRequestsIn;
     }
@@ -136,6 +138,7 @@ public class User implements UserBased {
      *
      * @return an ArrayList of {@code User} objects representing outgoing friend requests.
      */
+    @Override
     public ArrayList<User> getFriendRequestsOut() {
         return friendRequestsOut;
     }
@@ -145,6 +148,7 @@ public class User implements UserBased {
      *
      * @param friendRequestsOut an ArrayList of {@code User} objects to set as outgoing friend requests.
      */
+    @Override
     public void setFriendRequestsOut(ArrayList<User> friendRequestsOut) {
         this.friendRequestsOut = friendRequestsOut;
     }
@@ -243,14 +247,14 @@ public class User implements UserBased {
         friends.add(potentialFriend);
     }
     /**
-     * Accepts a friend request from the specified user if they are not already a friend or blocked.
+     * Adds a friend to incoming invites to user if they are not already a friend or blocked.
      *
      * @param potentialFriend The user who is sending the friend request.
      * @return true if the friend request was accepted, false otherwise.
      */
     @Override
     public boolean addIncomingRequest(User potentialFriend) {
-        if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend) && !friendRequestsIn.contains(potentialFriend)) {
+        if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend)) {
             friendRequestsIn.add(potentialFriend);
             return true;
         }
@@ -264,8 +268,11 @@ public class User implements UserBased {
      */
     @Override
     public boolean acceptFriendRequest(User potentialFriend) {
-        if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend) && friendRequestsIn.contains(potentialFriend)) {
+        if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend) &&
+                friendRequestsIn.contains(potentialFriend)) {
             friends.add(potentialFriend);
+            friendRequestsIn.remove(potentialFriend);
+            potentialFriend.getFriendRequestsIn().remove(this);
             potentialFriend.addFriend(this);
             return true;
         }
@@ -281,10 +288,10 @@ public class User implements UserBased {
      */
     @Override
     public boolean sendFriendRequest(User potentialFriend) {
-        if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend)) {
+        if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend)
+                && !potentialFriend.getFriendRequestsIn().contains(this)) {
             friendRequestsOut.add(potentialFriend);
             potentialFriend.addIncomingRequest(this);
-
             return true;
         }
         return false;
@@ -309,14 +316,28 @@ public class User implements UserBased {
     public int getNumberOfBlocked() {
         return blocked.size();
     }
+    private String getUsernames(ArrayList<User> a){
+        String l = "";
+        for (User k: a){
+            l+=k.getName() + " ";
+        }
+        return l;
+    }
+    @Override
+    public boolean equals(Object o){
+        if (o instanceof User){
+            return ((User) o).getName().equals(name);
+        }
+        return false;
+    }
     @Override
     public String toString() {
         return name + "\n" +
                 bio + "\n" +
-                friends.toString() + "\n" +
-                friendRequestsIn.toString() + "\n" +
-                friendRequestsOut.toString() + "\n" +
-                blocked;
+                getUsernames(friends) + "\n" +
+                getUsernames(friendRequestsIn) + "\n" +
+                getUsernames(friendRequestsOut) + "\n" +
+                getUsernames(blocked);
     }
     /**
      * Pushes user.toString() to the database
