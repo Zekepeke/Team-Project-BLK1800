@@ -13,7 +13,7 @@ functioning Social Media Platform.
 ### Compiling and Running the Project
 1. **Clone the Repository**
    ```bash
-   git clone [repository URL]
+   git clone https://github.com/Zekepeke/Team-Project-BLK1800
    cd Team-Project-BLK1800
 2. **Clone the Repository**
    ```bash
