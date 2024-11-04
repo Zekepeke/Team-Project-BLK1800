@@ -25,6 +25,14 @@ public interface UserBased {
     public ArrayList<User> getFriends();
     public void setFriends(ArrayList<User> friends);
 
+    ArrayList<User> getFriendRequestsIn();
+
+    void setFriendRequestsIn(ArrayList<User> friendRequestsIn);
+
+    ArrayList<User> getFriendRequestsOut();
+
+    void setFriendRequestsOut(ArrayList<User> friendRequestsOut);
+
     // An ArrayList of blocked users made by this user
     public ArrayList<User> getBlocked();
     public void setBlocked(ArrayList<User> blocked);
@@ -38,6 +46,11 @@ public interface UserBased {
     public String getPassword();
     public void setPassword(String password);
 
+    void addFriend(User potentialFriend);
+
+
+    boolean addIncomingRequest(User potentialFriend);
+
     // This is for accepting or declining a friendRequestMade from another user
     public boolean acceptFriendRequest(User potentialFriend);
 
@@ -49,9 +62,9 @@ public interface UserBased {
     public int getNumberOfFriends();
     public int getNumberOfBlocked();
 
+    String getUsernames(ArrayList<User> a);
+
     public boolean pushToDatabase();
-
-
 
 
 }

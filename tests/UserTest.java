@@ -13,7 +13,7 @@ class UserTest {
     private User user3;
 
     @BeforeEach
-    void setUp() {
+    void setUpClass() {
         user1 = new User("Alice", "Bio of Alice", "password123");
         user2 = new User("Bob", "Bio of Bob", "password456");
         user3 = new User("Charlie", "Bio of Charlie", "password789");
@@ -129,5 +129,17 @@ class UserTest {
         user1.getFriendRequestsOut().add(user2);
         assertEquals(1, user1.getFriendRequestsOut().size());
         assertEquals(user2, user1.getFriendRequestsOut().get(0));
+    }
+    @Test
+    void testPushToDatabase() {
+        System.out.println(user2.sendFriendRequest(user1));
+        System.out.println(user2.sendFriendRequest(user1));
+        user3.sendFriendRequest(user1);
+        user3.sendFriendRequest(user2);
+        user2.block(user3);
+        System.out.println(user1.acceptFriendRequest(user2));
+        System.out.println(user1.getFriendRequestsOut().size());
+        user1.pushToDatabase();
+        user2.pushToDatabase();
     }
 }
