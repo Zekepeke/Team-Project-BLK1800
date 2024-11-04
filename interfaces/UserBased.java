@@ -46,11 +46,6 @@ public interface UserBased {
     public String getPassword();
     public void setPassword(String password);
 
-    void addFriend(User potentialFriend);
-
-
-    boolean addIncomingRequest(User potentialFriend);
-
     // This is for accepting or declining a friendRequestMade from another user
     public boolean acceptFriendRequest(User potentialFriend);
 
@@ -62,9 +57,8 @@ public interface UserBased {
     public int getNumberOfFriends();
     public int getNumberOfBlocked();
 
-    String getUsernames(ArrayList<User> a);
-
     public boolean pushToDatabase();
 
 
+    int getNumberUsers();
 }
