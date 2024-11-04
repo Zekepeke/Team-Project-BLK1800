@@ -62,9 +62,9 @@ public interface UserBased {
     public int getNumberOfFriends();
     public int getNumberOfBlocked();
 
+    String getUsernames(ArrayList<User> a);
+
     public boolean pushToDatabase();
-
-
 
 
 }
