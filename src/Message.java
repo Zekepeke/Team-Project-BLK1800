@@ -116,7 +116,7 @@ public class Message implements Messagable {
             e.printStackTrace();
         }
         synchronized (locks) {
-            int k = messageFiles.indexOf(this);
+            int k = messageFiles.indexOf(this.getFileName());
             if (k != -1 && !locks.get(k)) {
                 locks.set(k,true);
             } else {

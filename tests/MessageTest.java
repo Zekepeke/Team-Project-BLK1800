@@ -1,11 +1,13 @@
-package src;
+package tests;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.*;
+import org.junit.Test;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-
+import src.Message;
+import src.User;
+import java.lang.*;
 import java.io.*;
 import java.util.Date;
 
@@ -28,7 +30,7 @@ public class MessageTest {
         File f = new File(message.getFileName());
         f.delete();
     }
-    @Test
+    @org.junit.Test
     public void testConstructorAndFileName() {
         sender = new User("Alice", "ohNoBoat123!");
         receiver = new User("Bob","bigBoat123!");
@@ -43,23 +45,23 @@ public class MessageTest {
         assertEquals(date, message.getDate());
     }
 
-    @Test
+    @org.junit.Test
     public void testSetContent() {
         message.setContent("New content");
         assertEquals("New content", message.getContent());
     }
-    @Test
+    @org.junit.Test
     public void testGetFileName() {
 
         assertEquals(message.getFileName(), "MESSAGE_DATABASE/Alice-Bob.txt");
     }
-    @Test
+    @org.junit.Test
     public void testSetFileName() {
         message.setFileName("NewFileName.txt");
         assertEquals("NewFileName.txt", message.getFileName());
     }
 
-    @Test
+    @org.junit.Test
     public void testToStringFormat() {
         String expectedString = Message.MESSAGE_SEP + "\n" +
                 date.toString() + "\n" +
@@ -68,21 +70,21 @@ public class MessageTest {
         assertEquals(expectedString, message.toString());
     }
 
-    @Test
+    @org.junit.Test
     public void testSetAndGetSender() {
         User newSender = new User("Charlie", "bigGoat123");
         message.setSender(newSender);
         assertEquals(newSender, message.getSender());
     }
 
-    @Test
+    @org.junit.Test
     public void testSetAndGetReceiver() {
         User newReceiver = new User("David", "bigGoat123");
         message.setReceiver(newReceiver);
         assertEquals(newReceiver, message.getReceiver());
     }
 
-    @Test
+    @org.junit.Test
     public void testSetAndGetDate() {
         Date newDate = new Date();
         message.setDate(newDate);
@@ -101,11 +103,16 @@ public class MessageTest {
         System.out.println(message.getFileName());
         System.out.println(message);
         // Write initial message to file
+        try{
+            Thread.sleep(5000);
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
         message.pushToDatabase();
         receiver = new User("Alice", "ohNoBoat123!");
         sender = new User("Bob","bigBoat123!");
-        date = new Date();
-        message = new Message(sender, receiver, date, "Hello, Alice!");
+        Date date1 = new Date();
+        message = new Message(sender, receiver, date1, "Hello, Alice!");
         message.pushToDatabase();
         // Verify file contents
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -114,7 +121,7 @@ public class MessageTest {
             assertEquals(receiver.getName(), reader.readLine());
             assertEquals("Hello, Bob!", reader.readLine());
             assertEquals(Message.MESSAGE_SEP, reader.readLine());
-            assertEquals(date.toString(), reader.readLine());
+            assertEquals(date1.toString(), reader.readLine());
             assertEquals(sender.getName(), reader.readLine());
             assertEquals("Hello, Alice!", reader.readLine());
             assertEquals(Message.CONVO_END, reader.readLine());
