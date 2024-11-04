@@ -35,7 +35,7 @@ functioning Social Media Platform.
 * **Functionality**:
     * Manages user information, including name, bio, and password.
     * Handles friend requests, allowing users to send, accept, or decline requests.
-    * 
+   
 * **Testing**:
     * Verify friend request functionality, ensuring users can send, accept, 
     * and decline requests correctly.
@@ -64,15 +64,15 @@ functioning Social Media Platform.
   friends or all users based on user settings.
 ---
 
-### 3. Comment Class
+### 3. App Class
 * **Functionality**:
-    *
-    *
+    * The main part of the program
+    * Should be the gui and other fun stuff
 * **Testing**:
-    *
-    *
+    * N/A
+    * N/A
 * **Relationships**:
-  *
-  *  
+  * Connects messages and users as it is needed for the whole app to work
+---
 ---
 
