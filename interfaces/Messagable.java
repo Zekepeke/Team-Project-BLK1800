@@ -1,7 +1,6 @@
 package interfaces;
-import src.User;
-
 import java.util.Date;
+import src.User;
 
 /**
  * The Messagable interface defines the necessary methods for handling message data.
