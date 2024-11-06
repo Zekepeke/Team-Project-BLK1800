@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import interfaces.ConversationReaderInterface;
 import interfaces.Messagable;
 import interfaces.UserBased;
 
@@ -20,7 +21,7 @@ import static interfaces.Messagable.CONVO_END;
 import static interfaces.Messagable.MESSAGE_SEP;
 
 
-public class ConversationReader implements src.interfaces.ConversationReaderInterface {
+public class ConversationReader implements ConversationReaderInterface {
     SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
     private ArrayList<Message> messages;
     public ConversationReader(String user1, String user2) {
@@ -83,8 +84,6 @@ public class ConversationReader implements src.interfaces.ConversationReaderInte
             System.out.println("Bad Parse!");
         }
     }
-
-
 
     public ArrayList<Message> getMessages() {
         return messages;
