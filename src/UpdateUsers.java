@@ -8,9 +8,9 @@ import java.util.HashMap;
 
 
 public class UpdateUsers implements Runnable {
-    private static ArrayList<User> currentUsers = new ArrayList<>();
-    private static HashMap<User, Socket> userNetMap = new HashMap<>();
-    private ServerSocket serverSocket;
+    public static ArrayList<User> currentUsers = new ArrayList<>();
+    public static HashMap<User, Socket> userNetMap = new HashMap<>();
+    public ServerSocket serverSocket;
     
 
     public UpdateUsers(ServerSocket serverSocket) {
