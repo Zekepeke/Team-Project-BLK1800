@@ -4,6 +4,7 @@ import interfaces.UserBased;
 
 import java.util.ArrayList;
 import java.io.*;
+import java.util.Arrays;
 
 /**
  * The User class represents a user of the app with properties like name, bio, password,
@@ -11,7 +12,7 @@ import java.io.*;
  * block/unblock users, and update user details.
  */
 public class User implements UserBased {
-    private static final ArrayList<String> usernames = new ArrayList<>();
+    private static ArrayList<String> usernames = new ArrayList<>();
     private String name;
     private ArrayList<String> friends;
     private ArrayList<String> friendRequestsIn;
@@ -19,10 +20,22 @@ public class User implements UserBased {
     private ArrayList<String> blocked;
     private String bio;
     private String password;
-
+    /**
+     * Reads in a user object from a database
+     * Reads in the name, password, and all relevant information for the user
+     * @param filename     The user's name.
+     */
     public User(String filename) throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-
+        try (BufferedReader br = new BufferedReader(
+                new FileReader("USER_DATABASE/" + filename));) {
+            this.name = br.readLine();
+            this.password = br.readLine();
+            this.friends = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
+            this.friendRequestsIn = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
+            this.friendRequestsOut = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
+            this.blocked = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
         }
     }
     /**
@@ -35,10 +48,6 @@ public class User implements UserBased {
      */
     public User(String name, String bio, String password) {
         this.name = name;
-        if (usernames.contains(name)) {
-            System.out.println("Username is already in use");
-            this.name = null;
-        }
         usernames.add(name);
         try {
             File f = new File(name + ".txt");
@@ -288,6 +297,20 @@ public class User implements UserBased {
     }
 
     /**
+     * Removes a friend from the list
+     *
+     * @return true if the friend is removed, false if the friend isn't in the list
+     */
+    @Override
+    public boolean removeFriend(User friend) {
+        if (friends.contains(friend.getName())) {
+            friends.remove(friend.getName());
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Retrieves the number of blocked users for this user.
      *
      * @return The number of blocked users.
@@ -330,10 +353,20 @@ public class User implements UserBased {
      *
      * @return The number of blocked users.
      */
-    @Override
-    public int getNumberUsers() {
+    public static int getNumberUsers() {
         return usernames.size();
     }
 
+    /**
+     * Retrieves the number of blocked users for this user.
+     *
+     * @return The number of blocked users.
+     */
+    public static ArrayList<String> getUsernames() {
+        return usernames;
+    }
 
+    public static boolean usernameExists(String username){
+        return usernames.contains(username);
+    }
 }
