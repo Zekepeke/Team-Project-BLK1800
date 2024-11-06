@@ -12,7 +12,7 @@ import java.util.Arrays;
  * block/unblock users, and update user details.
  */
 public class User implements UserBased {
-    private static final ArrayList<String> usernames = new ArrayList<>();
+    private static ArrayList<String> usernames = new ArrayList<>();
     private String name;
     private ArrayList<String> friends;
     private ArrayList<String> friendRequestsIn;
@@ -297,6 +297,20 @@ public class User implements UserBased {
     }
 
     /**
+     * Removes a friend from the list
+     *
+     * @return true if the friend is removed, false if the friend isn't in the list
+     */
+    @Override
+    public boolean removeFriend(User friend) {
+        if (friends.contains(friend.getName())) {
+            friends.remove(friend.getName());
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Retrieves the number of blocked users for this user.
      *
      * @return The number of blocked users.
@@ -344,5 +358,7 @@ public class User implements UserBased {
         return usernames.size();
     }
 
-
+    public static boolean usernameExists(String username){
+        return usernames.contains(username);
+    }
 }
