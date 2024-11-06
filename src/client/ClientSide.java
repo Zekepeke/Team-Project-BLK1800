@@ -1,4 +1,6 @@
 package src.client;
+import src.gui.GUIForApp;
+
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
@@ -20,7 +22,7 @@ public class ClientSide {
         /*
         * TODO: MAKE A GUIForApp object
         * */
-        GUIForApp guiForClient = GUIForApp();
+        GUIForApp guiForClient = new GUIForApp();
 
         // Send data to the server
         DataOutputStream dos
@@ -46,7 +48,7 @@ public class ClientSide {
             *
             *  */
 
-            boolean userWantsToExist = guiForClient.exist;
+            boolean userWantsToExist = guiForClient.theGUIExitPressed();
 
             if (userWantsToExist) {
                 keepRunningUntilExit = false;
