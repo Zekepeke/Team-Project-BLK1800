@@ -13,7 +13,7 @@ class UserTest {
     private User user3;
 
     @BeforeEach
-    void setUp() {
+    void setUpClass() {
         user1 = new User("Alice", "Bio of Alice", "password123");
         user2 = new User("Bob", "Bio of Bob", "password456");
         user3 = new User("Charlie", "Bio of Charlie", "password789");
@@ -54,7 +54,7 @@ class UserTest {
 
     @Test
     void testSendFriendRequestAlreadyFriend() {
-        user1.getFriends().add(user2);
+        user1.getFriends().add(user2.getName());
         assertFalse(user1.sendFriendRequest(user2));
     }
 
@@ -66,7 +66,7 @@ class UserTest {
 
     @Test
     void testAcceptFriendRequest() {
-        user2.getFriendRequestsIn().add(user1);
+        user2.getFriendRequestsIn().add(user1.getName());
         assertTrue(user2.acceptFriendRequest(user1));
         assertEquals(1, user2.getFriends().size());
         assertEquals(user1, user2.getFriends().get(0));
@@ -74,7 +74,7 @@ class UserTest {
 
     @Test
     void testAcceptFriendRequestAlreadyFriend() {
-        user2.getFriends().add(user1);
+        user2.getFriends().add(user1.getName());
         assertFalse(user2.acceptFriendRequest(user1));
     }
 
@@ -105,8 +105,8 @@ class UserTest {
 
     @Test
     void testGetNumberOfFriends() {
-        user1.getFriends().add(user2);
-        user1.getFriends().add(user3);
+        user1.getFriends().add(user2.getName());
+        user1.getFriends().add(user3.getName());
         assertEquals(2, user1.getNumberOfFriends());
     }
 
@@ -119,15 +119,27 @@ class UserTest {
 
     @Test
     void testGetFriendRequestsIn() {
-        user2.getFriendRequestsIn().add(user1);
+        user2.getFriendRequestsIn().add(user1.getName());
         assertEquals(1, user2.getFriendRequestsIn().size());
         assertEquals(user1, user2.getFriendRequestsIn().get(0));
     }
 
     @Test
     void testGetFriendRequestsOut() {
-        user1.getFriendRequestsOut().add(user2);
+        user1.getFriendRequestsOut().add(user2.getName());
         assertEquals(1, user1.getFriendRequestsOut().size());
         assertEquals(user2, user1.getFriendRequestsOut().get(0));
+    }
+    @Test
+    void testPushToDatabase() {
+        System.out.println(user2.sendFriendRequest(user1));
+        System.out.println(user2.sendFriendRequest(user1));
+        user3.sendFriendRequest(user1);
+        user3.sendFriendRequest(user2);
+        user2.block(user3);
+        System.out.println(user1.acceptFriendRequest(user2));
+        System.out.println(user1.getFriendRequestsOut().size());
+        user1.pushToDatabase();
+        user2.pushToDatabase();
     }
 }
