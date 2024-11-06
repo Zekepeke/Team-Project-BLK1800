@@ -27,14 +27,14 @@ public class User implements UserBased {
      */
     public User(String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(
-                new FileReader("USER_DATABASE/" + filename))) {
+                new FileReader("USER_DATABASE/" + filename));) {
             this.name = br.readLine();
             this.password = br.readLine();
-            this.friends = (ArrayList<String>) Arrays.asList(br.readLine().split(" "));
-            this.friendRequestsIn = (ArrayList<String>) Arrays.asList(br.readLine().split(" "));
-            this.friendRequestsOut = (ArrayList<String>) Arrays.asList(br.readLine().split(" "));
-            this.blocked = (ArrayList<String>) Arrays.asList(br.readLine().split(" "));
-        } catch (Exception e) {
+            this.friends = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
+            this.friendRequestsIn = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
+            this.friendRequestsOut = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
+            this.blocked = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
+        } catch (IOException e) {
             throw new IOException(e.getMessage());
         }
     }

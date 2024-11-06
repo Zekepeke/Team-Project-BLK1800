@@ -35,7 +35,6 @@ public class Message implements Messagable {
         this.date = date;
         this.content = content;
 
-
         if (sender.getName().compareTo(receiver.getName()) < 0) {
             fileName = sender.getName() + "-" + receiver.getName();
         } else {
