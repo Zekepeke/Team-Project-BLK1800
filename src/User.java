@@ -23,6 +23,8 @@ public class User implements UserBased {
     public User(String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
 
+        } catch (Exception e) {
+            throw new IOException(e.getMessage());
         }
     }
     /**
