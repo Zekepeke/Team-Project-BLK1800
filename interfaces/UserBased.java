@@ -64,5 +64,4 @@ public interface UserBased {
     public boolean pushToDatabase();
 
 
-    int getNumberUsers();
 }

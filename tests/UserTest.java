@@ -4,7 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import src.User;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static src.User.getNumberUsers;
+import static src.User.getUsernames;
 
 class UserTest {
 
@@ -17,6 +21,49 @@ class UserTest {
         user1 = new User("Alice", "Bio of Alice", "password123");
         user2 = new User("Bob", "Bio of Bob", "password456");
         user3 = new User("Charlie", "Bio of Charlie", "password789");
+    }
+    @Test
+    void testGetName() {
+        assertEquals("Alice", user1.getName());
+    }
+    @Test
+    void testSetFriends() {
+        ArrayList<String> a = new ArrayList<>();
+        a.add("Brah");
+        a.add("Slah");
+        user1.setFriends(a);
+        assertEquals("Brah", user1.getFriends().get(0));
+        assertEquals("Slah", user1.getFriends().get(1));
+    }
+
+    @Test
+    void testSetFriendRequestsIn() {
+        ArrayList<String> a = new ArrayList<>();
+        a.add("Brah");
+        a.add("Slah");
+        user1.setFriendRequestsIn(a);
+        assertEquals("Brah", user1.getFriendRequestsIn().get(0));
+        assertEquals("Slah", user1.getFriendRequestsIn().get(1));
+    }
+
+    @Test
+    void testSetFriendRequestsOut() {
+        ArrayList<String> a = new ArrayList<>();
+        a.add("Brah");
+        a.add("Slah");
+        user1.setFriendRequestsOut(a);
+        assertEquals("Brah", user1.getFriendRequestsOut().get(0));
+        assertEquals("Slah", user1.getFriendRequestsOut().get(1));
+    }
+
+    @Test
+    void testSetBlocked() {
+        ArrayList<String> a = new ArrayList<>();
+        a.add("Brah");
+        a.add("Slah");
+        user1.setBlocked(a);
+        assertEquals("Brah", user1.getBlocked().get(0));
+        assertEquals("Slah", user1.getBlocked().get(1));
     }
 
     @Test
@@ -37,6 +84,18 @@ class UserTest {
     void testSetBio() {
         user1.setBio("Updated Bio");
         assertEquals("Updated Bio", user1.getBio());
+    }
+
+    @Test
+    void testRemoveFriend() {
+        user1.getFriends().add(user2.getName());
+        user1.removeFriend(user2);
+        assertFalse(user1.getFriends().contains(user2.getName()));
+    }
+
+    @Test
+    void testGetNumberUsers() {
+        assertEquals(getNumberUsers(), user1.getUsernames().size());
     }
 
     @Test
@@ -130,6 +189,14 @@ class UserTest {
         assertEquals(1, user1.getFriendRequestsOut().size());
         assertEquals(user2.getName(), user1.getFriendRequestsOut().get(0));
     }
+
+    @Test
+    void testGetUsernames() {
+        assertEquals(getUsernames(), user1.getUsernames());
+    }
+
+
+
     @Test
     void testPushToDatabase() {
         System.out.println(user2.sendFriendRequest(user1));

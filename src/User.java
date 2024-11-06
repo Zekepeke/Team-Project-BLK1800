@@ -353,9 +353,17 @@ public class User implements UserBased {
      *
      * @return The number of blocked users.
      */
-    @Override
-    public int getNumberUsers() {
+    public static int getNumberUsers() {
         return usernames.size();
+    }
+
+    /**
+     * Retrieves the number of blocked users for this user.
+     *
+     * @return The number of blocked users.
+     */
+    public static ArrayList<String> getUsernames() {
+        return usernames;
     }
 
     public static boolean usernameExists(String username){
