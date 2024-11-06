@@ -4,6 +4,7 @@ import interfaces.UserBased;
 
 import java.util.ArrayList;
 import java.io.*;
+import java.util.Arrays;
 
 /**
  * The User class represents a user of the app with properties like name, bio, password,
@@ -19,10 +20,20 @@ public class User implements UserBased {
     private ArrayList<String> blocked;
     private String bio;
     private String password;
-
+    /**
+     * Reads in a user object from a database
+     * Reads in the name, password, and all relevant information for the user
+     * @param filename     The user's name.
+     */
     public User(String filename) throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-
+        try (BufferedReader br = new BufferedReader(
+                new FileReader("USER_DATABASE/" + filename))) {
+            this.name = br.readLine();
+            this.password = br.readLine();
+            this.friends = (ArrayList<String>) Arrays.asList(br.readLine().split(" "));
+            this.friendRequestsIn = (ArrayList<String>) Arrays.asList(br.readLine().split(" "));
+            this.friendRequestsOut = (ArrayList<String>) Arrays.asList(br.readLine().split(" "));
+            this.blocked = (ArrayList<String>) Arrays.asList(br.readLine().split(" "));
         } catch (Exception e) {
             throw new IOException(e.getMessage());
         }
@@ -37,10 +48,6 @@ public class User implements UserBased {
      */
     public User(String name, String bio, String password) {
         this.name = name;
-        if (usernames.contains(name)) {
-            System.out.println("Username is already in use");
-            this.name = null;
-        }
         usernames.add(name);
         try {
             File f = new File(name + ".txt");

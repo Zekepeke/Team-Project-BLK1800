@@ -49,7 +49,7 @@ class UserTest {
     void testSendFriendRequest() {
         assertTrue(user1.sendFriendRequest(user2));
         assertEquals(1, user1.getFriendRequestsOut().size());
-        assertEquals(user2, user1.getFriendRequestsOut().get(0));
+        assertEquals(user2.getName(), user1.getFriendRequestsOut().get(0));
     }
 
     @Test
@@ -69,7 +69,7 @@ class UserTest {
         user2.getFriendRequestsIn().add(user1.getName());
         assertTrue(user2.acceptFriendRequest(user1));
         assertEquals(1, user2.getFriends().size());
-        assertEquals(user1, user2.getFriends().get(0));
+        assertEquals(user1.getName(), user2.getFriends().get(0));
     }
 
     @Test
@@ -88,7 +88,7 @@ class UserTest {
     void testBlockUser() {
         user1.block(user2);
         assertEquals(1, user1.getBlocked().size());
-        assertEquals(user2, user1.getBlocked().get(0));
+        assertEquals(user2.getName(), user1.getBlocked().get(0));
     }
 
     @Test
@@ -121,14 +121,14 @@ class UserTest {
     void testGetFriendRequestsIn() {
         user2.getFriendRequestsIn().add(user1.getName());
         assertEquals(1, user2.getFriendRequestsIn().size());
-        assertEquals(user1, user2.getFriendRequestsIn().get(0));
+        assertEquals(user1.getName(), user2.getFriendRequestsIn().get(0));
     }
 
     @Test
     void testGetFriendRequestsOut() {
         user1.getFriendRequestsOut().add(user2.getName());
         assertEquals(1, user1.getFriendRequestsOut().size());
-        assertEquals(user2, user1.getFriendRequestsOut().get(0));
+        assertEquals(user2.getName(), user1.getFriendRequestsOut().get(0));
     }
     @Test
     void testPushToDatabase() {
