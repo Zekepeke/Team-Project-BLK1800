@@ -9,7 +9,6 @@ import java.util.Date;
  * storage details, and date, along with a structured format for storing and retrieving messages.
  */
 public interface Messagable {
-
     /**
      * A unique separator used in formatted messages to delineate message sections.
      */
