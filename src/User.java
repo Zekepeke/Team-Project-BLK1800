@@ -1,23 +1,30 @@
 package src;
 
 import interfaces.UserBased;
+
 import java.util.ArrayList;
 import java.io.*;
+
 /**
  * The User class represents a user of the app with properties like name, bio, password,
  * and lists of friends and blocked users. This class provides methods to manage friendships,
  * block/unblock users, and update user details.
  */
 public class User implements UserBased {
-    private static ArrayList<String> usernames = new ArrayList<>();
+    private static final ArrayList<String> usernames = new ArrayList<>();
     private String name;
-    private ArrayList<User> friends;
-    private ArrayList<User> friendRequestsIn;
-    private ArrayList<User> friendRequestsOut;
-    private ArrayList<User> blocked;
+    private ArrayList<String> friends;
+    private ArrayList<String> friendRequestsIn;
+    private ArrayList<String> friendRequestsOut;
+    private ArrayList<String> blocked;
     private String bio;
     private String password;
 
+    public User(String filename) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+
+        }
+    }
     /**
      * Constructs a User with the specified name, bio, and password.
      * Initializes empty lists for friends and blocked users.
@@ -28,17 +35,16 @@ public class User implements UserBased {
      */
     public User(String name, String bio, String password) {
         this.name = name;
-//        if (usernames.contains(name)) {
-//            System.out.println("Username is already in use");
-//            this.name = null;
-//        } else{
-//            usernames.add(name);
-//        }
+        if (usernames.contains(name)) {
+            System.out.println("Username is already in use");
+            this.name = null;
+        }
+        usernames.add(name);
         try {
             File f = new File(name + ".txt");
             f.createNewFile();
             f.delete();
-        } catch (Exception e){
+        } catch (Exception e) {
             this.name = "";
         }
         this.bio = bio;
@@ -63,7 +69,7 @@ public class User implements UserBased {
             File f = new File(name + ".txt");
             f.createNewFile();
             f.delete();
-        } catch (Exception e){
+        } catch (Exception e) {
             this.name = "";
         }
         this.bio = "";
@@ -100,7 +106,7 @@ public class User implements UserBased {
      * @return An ArrayList of friends.
      */
     @Override
-    public ArrayList<User> getFriends() {
+    public ArrayList<String> getFriends() {
         return friends;
     }
 
@@ -110,16 +116,17 @@ public class User implements UserBased {
      * @param friends An ArrayList of users who are friends with this user.
      */
     @Override
-    public void setFriends(ArrayList<User> friends) {
+    public void setFriends(ArrayList<String> friends) {
         this.friends = friends;
     }
+
     /**
      * Retrieves the list of incoming friend requests.
      *
      * @return an ArrayList of {@code User} objects representing incoming friend requests.
      */
     @Override
-    public ArrayList<User> getFriendRequestsIn() {
+    public ArrayList<String> getFriendRequestsIn() {
         return friendRequestsIn;
     }
 
@@ -129,7 +136,7 @@ public class User implements UserBased {
      * @param friendRequestsIn an ArrayList of {@code User} objects to set as incoming friend requests.
      */
     @Override
-    public void setFriendRequestsIn(ArrayList<User> friendRequestsIn) {
+    public void setFriendRequestsIn(ArrayList<String> friendRequestsIn) {
         this.friendRequestsIn = friendRequestsIn;
     }
 
@@ -139,7 +146,7 @@ public class User implements UserBased {
      * @return an ArrayList of {@code User} objects representing outgoing friend requests.
      */
     @Override
-    public ArrayList<User> getFriendRequestsOut() {
+    public ArrayList<String> getFriendRequestsOut() {
         return friendRequestsOut;
     }
 
@@ -149,16 +156,17 @@ public class User implements UserBased {
      * @param friendRequestsOut an ArrayList of {@code User} objects to set as outgoing friend requests.
      */
     @Override
-    public void setFriendRequestsOut(ArrayList<User> friendRequestsOut) {
+    public void setFriendRequestsOut(ArrayList<String> friendRequestsOut) {
         this.friendRequestsOut = friendRequestsOut;
     }
+
     /**
      * Retrieves the list of blocked users for this user.
      *
      * @return An ArrayList of blocked users.
      */
     @Override
-    public ArrayList<User> getBlocked() {
+    public ArrayList<String> getBlocked() {
         return blocked;
     }
 
@@ -168,7 +176,7 @@ public class User implements UserBased {
      * @param blocked An ArrayList of users who are blocked by this user.
      */
     @Override
-    public void setBlocked(ArrayList<User> blocked) {
+    public void setBlocked(ArrayList<String> blocked) {
         this.blocked = blocked;
     }
 
@@ -179,7 +187,7 @@ public class User implements UserBased {
      */
     @Override
     public void block(User blockedUser) {
-        blocked.add(blockedUser);
+        blocked.add(blockedUser.getName());
     }
 
     /**
@@ -190,8 +198,8 @@ public class User implements UserBased {
      */
     @Override
     public boolean unblock(User unblocked) {
-        if (blocked.contains(unblocked)) {
-            blocked.remove(unblocked);
+        if (blocked.contains(unblocked.getName())) {
+            blocked.remove(unblocked.getName());
             return true;
         }
         return false;
@@ -236,30 +244,7 @@ public class User implements UserBased {
     public void setPassword(String password) {
         this.password = password;
     }
-    /**
-     * Accepts a friend request from the specified user if they are not already a friend or blocked.
-     *
-     * @param potentialFriend The user who is sending the friend request.
-     * @return true if the friend request was accepted, false otherwise.
-     */
-    @Override
-    public void addFriend(User potentialFriend) {
-        friends.add(potentialFriend);
-    }
-    /**
-     * Adds a friend to incoming invites to user if they are not already a friend or blocked.
-     *
-     * @param potentialFriend The user who is sending the friend request.
-     * @return true if the friend request was accepted, false otherwise.
-     */
-    @Override
-    public boolean addIncomingRequest(User potentialFriend) {
-        if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend)) {
-            friendRequestsIn.add(potentialFriend);
-            return true;
-        }
-        return false;
-    }
+
     /**
      * Accepts a friend request from the specified user if they are not already a friend or blocked.
      *
@@ -268,13 +253,9 @@ public class User implements UserBased {
      */
     @Override
     public boolean acceptFriendRequest(User potentialFriend) {
-        if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend) &&
-                friendRequestsIn.contains(potentialFriend)) {
-            friends.add(potentialFriend);
-            friendRequestsIn.remove(potentialFriend);
-            potentialFriend.getFriendRequestsIn().remove(this);
-            potentialFriend.getFriendRequestsOut().remove(this);
-            potentialFriend.addFriend(this);
+        if (!friends.contains(potentialFriend.getName()) && !blocked.contains(potentialFriend.getName())
+                && friendRequestsIn.contains(potentialFriend.getName())) {
+            friends.add(potentialFriend.getName());
             return true;
         }
         return false;
@@ -289,10 +270,8 @@ public class User implements UserBased {
      */
     @Override
     public boolean sendFriendRequest(User potentialFriend) {
-        if (!friends.contains(potentialFriend) && !blocked.contains(potentialFriend)
-                && !potentialFriend.getFriendRequestsIn().contains(this)) {
-            friendRequestsOut.add(potentialFriend);
-            potentialFriend.addIncomingRequest(this);
+        if (!friends.contains(potentialFriend.getName()) && !blocked.contains(potentialFriend.getName())) {
+            friendRequestsOut.add(potentialFriend.getName());
             return true;
         }
         return false;
@@ -317,39 +296,28 @@ public class User implements UserBased {
     public int getNumberOfBlocked() {
         return blocked.size();
     }
-    @Override
-    public String getUsernames(ArrayList<User> a){
-        String l = "";
-        for (User k: a){
-            l+=k.getName() + " ";
-        }
-        return l;
-    }
-    @Override
-    public boolean equals(Object o){
-        if (o instanceof User){
-            return ((User) o).getName().equals(name);
-        }
-        return false;
-    }
+
     @Override
     public String toString() {
         return name + "\n" +
-                password + "\n" +
                 bio + "\n" +
-                getUsernames(friends) + "\n" +
-                getUsernames(friendRequestsIn) + "\n" +
-                getUsernames(friendRequestsOut) + "\n" +
-                getUsernames(blocked);
+                friends + "\n" +
+                friendRequestsIn + "\n" +
+                friendRequestsOut + "\n" +
+                blocked;
     }
+
     /**
      * Pushes user.toString() to the database
+     *
      * @return true if push was successful, false otherwise
      */
     @Override
     public boolean pushToDatabase() {
-        try(PrintWriter p = new PrintWriter(new FileWriter(USER_DATABASE + "/" + name + ".txt"))){
-            p.println(this.toString());
+        try (PrintWriter p = new PrintWriter(new FileWriter(name + ".txt"))) {
+            synchronized (usernames) {
+                p.println(this);
+            }
         } catch (Exception e) {
             System.out.println("Bad IO Exception");
             return false;
@@ -357,7 +325,15 @@ public class User implements UserBased {
         return true;
     }
 
-
+    /**
+     * Retrieves the number of blocked users for this user.
+     *
+     * @return The number of blocked users.
+     */
+    @Override
+    public int getNumberUsers() {
+        return usernames.size();
+    }
 
 
 }
