@@ -56,10 +56,12 @@ public interface UserBased {
 
     // Should return the number of friends
     public int getNumberOfFriends();
+
+    boolean removeFriend(User friend);
+
     public int getNumberOfBlocked();
 
     public boolean pushToDatabase();
 
 
-    int getNumberUsers();
 }

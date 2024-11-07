@@ -1,5 +1,7 @@
 package src;
+
 import interfaces.Messagable;
+
 import java.io.*;
 import java.util.*;
 
@@ -15,8 +17,8 @@ public class Message implements Messagable {
     private String fileName;
     private String content;
     private Date date;
-    private static ArrayList<String> messageFiles = new ArrayList<>();
-    private static ArrayList<Boolean> locks = new ArrayList<>();
+    private static final ArrayList<String> messageFiles = new ArrayList<>();
+    private static final ArrayList<Boolean> locks = new ArrayList<>();
 
     /**
      * Constructs a new Message with specified sender, receiver, date, and content.
@@ -32,7 +34,6 @@ public class Message implements Messagable {
         this.receiver = receiver;
         this.date = date;
         this.content = content;
-
 
         if (sender.getName().compareTo(receiver.getName()) < 0) {
             fileName = sender.getName() + "-" + receiver.getName();
@@ -87,7 +88,7 @@ public class Message implements Messagable {
             int k = messageFiles.indexOf(this.getFileName());
             if (k == -1) {
                 System.out.println("Oh no!");
-            } else{
+            } else {
                 messageFiles.set(k, this.getFileName());
             }
         }
@@ -101,10 +102,10 @@ public class Message implements Messagable {
     @Override
     public void pushToDatabase() {
         ArrayList<String> a = new ArrayList<>();
-        try (BufferedReader b= new BufferedReader(new FileReader(fileName));) {
+        try (BufferedReader b = new BufferedReader(new FileReader(fileName))) {
             while (true) {
                 String s = b.readLine();
-                if (s == null){
+                if (s == null) {
                     break;
                 }
                 if (s.equals(CONVO_END)) {
@@ -118,16 +119,16 @@ public class Message implements Messagable {
         synchronized (locks) {
             int k = messageFiles.indexOf(this.getFileName());
             if (k != -1 && !locks.get(k)) {
-                locks.set(k,true);
+                locks.set(k, true);
             } else {
                 System.out.println("Conversation not found!");
             }
         }
-        try (PrintWriter p = new PrintWriter(new FileWriter(fileName));) {
+        try (PrintWriter p = new PrintWriter(new FileWriter(fileName))) {
             for (String s : a) {
                 p.println(s);
             }
-            p.println(this.toString());
+            p.println(this);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -136,7 +137,7 @@ public class Message implements Messagable {
 
     /**
      * Provides a formatted string representation of the message, designed for storage in a text file.
-     *
+     * <p>
      * The structure of the formatted message is as follows:
      * 1) Message separator
      * 2) Date sent
