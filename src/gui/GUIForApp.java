@@ -36,7 +36,7 @@ public class GUIForApp {
         mainPanel.setBackground(Color.WHITE);
 
         // Header label to display app title or welcome message
-        headerLabel = new JLabel("Welcome to Socialize!"); // Customizable header
+        headerLabel = new JLabel("DEMO"); // Customizable header
         headerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         headerLabel.setFont(new Font("Arial", Font.BOLD, 24));
         frame.add(headerLabel, BorderLayout.NORTH);
