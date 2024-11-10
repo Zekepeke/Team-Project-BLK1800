@@ -8,8 +8,8 @@ import java.util.HashMap;
 
 
 public class UpdateUsers implements Runnable {
-    public static ArrayList<User> currentUsers = new ArrayList<>();
-    public static HashMap<User, Socket> userNetMap = new HashMap<>();
+    public static ArrayList<String> currentUsers = new ArrayList<>();
+    public static HashMap<String, Socket> userNetMap = new HashMap<>();
     public ServerSocket serverSocket;
     
 
@@ -27,11 +27,11 @@ public class UpdateUsers implements Runnable {
                 ObjectInputStream is = new ObjectInputStream(clientSocket.getInputStream());
                 
                 try {
-                    User user = (User)(is.readObject());
+                    String userName = (String)(is.readObject());
                     //
-                    currentUsers.add(user);
-                    userNetMap.put(user, clientSocket);
-                    System.out.println("Client " + user.getName() + " added!");
+                    currentUsers.add(userName);
+                    userNetMap.put(userName, clientSocket);
+                    System.out.println("Client " + userName + " added!");
 
                 } catch (ClassNotFoundException e) {
                     System.out.println(e.getMessage());

@@ -10,8 +10,8 @@ import java.util.HashMap;
 
 public class ServerImplementation implements Server {
     public ServerSocket serverSocket;
-    public ArrayList<User> currentUsers;
-    public HashMap<User, Socket> userNetMap;
+    public ArrayList<String> currentUsers;
+    public HashMap<String, Socket> userNetMap;
     private final Thread updateUserThread;
 
     private ServerImplementation(int portnumber) {
@@ -29,6 +29,9 @@ public class ServerImplementation implements Server {
         this.userNetMap = UpdateUsers.userNetMap;
     }
 
-
-
+    public boolean startup() {
+        int initialusers = 
+        while()
+    }
+    
 }
