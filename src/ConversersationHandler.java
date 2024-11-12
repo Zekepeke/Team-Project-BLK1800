@@ -11,21 +11,28 @@ import java.util.HashMap;
 import java.util.concurrent.TimeoutException;
 
 /**
- * The ConversationHandler class represents a thread that handles all sending data from one user to an array of friends.
+ * The ConversationHandler class represents a thread that handles sole communication between the server and a single client.
+ * This class handles signup, login, message parsing, and data delivery between the server and a client.
 **/
 
 public class ConversersationHandler extends Thread {
     private ArrayList<String> availablefriends;
     private Socket userSocket;
     private User user;
-    
+
+    /**
+     * @param socket The socket to communicate between server and client
+     */
     public ConversersationHandler(Socket socket) {
         this.userSocket = socket;
-    }   
+    }
 
 
+    /**
+     * Handles all states of communication
+     */
     @Override
-    public void run() {
+    public void run() throws ThreadTerminationException {
 
         SocketIO messager = new SocketIO(this.userSocket);
         ConversationHandlerState state = ConversationHandlerState.SEND_HANDSHAKE;
@@ -111,5 +118,6 @@ public class ConversersationHandler extends Thread {
                 System.out.println(e.getMessage());
             }
         }
+        throw new ThreadTerminationException();
     }
 }
