@@ -32,7 +32,7 @@ public class ConversersationHandler extends Thread {
      * Handles all states of communication
      */
     @Override
-    public void run() throws ThreadTerminationException {
+    public void run() {
 
         SocketIO messager = new SocketIO(this.userSocket);
         ConversationHandlerState state = ConversationHandlerState.SEND_HANDSHAKE;
@@ -108,9 +108,10 @@ public class ConversersationHandler extends Thread {
                                     this.user = temp1;
                                 }
                                 messager.writeCondition(SocketIO.SUCCESS_BYTE_USER_LOGIN);
-
                                 break;
                             case SocketIO.TYPE_BYTE_MESSAGE:
+                                Message message = new Message(user, new User(dataFromClient[1] + ".txt"), null, dataFromClient[2]);
+                                message.pushToDatabase();
                                 break;
                         }
                     }
@@ -118,6 +119,5 @@ public class ConversersationHandler extends Thread {
                 System.out.println(e.getMessage());
             }
         }
-        throw new ThreadTerminationException();
     }
 }

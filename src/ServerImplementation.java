@@ -57,7 +57,6 @@ public class ServerImplementation implements Server {
     }
 
     public boolean startup() {
-        Thread checkTerminated = new Thread(new TerminatedThreads());
         while (true) {
             try (Socket clientSocket = serverSocket.accept()) {
                 System.out.println("Client connected: " + clientSocket.getInetAddress());
@@ -66,8 +65,14 @@ public class ServerImplementation implements Server {
             } catch(IOException e) {
                 System.out.println(e.getMessage());
             }
+            for (int i = 0; i < ServerImplementation.activeConversations.size(); ) {
+                if (activeConversations.get(i).isAlive()) {
+                    activeConversations.remove(i);
+                    sockets.remove(i);
+                } else {
+                    i++;
+                }
+            }
         }
-
-        checkTerminated.interrupt();
     }
 }
