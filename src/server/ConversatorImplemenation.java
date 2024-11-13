@@ -1,12 +1,13 @@
-package src;
-import interfaces.*;
+package src.server;
+import src.UpdateUsers;
+import src.User;
+
 import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.Thread;
 import java.net.Socket;
-import java.util.HashMap;
 
 
 public class ConversatorImplemenation  extends Thread {
