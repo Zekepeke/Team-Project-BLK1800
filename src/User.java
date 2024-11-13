@@ -1,9 +1,8 @@
 package src;
 
 import interfaces.UserBased;
-
-import java.util.ArrayList;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
