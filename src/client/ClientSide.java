@@ -20,7 +20,6 @@ public class ClientSide {
         /*
         * TODO: MAKE A GUIForApp object
         * */
-        GUIForApp guiForClient = GUIForApp();
 
         // Send data to the server
         DataOutputStream dos
@@ -40,19 +39,14 @@ public class ClientSide {
         boolean keepRunningUntilExit = true;
 
         // Repeat as long as exit Is not typed at client
-        while (keepRunningUntilExit) {
-            /*
-            * TODO:Implement the GUI for the client side
-            *
-            *  */
-
-            boolean userWantsToExist = guiForClient.exist;
-
-            if (userWantsToExist) {
-                keepRunningUntilExit = false;
-                break;
-            }
-        }
+//        while (keepRunningUntilExit) {
+//            /*
+//            * TODO:Implement the GUI for the client side
+//            *
+//            *  */
+//
+//
+//        }
 
         // close connection.
         dos.close();

@@ -1,7 +1,6 @@
 package interfaces;
-import src.User;
-
 import java.util.Date;
+import src.User;
 
 /**
  * The Messagable interface defines the necessary methods for handling message data.
@@ -9,7 +8,6 @@ import java.util.Date;
  * storage details, and date, along with a structured format for storing and retrieving messages.
  */
 public interface Messagable {
-
     /**
      * A unique separator used in formatted messages to delineate message sections.
      */
