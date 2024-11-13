@@ -76,7 +76,7 @@ public class SocketIO implements IO {
     }
 
     public boolean validInformationByte(byte informationByte) {
-        if(informationByte != TYPE_BYTE_FRIEND_INFO_UPDATE) {
+        if (informationByte != TYPE_BYTE_FRIEND_INFO_UPDATE) {
             return false;
         }
         return true;
