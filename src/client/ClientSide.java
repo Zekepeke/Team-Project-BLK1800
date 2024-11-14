@@ -5,20 +5,27 @@ import java.io.*;
 import java.net.*;
 
 public class ClientSide {
-    public final byte DELIMITER_LOGIN_BYTE = 0x01;
-    public final byte DELIMITER_SIGNUP_BYTE = 0x02;
-    public final byte DELIMITER_START_BYTE = 0x03;
-    public final byte DELIMITER_END_BYTE = 0x04;
-    public final byte SPLITTER_BYTE = 0x05;
-
-
     private static final String HOST = "localhost";
     private static final int PORT = 5000;
     Socket userClient;
 
+    String username;
+    String password;
+
+    public ClientSide(String username, String password) throws IOException {
+        try {
+            this.userClient = new Socket(HOST, PORT);
+            this.username = username;
+            this.password = password;
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+    }
     public ClientSide() throws IOException {
         try {
-            userClient = new Socket(HOST, PORT);
+            this.userClient = new Socket(HOST, PORT);
+            this.username = username;
+            this.password = password;
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -33,7 +40,7 @@ public class ClientSide {
      * @param password The user making a password that is unique
      * @return True if it is a valid sign-up and false if it is invalid
      */
-    public boolean validSignUp(String username, String password) {
+    public boolean validUserAndPassword(String username, String password) {
         boolean validUsername = username != null && !username.contains(" ") && username.length() >= 4 && username.length() <= 14;
         boolean validPassword = password.length() >= 4 && password.length() <= 14 && !password.contains(" ");
 
@@ -49,32 +56,17 @@ public class ClientSide {
         return validUsername && validPassword;
     }
 
+    public void search(){
 
-    /**
-     *
-     * This is the first barrier for checking for a user
-     * Username is valid if no special characters, lower case, no spaces, and should be in the bounds of 4 and 14.
-     * Password is valid if no spaces and should be in the bounds of 4 and 14.
-     *
-     * @param username The name of a user already in the database
-     * @param password The password of an existing user.
-     *
-     * @return True if the login was successful otherwise false
-     */
-    public boolean validLogin(String username, String password) {
-        boolean validUsername = username != null && !username.contains(" ") && username.length() >= 4 && username.length() <= 14;
-        boolean validPassword = password.length() >= 4 && password.length() <= 14 && !password.contains(" ");
-
-        if (validUsername) {
-            for (int i = 0; i < username.length(); i++) {
-                char c = username.charAt(i);
-                if ((!Character.isLetter(c) && !Character.isDigit(c)) || Character.isUpperCase(c)) {
-                    validUsername = false;
-                }
-            }
-        }
-        return validUsername && validPassword;
     }
+    public void profile(){
+
+    }
+    public String[] messages(){
+
+    }
+
+
 
     public static int getPORT() {
         return PORT;
@@ -84,16 +76,24 @@ public class ClientSide {
         return userClient;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+
+
+
+
     public static void main(String[] args) throws Exception{
         // Create a client socket
-        ClientSide client = new ClientSide();
-        PrintWriter sendToServer = new PrintWriter(client.getUserClient().getOutputStream(), true);
-        SocketIO communicatingWithServer = new SocketIO(client.getUserClient());
-
-        BufferedReader readDataSentFromServer = new BufferedReader(new InputStreamReader(client.getUserClient().getInputStream()));
-
-        ByteArrayOutputStream message = new ByteArrayOutputStream();
-        OutputStream outputStream = client.getUserClient().getOutputStream();
+        ClientSide client1 = new ClientSide();
+        ClientSide client2 = new ClientSide();
+        SocketIO communicatingWithServerClient1 = new SocketIO(client1.getUserClient());
+        SocketIO communicatingWithServerClient2 = new SocketIO(client2.getUserClient());
 
         String user1Username = "somethingusername";
         String user1Password = "KSILOVER";
@@ -101,16 +101,17 @@ public class ClientSide {
         String user2Username = "Bob";
         String user2Password = "password456";
 
-        if (client.validSignUp(user1Username, user1Password)) {
+        if (client1.validUserAndPassword(user1Username, user1Password)) {
             System.out.println("User registered successfully");
+            client1 = new ClientSide(user1Username, user1Password);
             // Sending if made a connection  with the sever
-            communicatingWithServer.sendHandShake();
+            communicatingWithServerClient1.sendHandShake();
             // Sending Signup data to the server
-            communicatingWithServer.write(
-                    new String [] {user1Username, user1Password},
+            communicatingWithServerClient1.write(
+                    new String [] {client1.getUsername(), client1.getPassword()},
                     SocketIO.TYPE_USER_SIGNUP_INFORMATION);
 
-            byte conditionForUser = communicatingWithServer.readCondition();
+            byte conditionForUser = communicatingWithServerClient1.readCondition();
             switch (conditionForUser) {
                 case SocketIO.SUCCESS_BYTE_USER_SIGNUP:
                     System.out.println("User sign up was successfully");
@@ -125,16 +126,17 @@ public class ClientSide {
             System.out.println("Username or password is incorrect");
         }
 
-        if (client.validLogin(user2Username, user2Password)) {
+        if (client2.validUserAndPassword(user2Username, user2Password)) {
             System.out.println("User registered successfully");
+            client2 = new ClientSide(user2Username, user2Password);
             // Sending if made a connection  with the sever
-            communicatingWithServer.sendHandShake();
+            communicatingWithServerClient2.sendHandShake();
             // Sending login data to the server
-            communicatingWithServer.write(
-                    new String [] {user2Username, user2Password},
+            communicatingWithServerClient2.write(
+                    new String [] {client2.getUsername(), client2.getPassword()},
                     SocketIO.TYPE_USER_LOGIN_INFORMATION);
 
-            byte conditionForUser = communicatingWithServer.readCondition();
+            byte conditionForUser = communicatingWithServerClient2.readCondition();
             switch (conditionForUser) {
                 case SocketIO.SUCCESS_BYTE_USER_LOGIN:
                     System.out.println("User logged in successfully");
@@ -146,10 +148,12 @@ public class ClientSide {
                     System.out.println("User does not exist");
                     break;
             }
-
         } else {
             System.out.println("Username or password is incorrect");
         }
+
+
+
 
 
 
@@ -165,21 +169,6 @@ public class ClientSide {
          * */
 
 
-        // Send data to the server
-        DataOutputStream dos
-                = new DataOutputStream(
-                s.getOutputStream());
-
-        // Read data coming from the server
-        BufferedReader br
-                = new BufferedReader(
-                new InputStreamReader(
-                        s.getInputStream()));
-
-        // Read data from the keyboard
-        BufferedReader kb
-                = new BufferedReader(
-                new InputStreamReader(System.in));
         boolean keepRunningUntilExit = true;
 
         // Repeat as long as exit Is not typed at client
@@ -196,11 +185,6 @@ public class ClientSide {
 //                break;
 //            }
 //        }
-
-        // close connection.
-        dos.close();
-        br.close();
-        kb.close();
 
     }
 
