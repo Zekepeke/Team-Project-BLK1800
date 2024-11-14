@@ -57,12 +57,25 @@ public class ClientSide extends SocketIO {
     }
 
     public void search(){
+        /*
+         * TODO: After the socketIO class is updated make sure the search method works where it returns all the searched users
+         *
+         * */
 
     }
     public void profile(){
+        /*
+         * TODO: After the socketIO class is updated make sure to get the info of the clients profile including bio and possibly pfp and return the list
+         *
+         * */
 
     }
     public String[] listOfFriends(){
+        /*
+         * TODO: After the socketIO class is updated make sure to get the list of friends from the user and return the list
+         *
+         *
+         * */
         return null;
     }
 
@@ -84,11 +97,11 @@ public class ClientSide extends SocketIO {
         return password;
     }
 
-    public String setUsername(String username) {
+    public void setUsername(String username) {
         this.username = username;
     }
 
-    public String setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -108,6 +121,18 @@ public class ClientSide extends SocketIO {
         String user2Username = "Bob";
         String user2Password = "password456";
         ClientSide client2 = new ClientSide(userClient);
+
+        String user3Username = "Johnis∑&Cool";
+        String user3Password = "password456";
+        ClientSide client3 = new ClientSide(userClient);
+
+        if (client3.validUserAndPassword(user3Username, user3Password)) {
+            System.out.println("valid user and password");
+        } else {
+            System.out.println("invalid user and password");
+        }
+
+
 
         if (client1.validUserAndPassword(user1Username, user1Password)) {
             System.out.println("User registered successfully");
