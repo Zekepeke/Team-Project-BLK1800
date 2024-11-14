@@ -1,10 +1,11 @@
 package src.client;
+import Exceptions.BadClientException;
 import src.SocketIO;
 
 import java.io.*;
 import java.net.*;
 
-public class ClientSide {
+public class ClientSide extends SocketIO {
     private static final String HOST = "localhost";
     private static final int PORT = 5000;
     Socket userClient;
@@ -12,23 +13,22 @@ public class ClientSide {
     String username;
     String password;
 
-    public ClientSide(String username, String password) throws IOException {
+    public ClientSide(Socket userClient, String username, String password) throws IOException {
+        super(userClient);
         try {
-            this.userClient = new Socket(HOST, PORT);
-            this.username = username;
-            this.password = password;
-        } catch (UnknownHostException e) {
+            if (validUserAndPassword(username, password)) {
+                this.username = username;
+                this.password = password;
+            } else {
+                throw new BadClientException("Invalid username or password");
+            }
+        } catch (BadClientException e) {
             e.printStackTrace();
         }
+
     }
-    public ClientSide() throws IOException {
-        try {
-            this.userClient = new Socket(HOST, PORT);
-            this.username = username;
-            this.password = password;
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+    public ClientSide(Socket userClient) throws IOException {
+        super(userClient);
     }
 
     /**
@@ -62,8 +62,8 @@ public class ClientSide {
     public void profile(){
 
     }
-    public String[] messages(){
-
+    public String[] listOfFriends(){
+        return null;
     }
 
 
@@ -84,34 +84,42 @@ public class ClientSide {
         return password;
     }
 
+    public String setUsername(String username) {
+        this.username = username;
+    }
+
+    public String setPassword(String password) {
+        this.password = password;
+    }
+
 
 
 
 
     public static void main(String[] args) throws Exception{
         // Create a client socket
-        ClientSide client1 = new ClientSide();
-        ClientSide client2 = new ClientSide();
-        SocketIO communicatingWithServerClient1 = new SocketIO(client1.getUserClient());
-        SocketIO communicatingWithServerClient2 = new SocketIO(client2.getUserClient());
+        Socket userClient = new Socket(HOST, PORT);
+
 
         String user1Username = "somethingusername";
         String user1Password = "KSILOVER";
+        ClientSide client1 = new ClientSide(userClient);
 
         String user2Username = "Bob";
         String user2Password = "password456";
+        ClientSide client2 = new ClientSide(userClient);
 
         if (client1.validUserAndPassword(user1Username, user1Password)) {
             System.out.println("User registered successfully");
-            client1 = new ClientSide(user1Username, user1Password);
+            client1 = new ClientSide(userClient, user1Username, user1Password);
             // Sending if made a connection  with the sever
-            communicatingWithServerClient1.sendHandShake();
+            client1.sendHandShake();
             // Sending Signup data to the server
-            communicatingWithServerClient1.write(
+            client1.write(
                     new String [] {client1.getUsername(), client1.getPassword()},
                     SocketIO.TYPE_USER_SIGNUP_INFORMATION);
 
-            byte conditionForUser = communicatingWithServerClient1.readCondition();
+            byte conditionForUser = client1.readCondition();
             switch (conditionForUser) {
                 case SocketIO.SUCCESS_BYTE_USER_SIGNUP:
                     System.out.println("User sign up was successfully");
@@ -128,15 +136,15 @@ public class ClientSide {
 
         if (client2.validUserAndPassword(user2Username, user2Password)) {
             System.out.println("User registered successfully");
-            client2 = new ClientSide(user2Username, user2Password);
+            client2 = new ClientSide(userClient, user2Username, user2Password);
             // Sending if made a connection  with the sever
-            communicatingWithServerClient2.sendHandShake();
+            client2.sendHandShake();
             // Sending login data to the server
-            communicatingWithServerClient2.write(
+            client2.write(
                     new String [] {client2.getUsername(), client2.getPassword()},
                     SocketIO.TYPE_USER_LOGIN_INFORMATION);
 
-            byte conditionForUser = communicatingWithServerClient2.readCondition();
+            byte conditionForUser = client2.readCondition();
             switch (conditionForUser) {
                 case SocketIO.SUCCESS_BYTE_USER_LOGIN:
                     System.out.println("User logged in successfully");
