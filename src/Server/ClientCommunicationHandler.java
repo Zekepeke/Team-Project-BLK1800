@@ -6,7 +6,6 @@ import src.Server.AuthenticationException.*;
 
 import java.lang.Thread;
 import java.util.ArrayList;
-import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -20,9 +19,6 @@ public class ClientCommunicationHandler extends Thread {
     private final Socket userSocket;
     private User user;
 
-    private boolean userAlreadyActive(User user) {
-        return false;
-    }
 
     private User signup(String username, String bio, String password) {
         UserFileManager.writeNewUser(username);
@@ -31,12 +27,12 @@ public class ClientCommunicationHandler extends Thread {
 
 
     private User login(String username, String potentialPassword) throws LoginException {
-        File f = new File("../USER_DATABASE/" + username + ".txt");
-
-        if(!f.exists() || f.isDirectory()) {throw new LoginException(SocketIO.ERROR_USER_DNE);}
+        if(!UserFileManager.usernames.contains(username)) {
+            throw new LoginException(SocketIO.ERROR_USER_DNE);
+        }
 
         try {
-            User tempUser = new User(f.getPath());
+            User tempUser = new User(username + ".txt");
 
             if(!potentialPassword.equals(tempUser.getPassword())) {
                 throw new LoginException(SocketIO.ERROR_PASSWORD);
