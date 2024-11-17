@@ -4,7 +4,7 @@ package interfaces.client;
  * server connection, and handling user-specific features like searching,
  * retrieving profiles, and listing friends.
  */
-public interface clientSideInterface {
+public interface ClientSideInterface {
     static final String HOST = "localhost";
     static final int PORT = 5000;
     boolean validUserAndPassword(String username, String password);

@@ -1,6 +1,6 @@
 package src.client;
 import Exceptions.BadClientException;
-import interfaces.client.clientSideInterface;
+import interfaces.client.ClientSideInterface;
 import src.SocketIO;
 
 import java.io.*;
@@ -14,7 +14,7 @@ import java.util.Arrays;
  * This class extends the SocketIO class for socket communication
  * and implements clientSideInterface.
  */
-public class ClientSide extends SocketIO implements clientSideInterface {
+public class ClientSide extends SocketIO implements ClientSideInterface {
     private static final String HOST = "localhost";
     private static final int PORT = 5000;
     Socket userClient;
