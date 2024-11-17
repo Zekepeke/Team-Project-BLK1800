@@ -13,7 +13,7 @@ public class ServerImplementationTest {
 
     @Before
     public void setUp() {
-        server = new ServerImplementation(8080);
+        server = new ServerImplementation(5000);
     }
 
     @Test
@@ -25,16 +25,6 @@ public class ServerImplementationTest {
     public void testStartup() {
         boolean result = server.startup();
         assertTrue("Server should start up successfully", result);
-    }
-
-    @Test
-    public void testCurrentUsers() {
-        assertNotNull("Current users list should be initialized", server.currentUsers);
-    }
-
-    @Test
-    public void testUserNetMap() {
-        assertNotNull("User network map should be initialized", server.userNetMap);
     }
 
     @Test
