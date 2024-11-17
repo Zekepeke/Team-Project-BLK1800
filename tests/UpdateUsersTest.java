@@ -30,4 +30,11 @@ public class UpdateUsersTest {
     public void testUserNetMap() {
         assertNotNull("User network map should be initialized", UpdateUsers.userNetMap);
     }
+
+    @Test
+    public void testDatabaseIntegration() {
+        updateUsers.addUser("user1");
+        updateUsers.saveToDatabase(); 
+        assertTrue("User should be in database", mockDatabase.contains("user1")); 
+    }
 }
