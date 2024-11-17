@@ -1,6 +1,6 @@
-package src;
+package src.Server;
 
-public enum ConversationHandlerState {
+public enum ServerState {
 	SEND_HANDSHAKE,
 	READ_HANDSHAKE,
 	READ_DATA,

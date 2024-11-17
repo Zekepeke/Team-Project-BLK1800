@@ -11,27 +11,9 @@ import java.net.Socket;
 public class SocketIO implements IO {
 
     private final static String IMG_TOKEN = "|img|";
-
-    private final byte DELIMITER_START_BYTE = 0x01;
-    private final byte DELIMITER_END_BYTE = 0x02;
-    private final byte SPLITTER_BYTE = 0x03;
-
-    public static final byte TYPE_BYTE_FRIEND_INFO_UPDATE = 0x04;
-    public static final byte TYPE_BYTE_MESSAGE = 0x05;
-    public static final byte TYPE_BYTE_SIGNUP = 0x06;
-    public static final byte TYPE_BYTE_LOGIN = 0x06;
-    public static final byte TYPE_BYTE_HAND_SHAKE = 0x07;
-
-    //usersignup informatics
-    public static final byte SUCCESS_BYTE_USER_SIGNUP = 0x08;
-    public static final byte ERROR_BYTE_USER_EXISTS = 0x09;
-    public static final byte TYPE_USER_SIGNUP_INFORMATION = 0x0A;
-
-    //user login informatics
-    public static final byte SUCCESS_BYTE_USER_LOGIN = 0x0B;
-    public static final byte ERROR_BYTE_USER_DNE = 0x0C;
-    public static final byte ERROR_BYTE_PASSWORD = 0x0D;
-    public static final byte TYPE_USER_LOGIN_INFORMATION = 0x0E;
+    class InnerClass {
+        // Inner class members
+    }
 
     private Socket socket;
     private BufferedReader reader;
@@ -51,32 +33,32 @@ public class SocketIO implements IO {
     }
 
     @Override
-    public boolean write(String[] stream, byte informationType) {
+    public boolean write(String[] stream, String informationType) {
 
         if(stream.length == 0) {
-            this.writer.print(DELIMITER_START_BYTE);
+            this.writer.print(DELIMITER_START);
             this.writer.print(informationType);
-            this.writer.println(DELIMITER_END_BYTE);
+            this.writer.println(DELIMITER_END);
             return true;
         }
 
-        this.writer.print(DELIMITER_START_BYTE);
+        this.writer.print(DELIMITER_START);
         this.writer.print(informationType);
 
         for(int i = 0; i < stream.length - 1; i++) {
             this.writer.print(stream[i]);
-            this.writer.print(SPLITTER_BYTE);
+            this.writer.print(SPLITTER);
         }
 
         this.writer.print(stream[stream.length - 1]);
         
-        this.writer.println(DELIMITER_END_BYTE);
+        this.writer.println(DELIMITER_END);
 
         return true;
     }
 
-    public boolean validInformationByte(byte informationByte) {
-        if (informationByte != TYPE_BYTE_FRIEND_INFO_UPDATE) {
+    public boolean validInformation(String information) {
+        if(!information.equals(TYPE_HAND_SHAKE)) {
             return false;
         }
         return true;
@@ -85,20 +67,25 @@ public class SocketIO implements IO {
     @Override
     public String[] read() {
 
-        String input = this.reader.readLine();
+        try {
+            String input = this.reader.readLine();
 
-        if(input.charAt(0) != DELIMITER_START_BYTE) {return null;}
-        if(input.charAt(input.length() - 1) != DELIMITER_END_BYTE) {return null;}
+            String[] information = input.split(SPLITTER);
 
-        byte informationType = (byte)input.charAt(1);
+            if(information[0].indexOf(DELIMITER_START) == -1) {return null;}
+            if(information[information.length-1].indexOf(DELIMITER_END) == -1) {return null;}
 
-        if(!validInformationByte(informationType)) {return null;}
 
-        input = input.substring(1, input.length()-1);
+            if(!validInformation(information[1])) {return null;}
 
-        String[] information = input.split(Character.toString(SPLITTER_BYTE));
+            input = input.substring(DELIMITER_START.length(), input.length()-DELIMITER_END.length());
 
-        return information;
+            information = input.split(SPLITTER);
+
+            return information;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
@@ -133,26 +120,35 @@ public class SocketIO implements IO {
     }
 
     public boolean sendHandShake() {
-        return this.write(null, TYPE_BYTE_HAND_SHAKE);
+        return this.write(null, TYPE_HAND_SHAKE);
+    }
+
+    public boolean checkForHandShake() {
+        return readCondition().equals(TYPE_HAND_SHAKE);
     }
 
     public boolean checkForHandShake(String[] input) {
-        return input != null && input[0].charAt(0) == TYPE_BYTE_HAND_SHAKE;
+        return input[0].equals(TYPE_HAND_SHAKE);
     }
 
-    public boolean writeCondition(byte conditionType) {
-        if(validInformationByte(conditionType)) {return false;}
-        writer.print(DELIMITER_START_BYTE);
+    public boolean writeCondition(String conditionType) {
+        if(validInformation(conditionType)) {return false;}
+        writer.print(DELIMITER_START);
         writer.print(conditionType);
-        writer.println(DELIMITER_END_BYTE);
+        writer.println(DELIMITER_END);
         return true;
     }
 
-    public byte readCondition() {
-        String input = reader.readLine();
-        input = input.substring(1, input.length()-1);
-        byte type = (byte)input.charAt(0);
-        if(!validInformationByte(type)) {return 0x00;}
-        return type;
+    public String readCondition() {
+        try {
+            String input = read()[0];
+
+            if (!validInformation(input)) {
+                return null;
+            }
+            return input;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
