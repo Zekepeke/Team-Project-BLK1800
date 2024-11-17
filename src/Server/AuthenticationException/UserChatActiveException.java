@@ -1,4 +1,4 @@
-package src.Server.AuthenticationException;
+package src.server.AuthenticationException;
 import src.SocketIO;
 
 public class UserChatActiveException extends AuthenticationException{

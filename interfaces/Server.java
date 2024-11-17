@@ -1,7 +1,6 @@
 package interfaces;
 
 import src.User;
-import
 
 public interface Server {
 

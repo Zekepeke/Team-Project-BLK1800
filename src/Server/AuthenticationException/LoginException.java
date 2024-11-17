@@ -1,4 +1,4 @@
-package src.Server.AuthenticationException;
+package src.server.AuthenticationException;
 
 public class LoginException extends AuthenticationException {
 

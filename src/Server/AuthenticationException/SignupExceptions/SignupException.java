@@ -1,6 +1,6 @@
-package src.Server.AuthenticationException.SignupExceptions;
+package src.server.AuthenticationException.SignupExceptions;
 
-import src.Server.AuthenticationException.AuthenticationException;
+import src.server.AuthenticationException.AuthenticationException;
 
 public class SignupException extends AuthenticationException {
     public SignupException(String message) {

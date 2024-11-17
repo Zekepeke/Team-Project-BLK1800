@@ -1,8 +1,8 @@
-package src.Server;
+package src.server;
 
 import src.*;
-import src.Server.AuthenticationException.LoginException;
-import src.Server.AuthenticationException.*;
+import src.server.AuthenticationException.LoginException;
+import src.server.AuthenticationException.*;
 
 import java.lang.Thread;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class ClientCommunicationHandler extends Thread {
 
 
     public void setUser(User user) throws UserChatActiveException{
-        for(Thread handler : ServerImplementation.activeConversations) {
+        for(Thread handler : test.ServerImplementation.activeConversations) {
             ClientCommunicationHandler clientCommunicationHandler = (ClientCommunicationHandler) handler;
             if(clientCommunicationHandler.getUser().getName().equals(user.getName())) {
                 throw new UserChatActiveException();

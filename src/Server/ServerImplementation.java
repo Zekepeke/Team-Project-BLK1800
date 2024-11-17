@@ -1,7 +1,8 @@
-package src.Server;
+package src.server;
 
 import interfaces.Server;
 import src.User;
+import src.server.ClientCommunicationHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -34,13 +35,6 @@ public class ServerImplementation implements Server {
         }
     }
 
-    /**
-     * Checks if the user is already active within another thread
-     *
-     *
-     * @param userName
-     * @return The reference to the existing user
-     */
 
     public boolean startup() {
         while (true) {

@@ -3,12 +3,13 @@ package tests;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import src.ServerImplementation;
+import src.server.ServerImplementation;
+
 import java.io.IOException;
 import java.net.Socket;
 
 public class ServerImplementationTest {
-    private ServerImplementation server;
+    private src.server.ServerImplementation server;
 
     @Before
     public void setUp() {

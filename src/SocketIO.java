@@ -11,6 +11,7 @@ import java.net.Socket;
 public class SocketIO implements IO {
 
     private final static String IMG_TOKEN = "|img|";
+
     class InnerClass {
         // Inner class members
     }
@@ -66,7 +67,6 @@ public class SocketIO implements IO {
 
     @Override
     public String[] read() {
-
         try {
             String input = this.reader.readLine();
 
