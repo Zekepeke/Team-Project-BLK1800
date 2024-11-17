@@ -6,7 +6,14 @@ import src.SocketIO;
 import java.io.*;
 import java.net.*;
 import java.util.Arrays;
-
+/**
+ * Handles the client-side operations, including validating user credentials,
+ * connecting to the server, and managing user-related functionalities like search,
+ * profile, and friend list.
+ *
+ * This class extends the SocketIO class for socket communication
+ * and implements clientSideInterface.
+ */
 public class ClientSide extends SocketIO implements clientSideInterface {
     private static final String HOST = "localhost";
     private static final int PORT = 5000;
@@ -60,15 +67,27 @@ public class ClientSide extends SocketIO implements clientSideInterface {
         }
         return validUsername && validPassword;
     }
-
+    /**
+     * Attempts to check connection to the server by checking if the user client instance is initialized.
+     *
+     * @return {@code true} if the user client is not null, indicating a successful connection;
+     *         {@code false} otherwise.
+     */
     public boolean connectToServer() {
-        if (userClient != null) {
-            return true;
-        }
-        return false;
+        return userClient != null;
     }
 
 
+    /**
+     * Searches for users matching the given name by communicating with the server.
+     *
+     * @param name the name to search for.
+     * @return an array of user names matching the search criteria if the operation is successful;
+     *         {@code null} if the search fails or no results are found.
+     *
+     * @implNote Ensure the {@code SocketIO} class is updated so the search method
+     *           works correctly and returns all the searched users.
+     */
 
     public String[] search(String name){
         /*
@@ -83,10 +102,15 @@ public class ClientSide extends SocketIO implements clientSideInterface {
         }
 
         return null;
-
-
-
     }
+
+    /**
+     * Retrieves the profile information of the current user by communicating with the server.
+     *
+     * @return an array of strings containing the user's profile information if the operation is successful;
+     *         {@code null} if the request fails or no profile data is returned.
+     */
+
     public String[] profile(){
         String [] stream = {"String"};
         boolean success = write(stream, TYPE_USER_INFORMATION);
@@ -95,18 +119,17 @@ public class ClientSide extends SocketIO implements clientSideInterface {
             System.out.println(Arrays.toString(info));
             return info;
         }
-
         return null;
-
-
-
     }
+
+    /**
+     * Retrieves the list of friends for the current user by communicating with the server.
+     *
+     * @return an array of strings containing the names or identifiers of the user's friends
+     *         if the operation is successful; {@code null} if the request fails or no data is returned.
+     *
+     */
     public String[] listOfFriends(){
-        /*
-         * TODO: After the socketIO class is updated make sure to get the list of friends from the user and return the list
-         *
-         *
-         * */
         String [] stream = {"String"};
         boolean success = write(stream, TYPE_FRIEND_LIST);
         if (success) {
@@ -119,27 +142,56 @@ public class ClientSide extends SocketIO implements clientSideInterface {
     }
 
 
-
+    /**
+     * Retrieves the port number used for the server connection.
+     *
+     * @return the port number as an integer.
+     */
     public static int getPORT() {
         return PORT;
     }
 
+    /**
+     * Retrieves the socket instance representing the client connection to the server.
+     *
+     * @return the {@code Socket} object for the user client.
+     */
     public Socket getUserClient() {
         return userClient;
     }
 
+    /**
+     * Retrieves the username of the current user.
+     *
+     * @return the username as a {@code String}.
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Retrieves the password of the current user.
+     *
+     * @return the password as a {@code String}.
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     * Sets the username for the current user.
+     *
+     * @param username the new username as a {@code String}.
+     */
     public void setUsername(String username) {
         this.username = username;
     }
 
+    /**
+     * Sets the password for the current user.
+     *
+     * @param password the new password as a {@code String}.
+     */
     public void setPassword(String password) {
         this.password = password;
     }
