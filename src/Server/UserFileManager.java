@@ -1,4 +1,4 @@
-package src.server;
+package src.Server;
 
 import java.io.*;
 import java.util.ArrayList;

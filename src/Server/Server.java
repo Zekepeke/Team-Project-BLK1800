@@ -1,4 +1,4 @@
-package src.server;
+package src.Server;
 
 import interfaces.ServerInterface;
 import src.User;

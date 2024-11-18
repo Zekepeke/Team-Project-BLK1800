@@ -1,4 +1,4 @@
-package src.server;
+package src.Server;
 
 public enum ServerState {
 	SEND_HANDSHAKE,
