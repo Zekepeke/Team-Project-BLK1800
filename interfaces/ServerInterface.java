@@ -1,9 +1,8 @@
 package interfaces;
 
 import src.User;
-import
 
-public interface Server {
+public interface ServerInterface {
 
     static User isUserActive(String userName) {
         return null;

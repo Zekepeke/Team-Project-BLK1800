@@ -1,7 +1,7 @@
-package src.Server.AuthenticationException;
+package src.Server.ServerExceptions;
 import src.SocketIO;
 
-public class UserChatActiveException extends AuthenticationException{
+public class UserChatActiveException extends Exception {
     private final String type = SocketIO.ERROR_USER_ALREADY_ACTIVE;
     public UserChatActiveException(String message) {
         super(message);
