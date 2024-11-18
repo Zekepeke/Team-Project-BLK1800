@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * user communication, and threads for each active conversation.
  */
 public class Server implements ServerInterface {
-
+    private static final int PORT_NUMBER = 8282;
     private final ServerSocket serverSocket;
 
     // Stores active conversation threads
@@ -79,7 +79,7 @@ public class Server implements ServerInterface {
     }
 
     public static void main(String[] args) {
-        Server server = new Server(8282);
+        Server server = new Server(PORT_NUMBER);
         server.startup();
     }
 }
