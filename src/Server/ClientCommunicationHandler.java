@@ -1,8 +1,13 @@
 package src.server;
 
+import interfaces.ClientHandlerInterface;
 import src.*;
+<<<<<<< HEAD
 import src.server.AuthenticationException.LoginException;
 import src.server.AuthenticationException.*;
+=======
+import src.Server.ServerExceptions.*;
+>>>>>>> ServerBranch
 
 import java.lang.Thread;
 import java.util.ArrayList;
@@ -10,204 +15,254 @@ import java.io.IOException;
 import java.net.Socket;
 
 /**
- * The ConversationHandler class represents a thread that handles sole communication between the server and a single client.
- * This class handles signup, login, message parsing, and data delivery between the server and a client.
-**/
+ * Handles communication between the server and a single client.
+ * This includes signup, login, message parsing, and data delivery.
+ */
+public class ClientCommunicationHandler extends Thread implements ClientHandlerInterface {
 
-public class ClientCommunicationHandler extends Thread {
-    private ArrayList<String> availablefriends;
+    public enum State {
+        SEND_HANDSHAKE,
+        READ_HANDSHAKE,
+        READ_DATA,
+        EXECUTE
+    }
+
     private final Socket userSocket;
+    private final SocketIO messager;
     private User user;
 
-
-    private User signup(String username, String bio, String password) {
-        UserFileManager.writeNewUser(username);
-        return new User(username, bio, password);
-    }
-
-
-    private User login(String username, String potentialPassword) throws LoginException {
-        if(!UserFileManager.usernames.contains(username)) {
-            throw new LoginException(SocketIO.ERROR_USER_DNE);
-        }
-
-        try {
-            User tempUser = new User(username + ".txt");
-
-            if(!potentialPassword.equals(tempUser.getPassword())) {
-                throw new LoginException(SocketIO.ERROR_PASSWORD);
-            }
-
-            return tempUser;
-
-        } catch (IOException e) {
-            throw new LoginException("[ERROR] CANNOT READ USER DATA");
-        }
-    }
-
     /**
-     * @param socket The socket to communicate between server and client
+     * Constructs a handler for client communication.
+     *
+     * @param socket The socket for server-client communication.
      */
     public ClientCommunicationHandler(Socket socket) {
         this.userSocket = socket;
+        this.messager = new SocketIO(socket);
     }
 
+<<<<<<< HEAD
 
     public void setUser(User user) throws UserChatActiveException{
         for(Thread handler : test.ServerImplementation.activeConversations) {
             ClientCommunicationHandler clientCommunicationHandler = (ClientCommunicationHandler) handler;
             if(clientCommunicationHandler.getUser().getName().equals(user.getName())) {
+=======
+    /**
+     * Sets the current user and ensures no duplicate active sessions.
+     *
+     * @param user The User to set.
+     * @throws UserChatActiveException If the user is already in an active session.
+     */
+    public void setUser(User user) throws UserChatActiveException {
+        for (Thread handler : Server.activeConversations) {
+            ClientCommunicationHandler clientHandler = (ClientCommunicationHandler) handler;
+            if (clientHandler.getUser().getName().equals(user.getName())) {
+>>>>>>> ServerBranch
                 throw new UserChatActiveException();
             }
         }
+        this.user = user;
     }
 
+    /**
+     * Gets the current user.
+     *
+     * @return The current User object.
+     */
     public User getUser() {
         return this.user;
     }
 
-    /*
-     * Handles all states of communication
+    /**
+     * Handles all states of server-client communication.
      */
-
-
-
     @Override
     public void run() {
-        SocketIO messager = new SocketIO(this.userSocket);
-        ServerState state = ServerState.SEND_HANDSHAKE;
-
+        State state = State.SEND_HANDSHAKE;
         String[] dataFromClient = null;
-        String informationType = null;
-        UserFileManager.initialize();
 
-        //Checking if the user is present or not
-        while(!(this.userSocket.isClosed())){
-            // Check for    client disconnection
-            switch(state) {
+        while (!this.userSocket.isClosed()) {
+            switch (state) {
                 case SEND_HANDSHAKE:
                     messager.sendHandShake();
-                    state = ServerState.READ_HANDSHAKE;
+                    state = State.READ_HANDSHAKE;
                     break;
 
                 case READ_HANDSHAKE:
-                    if(messager.checkForHandShake()) {
-                        state = ServerState.READ_DATA;
-                    } else{
-                        System.out.println("Waiting for handshake from client");
-                    }
+                    messager.checkForHandShake();
+                    state = State.READ_DATA;
                     break;
 
                 case READ_DATA:
                     dataFromClient = messager.read();
-                    if(dataFromClient == null) {
-                        System.out.println("Waiting for data");
-                    } else {
-                        informationType = dataFromClient[0];
-                        state = ServerState.EXECUTE;
-                    }
+                    state = State.EXECUTE;
                     break;
+
                 case EXECUTE:
+                    processClientData(dataFromClient);
+                    break;
 
-                    //trimming the data to remove the information index
-                    String[] data = new String[dataFromClient.length - 1];
-
-                    for(int i = 1; i < dataFromClient.length; i++) {
-                        data[i - 1] = dataFromClient[i];
-                    }
-
-                    switch(informationType) {
-                        case SocketIO.TYPE_SIGNUP:
-
-                            if(UserFileManager.usernames.contains(data[0])) {
-                                messager.writeCondition(SocketIO.ERROR_USER_EXISTS);
-                                break;
-                            }
-
-                            try {
-                                this.setUser(signup(data[0], data[1], data[2]));
-                                messager.writeCondition(SocketIO.SUCCESS_USER_SIGNUP);
-                            } catch (UserChatActiveException e) {
-                                messager.writeCondition(e.getMessage());
-                            }
-
-                            break;
-
-                        case SocketIO.TYPE_LOGIN:
-
-                            try {
-                                this.setUser(login(data[0], data[1]));
-                                messager.writeCondition(SocketIO.SUCCESS_USER_LOGIN);
-
-                            } catch(LoginException | UserChatActiveException e) {
-                                messager.writeCondition(e.getMessage());
-                            }
-
-                            break;
-
-                        case SocketIO.TYPE_USER_INFORMATION:
-                            String[] sender = new String[]{this.user.getName(), this.user.getBio()};
-                            messager.write(sender, SocketIO.TYPE_USER_INFORMATION);
-
-                        case SocketIO.TYPE_MESSAGE:
-                            try {
-                                Message message = new Message(user, new User(dataFromClient[1] + ".txt"), null, dataFromClient[2]);
-                                message.pushToDatabase();
-
-                            } catch (IOException e) {
-                                System.out.println("Idek");
-                            }
-                            break;
-
-                        case SocketIO.TYPE_FRIEND_LIST:
-                            ArrayList<String> friends = this.user.getFriends();
-                            String[] friendList = new String[friends.size()];
-
-                            for(int i = 0; i < friendList.length; i++) {
-                                friendList[i] = friends.get(i);
-                            }
-
-                            messager.write(friendList, SocketIO.TYPE_LIST_FRIENDS);
-                            break;
-                        case SocketIO.TYPE_USER_LIST_SEARCH:
-
-                            String query = data[0].toLowerCase();
-                            ArrayList<String> matchingNames = new ArrayList<>();
-
-                            for(String userName: UserFileManager.usernames) {
-                                if(userName.toLowerCase().contains(query)){
-                                    matchingNames.add(userName);
-                                }
-                            }
-
-                            String[] sendUsers = matchingNames.toArray(new String[matchingNames.size()]);
-                            messager.write(sendUsers, SocketIO.TYPE_USER_LIST_SEARCH);
-
-                        case SocketIO.TYPE_FRIEND_CONVERSATION_HISTORY:
-
-                            try {
-                                User friendInformation = new User(data[0] + ".txt");
-
-                                ConversationReader reader = new ConversationReader(this.user.getName(), friendInformation.getName());
-                                ArrayList<Message> messages = reader.getMessages();
-                                String[] messagesToString = new String[messages.size()];
-
-                                for(int i = 0; i < messages.size(); i++) {
-                                    messagesToString[i] = messages.get(i).toString();
-                                }
-
-                                messager.write(messagesToString, SocketIO.TYPE_FRIEND_CONVERSATION_HISTORY);
-
-                            }
-                            catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                            break;
-                        default:
-                            break;
-                    }
+                default:
+                    break;
             }
+        }
+    }
+
+    /**
+     * Processes the data sent by the client and performs corresponding actions.
+     *
+     * @param dataFromClient The data received from the client.
+     */
+    public void processClientData(String[] dataFromClient) {
+        String informationType = dataFromClient[0];
+        String[] data = new String[dataFromClient.length - 1];
+        System.arraycopy(dataFromClient, 1, data, 0, dataFromClient.length - 1);
+
+        switch (informationType) {
+            case SocketIO.TYPE_SIGNUP:
+                handleSignup(data);
+                break;
+
+            case SocketIO.TYPE_LOGIN:
+                handleLogin(data);
+                break;
+
+            case SocketIO.TYPE_USER_INFORMATION:
+                sendUserInfo();
+                break;
+
+            case SocketIO.TYPE_MESSAGE:
+                sendMessage(data);
+                break;
+
+            case SocketIO.TYPE_FRIEND_LIST:
+                sendFriendList();
+                break;
+
+            case SocketIO.TYPE_USER_LIST_SEARCH:
+                searchUsers(data);
+                break;
+
+            case SocketIO.TYPE_FRIEND_CONVERSATION_HISTORY:
+                sendConversationHistory(data);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Handles the signup process for a new user.
+     *
+     * @param data The data containing the username, bio, and password.
+     */
+    public void handleSignup(String[] data) {
+        if (User.getUsernames().contains(data[0])) {
+            messager.writeCondition(SocketIO.ERROR_USER_EXISTS);
+            return;
+        }
+
+        try {
+            // Create a new user and save to file
+            User newUser = new User(data[0], data[1], data[2]);
+            this.setUser(newUser);
+            messager.writeCondition(SocketIO.SUCCESS_USER_SIGNUP);
+        } catch (UserChatActiveException e) {
+            messager.writeCondition(e.getMessage());
+        }
+    }
+
+    /**
+     * Handles the login process for an existing user.
+     *
+     * @param data The data containing the username and password.
+     */
+    public void handleLogin(String[] data) {
+        try {
+            // Validate username and password
+            if (!User.getUsernames().contains(data[0])) {
+                messager.writeCondition(SocketIO.ERROR_USER_DNE);
+                return;
+            }
+
+            User tempUser = new User(data[0] + ".txt");
+            if (!data[1].equals(tempUser.getPassword())) {
+                messager.writeCondition(SocketIO.ERROR_PASSWORD);
+                return;
+            }
+
+            // Set the user and indicate success
+            this.setUser(tempUser);
+            messager.writeCondition(SocketIO.SUCCESS_USER_LOGIN);
+        } catch (IOException e) {
+            messager.writeCondition("[ERROR] CANNOT READ USER DATA");
+        } catch (UserChatActiveException e) {
+            messager.writeCondition(e.getMessage());
+        }
+    }
+
+    /**
+     * Sends the current user's information to the client.
+     */
+    public void sendUserInfo() {
+        String[] userInfo = {this.user.getName(), this.user.getBio()};
+        messager.write(userInfo, SocketIO.TYPE_USER_INFORMATION);
+    }
+
+    /**
+     * Sends a message to another user.
+     *
+     * @param data The data containing the recipient and the message.
+     */
+    public void sendMessage(String[] data) {
+        try {
+            Message message = new Message(user, new User(data[0] + ".txt"), null, data[1]);
+            message.pushToDatabase();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Sends the list of the current user's friends to the client.
+     */
+    public void sendFriendList() {
+        ArrayList<String> friends = this.user.getFriends();
+        messager.write(friends.toArray(new String[0]), SocketIO.TYPE_LIST_FRIENDS);
+    }
+
+    /**
+     * Searches for users whose names match the query and sends the results to the client.
+     *
+     * @param data The data containing the search query.
+     */
+    public void searchUsers(String[] data) {
+        String query = data[0].toLowerCase();
+        ArrayList<String> matchingNames = new ArrayList<>();
+        for (String userName : User.getUsernames()) {
+            if (userName.toLowerCase().contains(query)) {
+                matchingNames.add(userName);
+            }
+        }
+        messager.write(matchingNames.toArray(new String[0]), SocketIO.TYPE_USER_LIST_SEARCH);
+    }
+
+    /**
+     * Sends the conversation history between the current user and a friend to the client.
+     *
+     * @param data The data containing the friend's username.
+     */
+    public void sendConversationHistory(String[] data) {
+        try {
+            User friend = new User(data[0] + ".txt");
+            ConversationReader reader = new ConversationReader(this.user.getName(), friend.getName());
+            ArrayList<Message> messages = reader.getMessages();
+            messager.write(messages.stream().map(Message::toString).toArray(String[]::new),
+                    SocketIO.TYPE_FRIEND_CONVERSATION_HISTORY);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
