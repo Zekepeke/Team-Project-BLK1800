@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import src.client.ClientSide;
-import src.server.Server;
+import src.Server.Server;
 
 import java.io.IOException;
 import java.net.Socket;

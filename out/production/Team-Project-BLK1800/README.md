@@ -17,7 +17,7 @@ functioning Social Media Platform.
    cd Team-Project-BLK1800
 2. **Run**
    ```bash
-    cd out/production/Team-Project-BLK1800/src && java App
+    java -cp /**Path**/**To**/**The**/**Project**/out/production/Team-Project-BLK1800 src.App
 
 
 ## Submission Details

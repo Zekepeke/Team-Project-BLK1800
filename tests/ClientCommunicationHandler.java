@@ -1,9 +1,9 @@
-package src.Server;
+package tests;
 
 import interfaces.ClientHandlerInterface;
 import src.*;
+import src.Server.Server;
 import src.server.ServerExceptions.UserChatActiveException;
-
 import java.lang.Thread;
 import java.util.ArrayList;
 import java.io.IOException;

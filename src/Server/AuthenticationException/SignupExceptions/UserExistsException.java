@@ -1,4 +1,4 @@
-package src.server.AuthenticationException.SignupExceptions;
+package src.Server.AuthenticationException.SignupExceptions;
 
 public class UserExistsException extends SignupException{
     public UserExistsException(String message) {
