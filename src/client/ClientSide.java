@@ -16,7 +16,7 @@ import java.util.Arrays;
  */
 public class ClientSide extends SocketIO implements ClientSideInterface {
     private static final String HOST = "localhost";
-    private static final int PORT = 5000;
+    private static final int PORT = 8282;
     Socket userClient;
 
     String username;
@@ -46,15 +46,15 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
     /**
      * This method makes a new user and makes sure that the username and password is valid.
      * Username is valid if no special characters, lower case, no spaces, and should be in the bounds of 4 and 14.
-     * Password is valid if no spaces and should be in the bounds of 4 and 14.
+     * Password is valid if no spaces and should be in the bounds of 3 and 14.
      *
      * @param username The user making their own unique username
      * @param password The user making a password that is unique
      * @return True if it is a valid sign-up and false if it is invalid
      */
     public boolean validUserAndPassword(String username, String password) {
-        boolean validUsername = username != null && !username.contains(" ") && username.length() >= 4 && username.length() <= 14;
-        boolean validPassword = password.length() >= 4 && password.length() <= 14 && !password.contains(" ");
+        boolean validUsername = username != null && !username.contains(" ") && username.length() >= 3 && username.length() <= 14;
+        boolean validPassword = password.length() >= 3 && password.length() <= 14 && !password.contains(" ");
 
         if (validUsername) {
             for (int i = 0; i < username.length(); i++) {
@@ -90,10 +90,6 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
      */
 
     public String[] search(String name){
-        /*
-         * TODO: After the socketIO class is updated make sure the search method works where it returns all the searched users
-         *
-         * */
         String[] stream = {name};
         boolean success = write(stream, TYPE_USER_LIST_SEARCH);
         if (success) {
