@@ -78,6 +78,16 @@ public class Server implements ServerInterface {
         }
     }
 
+    /**
+     * Shutdowns the server(Used for testing)
+     */
+    public void shutdown() throws IOException {
+        if (serverSocket != null && !serverSocket.isClosed()) {
+            serverSocket.close();
+        }
+        System.out.println("Server stopped.");
+    }
+
     public static void main(String[] args) {
         Server server = new Server(PORT_NUMBER);
         server.startup();
