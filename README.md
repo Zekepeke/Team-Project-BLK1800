@@ -82,18 +82,6 @@ This project implements a basic client-server communication system using sockets
 
 ## Features
 
-1. **Client-Side Operations**
-  - User authentication (login and signup)
-  - Search for users
-  - Retrieve profile information
-  - View the friend list
-
-2. **Socket Communication**
-  - Handles low-level socket communication between client and server.
-  - Supports data streaming and handshake operations.
-3. **Server Operations**
-  - Looks into reading and writing to the datbase
-  - Manages all the backend functionality
 ## Project Structure
 
 ### Classes
