@@ -43,12 +43,16 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
      * @throws UserChatActiveException If the user is already in an active session.
      */
     public void setUser(User user) throws UserChatActiveException {
-        for (User temp : Server.activeUsers) {
-            if (temp.getName().equals(user.getName())) {
-                throw new UserChatActiveException();
+        int count = 0;
+        for(int i = 0; i < Server.activeUsers.size(); i++) {
+            if(Server.activeUsers.get(i).getName().equals(this.user.getName())) {
+                count++;
             }
         }
-        this.user = user;
+
+        if(count > 1) {
+            throw new UserChatActiveException();
+        }
     }
 
     /**
@@ -145,7 +149,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
      * @param data The data containing the username, bio, and password.
      */
     public void handleSignup(String[] data) {
-        if (User.getUsernames().contains(data[0])) {
+        if (User.storedUsers().contains(data[0])) {
             messager.writeCondition(SocketIO.ERROR_USER_EXISTS);
             return;
         }
@@ -168,7 +172,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
     public void handleLogin(String[] data) {
         try {
             // Validate username and password
-            if (!User.getUsernames().contains(data[0])) {
+            if (!User.storedUsers().contains(data[0])) {
                 messager.writeCondition(SocketIO.ERROR_USER_DNE);
                 return;
             }
@@ -193,7 +197,9 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
      * Sends the current user's information to the client.
      */
     public void sendUserInfo() {
-        String[] userInfo = {this.user.getName(), this.user.getBio()};
+        String name = this.user.getName();
+        String bio = this.user.getBio();
+        String[] userInfo = new String[]{this.user.getName(), this.user.getBio()};
         messager.write(userInfo, SocketIO.TYPE_USER_INFORMATION);
     }
 
@@ -227,7 +233,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
     public void searchUsers(String[] data) {
         String query = data[0].toLowerCase();
         ArrayList<String> matchingNames = new ArrayList<>();
-        for (String userName : User.getUsernames()) {
+        for (String userName : User.storedUsers()) {
             if (userName.toLowerCase().contains(query)) {
                 matchingNames.add(userName);
             }

@@ -336,15 +336,34 @@ public class User implements UserBased {
      */
     @Override
     public boolean pushToDatabase() {
-        try (PrintWriter p = new PrintWriter(new FileWriter(name + ".txt"))) {
+        try (PrintWriter p = new PrintWriter(new FileWriter(name + ".txt")); PrintWriter a = new PrintWriter(new FileWriter(USERS_LIST_PATH))) {
             synchronized (usernames) {
                 p.println(this);
+                a.println(this.name);
             }
         } catch (Exception e) {
             System.out.println("Bad IO Exception");
             return false;
         }
         return true;
+    }
+
+    /**
+     * Retrieves all the stored users names within the database
+     */
+    public static ArrayList<String> storedUsers() {
+        ArrayList<String> users = new ArrayList<String>();
+        try(BufferedReader a = new BufferedReader(new FileReader(USERS_LIST_PATH))) {
+            String input = null;
+            while((input = a.readLine()) != null) {
+                users.add(input);
+            }
+            return users;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return users;
     }
 
     /**

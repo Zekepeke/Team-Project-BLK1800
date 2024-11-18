@@ -42,7 +42,7 @@ public class Server implements ServerInterface {
      * @return true if the server starts successfully, otherwise false.
      */
     public boolean startup() {
-        System.out.println("ServerInterface is running...");
+        System.out.println("Server is running...");
         while (true) {
             try {
                 // Accept incoming client connections
@@ -74,7 +74,7 @@ public class Server implements ServerInterface {
                 System.out.println("Removing inactive conversation...");
                 activeConversations.remove(i);
                 sockets.remove(i);
-                activeConversations.remove(i);
+                activeUsers.remove(i);
             } else {
                 i++;
             }
