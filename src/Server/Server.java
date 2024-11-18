@@ -1,4 +1,4 @@
-package src.Server;
+package src.server;
 
 import interfaces.ServerInterface;
 

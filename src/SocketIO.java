@@ -12,6 +12,10 @@ import java.net.Socket;
 
 /**
  * Handles socket-based input/output communication with a client.
+ * Manages the low-level socket communication between the client and server, providing methods for reading
+ * and writing data streams, validating information, and managing handshake operations.
+ * Handles socket-based input/output communication with a client.
+ * Implements the IO interface for input-output stream management.
  */
 public class SocketIO implements IO {
 
@@ -40,10 +44,12 @@ public class SocketIO implements IO {
 
     /**
      * Writes data to the client socket.
-     *
+     * Writes a data stream to the server with a specified information type.
+     * Initializes a new SocketIO instance for client communication.
      * @param stream          The data to write as a string array.
      * @param informationType The type of information being sent.
-     * @return true if the message was written successfully, false otherwise.
+     * @return {@code true} if the data was successfully written;
+     * {@code false} otherwise.
      */
     public boolean write(String[] stream, String informationType) {
         if (writer == null) {
@@ -65,6 +71,9 @@ public class SocketIO implements IO {
 
     /**
      * Reads data from the client socket.
+     * Validates the type of information received.
+     * Writes data to the client socket.
+     *
      *
      * @return The data read as a string array, or null if reading fails.
      */
@@ -85,9 +94,11 @@ public class SocketIO implements IO {
 
     /**
      * Validates the information type received from the client.
+     *  Writes data to the client socket.
      *
      * @param information The information type to validate.
-     * @return true if the information type is valid, false otherwise.
+     * @return {@code true} if the information type is valid;
+     * {@code false} otherwise.
      */
     public boolean validInformation(String information) {
         return TYPE_HAND_SHAKE.equals(information);
@@ -95,6 +106,7 @@ public class SocketIO implements IO {
 
     /**
      * Sets a new input stream for reading from the client socket.
+     * Reads a data stream from the server and parses it into an array of strings.
      *
      * @param stream The input stream to set.
      * @return true if the input stream was successfully set, false otherwise.
@@ -108,7 +120,7 @@ public class SocketIO implements IO {
      * Sets a new output stream for writing to the client socket.
      *
      * @param stream The output stream to set.
-     * @return true if the output stream was successfully set, false otherwise.
+     * @return {@code true} if the stream is successfully set; {@code false} otherwise.
      */
     public boolean setStreamWriter(OutputStream stream) {
         this.writer = new PrintWriter(stream, true);
@@ -118,7 +130,7 @@ public class SocketIO implements IO {
     /**
      * Gets the input stream associated with the client socket.
      *
-     * @return The input stream, or null if it cannot be retrieved.
+     * @return the {@code InputStream} for reading data, or {@code null} if an error occurs.
      */
     public InputStream getStreamReader() {
         try {
@@ -132,7 +144,7 @@ public class SocketIO implements IO {
     /**
      * Gets the output stream associated with the client socket.
      *
-     * @return The output stream, or null if it cannot be retrieved.
+     * @return the {@code OutputStream} for writing data, or {@code null} if an error occurs.
      */
     public OutputStream getStreamWriter() {
         try {
@@ -146,7 +158,7 @@ public class SocketIO implements IO {
     /**
      * Sends a handshake message to the client.
      *
-     * @return true if the handshake message was sent successfully, false otherwise.
+     * @return {@code true} if the handshake message is successfully sent; {@code false} otherwise.
      */
     public boolean sendHandShake() {
         return write(null, TYPE_HAND_SHAKE);
@@ -155,7 +167,7 @@ public class SocketIO implements IO {
     /**
      * Checks if a handshake message was received from the client.
      *
-     * @return true if a valid handshake message was received, false otherwise.
+     * @return {@code true} if the received message is a valid handshake; {@code false} otherwise.
      */
     public boolean checkForHandShake() {
         String condition = readCondition();
@@ -166,7 +178,7 @@ public class SocketIO implements IO {
      * Checks if the input contains a valid handshake message.
      *
      * @param input The input to validate.
-     * @return true if the input contains a valid handshake message, false otherwise.
+     * @return {@code true} if the input is a valid handshake message; {@code false} otherwise.
      */
     public boolean checkForHandShake(String[] input) {
         return input.length > 0 && TYPE_HAND_SHAKE.equals(input[0]);
@@ -176,7 +188,7 @@ public class SocketIO implements IO {
      * Writes a condition message to the client socket.
      *
      * @param conditionType The type of condition to write.
-     * @return true if the condition message was written successfully, false otherwise.
+     * @return {@code true} if the condition type is successfully written; {@code false} otherwise.
      */
     public boolean writeCondition(String conditionType) {
         if (!validInformation(conditionType)) {

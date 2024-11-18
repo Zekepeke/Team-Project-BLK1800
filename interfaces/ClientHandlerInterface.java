@@ -1,7 +1,7 @@
 package interfaces;
 
 import src.User;
-import src.Server.ServerExceptions.UserChatActiveException;
+import src.server.ServerExceptions.UserChatActiveException;
 
 /**
  * Interface for handling communication between the server and a single client.

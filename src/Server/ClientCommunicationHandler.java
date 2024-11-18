@@ -2,12 +2,7 @@ package src.server;
 
 import interfaces.ClientHandlerInterface;
 import src.*;
-<<<<<<< HEAD
-import src.server.AuthenticationException.LoginException;
-import src.server.AuthenticationException.*;
-=======
-import src.Server.ServerExceptions.*;
->>>>>>> ServerBranch
+import src.server.ServerExceptions.UserChatActiveException;
 
 import java.lang.Thread;
 import java.util.ArrayList;
@@ -41,13 +36,6 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
         this.messager = new SocketIO(socket);
     }
 
-<<<<<<< HEAD
-
-    public void setUser(User user) throws UserChatActiveException{
-        for(Thread handler : test.ServerImplementation.activeConversations) {
-            ClientCommunicationHandler clientCommunicationHandler = (ClientCommunicationHandler) handler;
-            if(clientCommunicationHandler.getUser().getName().equals(user.getName())) {
-=======
     /**
      * Sets the current user and ensures no duplicate active sessions.
      *
@@ -58,7 +46,6 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
         for (Thread handler : Server.activeConversations) {
             ClientCommunicationHandler clientHandler = (ClientCommunicationHandler) handler;
             if (clientHandler.getUser().getName().equals(user.getName())) {
->>>>>>> ServerBranch
                 throw new UserChatActiveException();
             }
         }

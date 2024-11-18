@@ -1,8 +1,4 @@
-<<<<<<< HEAD:src/Server/AuthenticationException/UserChatActiveException.java
-package src.server.AuthenticationException;
-=======
-package src.Server.ServerExceptions;
->>>>>>> ServerBranch:src/Server/ServerExceptions/UserChatActiveException.java
+package src.server.ServerExceptions;
 import src.SocketIO;
 
 public class UserChatActiveException extends Exception {
