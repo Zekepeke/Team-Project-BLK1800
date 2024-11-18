@@ -23,7 +23,7 @@ functioning Social Media Platform.
 
 | Team Member | Submission Details              |
 |-------------|---------------------------------|
-| Zeke Linares  | Submitted Vocareum phase 1   |
+| Zeke Linares  | Submitted Vocareum phase 2   |
 | DY Park   | N/A         |
 | Kai Liu   | N/A                             |
 | Advait Duggi   | N/A                             |
