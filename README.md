@@ -122,11 +122,7 @@ This project implements a basic client-server communication system using sockets
   - `sendHandShake()`: Initiates a handshake operation.
   - `readCondition()`: Reads server response conditions.
 
-## Installation
-
-1. Clone this repository.
-   ```bash
-   git clone https://github.com/username/project.git
+## Running Everything
 
 To run the files, go to src/App.java and run the main fuction there (this opens up the client side). Then run the src/Server/server.java's main function as well. Running both of these will boot up the app and begin the process for the user.
 
