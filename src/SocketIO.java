@@ -83,7 +83,7 @@ public class SocketIO implements IO {
 
             input = input.substring(DELIMITER_START.length(), input.length() - DELIMITER_END.length());
 
-            if(input.contains(SPLITTER)) {return new String[]{input};};
+            if(!input.contains(SPLITTER)) {return new String[]{input};};
 
             return input.split(SPLITTER);
         } catch (IOException e) {
@@ -101,7 +101,7 @@ public class SocketIO implements IO {
      * {@code false} otherwise.
      */
     public boolean validInformation(String information) {
-        return TYPE_HAND_SHAKE.equals(information);
+        return true;
     }
 
     /**
@@ -206,16 +206,7 @@ public class SocketIO implements IO {
      * @return The condition message as a string, or null if reading fails.
      */
     public String readCondition() {
-        try {
-            String input = reader.readLine();
-            if (input == null || !validInformation(input)) {
-                return null;
-            }
-            return input;
-        } catch (IOException e) {
-            logError("Failed to read condition.", e);
-            return null;
-        }
+        return read()[0];
     }
 
     /**
