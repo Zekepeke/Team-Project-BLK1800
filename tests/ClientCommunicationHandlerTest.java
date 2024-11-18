@@ -76,9 +76,6 @@ public class ClientCommunicationHandlerTest {
 
     @org.junit.Test
     public void testHandleLogin() {
-        // Add a test user
-        User testUser = new User("TestUser", "TestBio", "password");
-        testUser.pushToDatabase();
 
         // Simulate client sending login data
         String[] loginData = {"TestUser", "password"};
