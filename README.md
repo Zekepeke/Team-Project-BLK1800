@@ -74,5 +74,60 @@ functioning Social Media Platform.
 * **Relationships**:
   * Connects messages and users as it is needed for the whole app to work
 ---
----
 
+# Client-Server Communication System
+
+This project implements a basic client-server communication system using sockets in Java. The system allows for user authentication, searching for other users, retrieving profile information, and managing friend lists.
+
+## Features
+
+1. **Client-Side Operations**
+   - User authentication (login and signup)
+   - Search for users
+   - Retrieve profile information
+   - View the friend list
+
+2. **Socket Communication**
+   - Handles low-level socket communication between client and server.
+   - Supports data streaming and handshake operations.
+3. **Server Operations**
+   - Looks into reading and writing to the datbase
+   - Manages all the backend functionality
+## Project Structure
+
+### Classes
+
+#### 1. `ClientSide.java`
+- **Location**: `src/Client/ClientSide.java`
+- Handles the client-side logic.
+- Validates user credentials and interacts with the server.
+- Provides methods:
+  - `search()`: Searches for users.
+  - `profile()`: Fetches profile details.
+  - `listOfFriends()`: Retrieves the user's friend list.
+  - `validUserAndPassword()`: Validates usernames and passwords based on specific rules.
+
+#### 2. `Server.java`
+- **Location**: `src/Server/Server.java`
+- Implements the server-side functionality.
+- Manages client connections and processes incoming requests.
+
+#### 3. `SocketIO.java`
+- **Location**: `src/SocketIO.java`
+- Manages socket-based input/output communication.
+- Provides utilities for reading and writing data streams.
+- Key methods:
+  - `write()`: Sends data to the server.
+  - `read()`: Reads data from the server.
+  - `sendHandShake()`: Initiates a handshake operation.
+  - `readCondition()`: Reads server response conditions.
+
+## Installation
+
+1. Clone this repository.
+   ```bash
+   git clone https://github.com/username/project.git
+
+To run the files, go to src/App.java and run the main fuction there (this opens up the client side). Then run the src/Server/server.java's main function as well. Running both of these will boot up the app and begin the process for the user.
+
+Test cases are also included in the tests directory
