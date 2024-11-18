@@ -1,7 +1,7 @@
 package src;
 
 import src.client.ClientSide;
-import src.server.Server;
+import src.Server.Server;
 
 import java.io.IOException;
 import java.net.Socket;
