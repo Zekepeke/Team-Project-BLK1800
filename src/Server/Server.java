@@ -1,6 +1,7 @@
 package src.Server;
 
 import interfaces.ServerInterface;
+import src.User;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -17,6 +18,7 @@ public class Server implements ServerInterface {
 
     // Stores active conversation threads
     public static final ArrayList<Thread> activeConversations = new ArrayList<>();
+    public static final ArrayList<User> activeUsers = new ArrayList<>();
     // Stores client sockets
     public static final ArrayList<Socket> sockets = new ArrayList<>();
 
@@ -72,6 +74,7 @@ public class Server implements ServerInterface {
                 System.out.println("Removing inactive conversation...");
                 activeConversations.remove(i);
                 sockets.remove(i);
+                activeConversations.remove(i);
             } else {
                 i++;
             }

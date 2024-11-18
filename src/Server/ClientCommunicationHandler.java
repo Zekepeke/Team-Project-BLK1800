@@ -43,9 +43,8 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
      * @throws UserChatActiveException If the user is already in an active session.
      */
     public void setUser(User user) throws UserChatActiveException {
-        for (Thread handler : Server.activeConversations) {
-            ClientCommunicationHandler clientHandler = (ClientCommunicationHandler) handler;
-            if (clientHandler.getUser().getName().equals(user.getName())) {
+        for (User temp : Server.activeUsers) {
+            if (temp.getName().equals(user.getName())) {
                 throw new UserChatActiveException();
             }
         }
