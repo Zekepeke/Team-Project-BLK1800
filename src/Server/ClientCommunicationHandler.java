@@ -149,7 +149,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
      * @param data The data containing the username, bio, and password.
      */
     public void handleSignup(String[] data) {
-        if (User.storedUsers().contains(data[0])) {
+        if (User.userListContains(data[0])) {
             messager.writeCondition(SocketIO.ERROR_USER_EXISTS);
             return;
         }
@@ -172,7 +172,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
     public void handleLogin(String[] data) {
         try {
             // Validate username and password
-            if (!User.storedUsers().contains(data[0])) {
+            if (!User.userListContains((data[0]))) {
                 messager.writeCondition(SocketIO.ERROR_USER_DNE);
                 return;
             }
@@ -233,8 +233,8 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
     public void searchUsers(String[] data) {
         String query = data[0].toLowerCase();
         ArrayList<String> matchingNames = new ArrayList<>();
-        for (String userName : User.storedUsers()) {
-            if (userName.toLowerCase().contains(query)) {
+        for (String userName : User.storedUsernames) {
+            if (User.userListContains(userName)) {
                 matchingNames.add(userName);
             }
         }

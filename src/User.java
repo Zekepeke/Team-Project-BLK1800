@@ -12,6 +12,7 @@ import java.util.Arrays;
  */
 public class User implements UserBased {
     private static ArrayList<String> usernames = new ArrayList<>();
+    public static ArrayList<String> storedUsernames = new ArrayList<>();
     private String name;
     private ArrayList<String> friends;
     private ArrayList<String> friendRequestsIn;
@@ -86,6 +87,27 @@ public class User implements UserBased {
         this.friendRequestsIn = new ArrayList<>();
         this.friendRequestsOut = new ArrayList<>();
         this.blocked = new ArrayList<>();
+    }
+
+    /**
+     * Retrieves all the stored users names within the database
+     */
+    public static void initialze() {
+        try(BufferedReader a = new BufferedReader(new FileReader(USERS_LIST_PATH))) {
+            String input = null;
+            while((input = a.readLine()) != null) {
+                storedUsernames.add(input);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean userListContains(User user) {
+        return storedUsernames.contains(user.getName());
+    }
+    public static boolean userListContains(String user) {
+        return storedUsernames.contains(user);
     }
 
     /**
@@ -346,24 +368,6 @@ public class User implements UserBased {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Retrieves all the stored users names within the database
-     */
-    public static ArrayList<String> storedUsers() {
-        ArrayList<String> users = new ArrayList<String>();
-        try(BufferedReader a = new BufferedReader(new FileReader(USERS_LIST_PATH))) {
-            String input = null;
-            while((input = a.readLine()) != null) {
-                users.add(input);
-            }
-            return users;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return users;
     }
 
     /**

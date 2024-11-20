@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * user communication, and threads for each active conversation.
  */
 public class Server implements ServerInterface {
-    private static final int PORT_NUMBER = 8282;
+    private final int PORT_NUMBER;
     private final ServerSocket serverSocket;
 
     // Stores active conversation threads
@@ -31,6 +31,7 @@ public class Server implements ServerInterface {
         try {
             serverSocket = new ServerSocket(portNumber);
             System.out.println("ServerInterface started on port " + portNumber);
+            this.PORT_NUMBER = portNumber;
         } catch (IOException e) {
             throw new RuntimeException("Unable to start server: " + e.getMessage());
         }
@@ -79,10 +80,5 @@ public class Server implements ServerInterface {
                 i++;
             }
         }
-    }
-
-    public static void main(String[] args) {
-        Server server = new Server(PORT_NUMBER);
-        server.startup();
     }
 }
