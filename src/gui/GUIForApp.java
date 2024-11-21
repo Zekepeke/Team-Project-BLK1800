@@ -1,5 +1,7 @@
 package src.gui;
 
+import src.gui.components.Sprite;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
