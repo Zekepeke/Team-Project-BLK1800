@@ -17,25 +17,27 @@ import java.util.ArrayList;
  */
 public interface UserBased {
     String USER_DATABASE = "USER_DATABASE";
+    String USERS_LIST_PATH = USER_DATABASE + "/Stored_Users.txt";
     // Users name for the app should be lowercase letters or numbers and without specials charcters
     public String getName();
     public void setName(String name);
 
     // A list of friends of this user
-    public ArrayList<User> getFriends();
-    public void setFriends(ArrayList<User> friends);
+    public ArrayList<String> getFriends();
 
-    ArrayList<User> getFriendRequestsIn();
+    void setFriends(ArrayList<String> friends);
 
-    void setFriendRequestsIn(ArrayList<User> friendRequestsIn);
+    ArrayList<String> getFriendRequestsIn();
 
-    ArrayList<User> getFriendRequestsOut();
+    void setFriendRequestsIn(ArrayList<String> friendRequestsIn);
 
-    void setFriendRequestsOut(ArrayList<User> friendRequestsOut);
+    ArrayList<String> getFriendRequestsOut();
+
+    void setFriendRequestsOut(ArrayList<String> friendRequestsOut);
 
     // An ArrayList of blocked users made by this user
-    public ArrayList<User> getBlocked();
-    public void setBlocked(ArrayList<User> blocked);
+    public ArrayList<String> getBlocked();
+    public void setBlocked(ArrayList<String> blocked);
     public void block(User blocked);
     public boolean unblock(User unblocked);
     // Bio's should be less than or equal to 150 characters
@@ -55,10 +57,12 @@ public interface UserBased {
 
     // Should return the number of friends
     public int getNumberOfFriends();
+
+    boolean removeFriend(User friend);
+
     public int getNumberOfBlocked();
 
     public boolean pushToDatabase();
 
 
-    int getNumberUsers();
 }

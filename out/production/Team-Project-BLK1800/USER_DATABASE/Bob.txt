@@ -1,7 +1,7 @@
-Bob
+bob
 password456
 Bio of Bob
-Alice 
-Charlie 
-
-Charlie 
+alice
+charlie
+thing
+charlie
