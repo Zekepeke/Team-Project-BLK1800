@@ -17,13 +17,24 @@ public class Sprite extends JComponent {
      * Constructs new Sprite with an image and initial position.
      *
      * @param imagePath The file path to the image representing this sprite.
-     * @param x The initial x-coordinate position of the sprite.
-     * @param y The initial y-coordinate position of the sprite.
+     * @param width The initial x-scale of the sprite.
+     * @param height The initial y-scale of the sprite.
      */
-    public Sprite(String imagePath, int x, int y) {
-        this.image = new ImageIcon(imagePath).getImage();
-        this.x = x;
-        this.y = y;
+    public Sprite(String imagePath, int width, int height) {
+        java.net.URL imgURL = getClass().getResource(imagePath);
+
+        if (imgURL != null) {
+            // Load the image icon
+            ImageIcon originalIcon = new ImageIcon(imgURL);
+            // Scale down the image
+            Image originalImage = originalIcon.getImage();
+            this.image = originalImage.getScaledInstance(width , height, Image.SCALE_SMOOTH);
+        } else {
+            this.image = null;
+            System.err.println("Error: Resource not found!");
+        }
+        this.x = width; // Desired width
+        this.y = height; // Desired height
         setBounds(x, y, image.getWidth(null), image.getHeight(null)); // Set initial bounds
     }
 
@@ -68,5 +79,23 @@ public class Sprite extends JComponent {
      */
     public int getYPosition() {
         return y;
+    }
+
+    /**
+     * Get current image sprite
+     *
+     * @return the image sprite
+     */
+    public Image getImage() {
+        return image;
+    }
+
+    /**
+     * Updates the image
+     *
+     * @param image is the new image or sprite being converted
+     */
+    public void setImage(Image image) {
+        this.image = image;
     }
 }
