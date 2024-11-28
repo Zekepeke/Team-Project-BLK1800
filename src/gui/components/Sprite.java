@@ -2,6 +2,7 @@ package src.gui.components;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 /**
  * Represents a visual component in the app with an image and position.
@@ -10,7 +11,7 @@ import java.awt.*;
  * for different UI layouts and animations.
  */
 public class Sprite extends JComponent {
-    private Image image;
+    private ImageIcon image;
     private int x, y;
 
     /**
@@ -27,15 +28,15 @@ public class Sprite extends JComponent {
             // Load the image icon
             ImageIcon originalIcon = new ImageIcon(imgURL);
             // Scale down the image
-            Image originalImage = originalIcon.getImage();
-            this.image = originalImage.getScaledInstance(width , height, Image.SCALE_SMOOTH);
+            Image imageTransform = originalIcon.getImage();
+            Image newimg = imageTransform.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            this.image = new ImageIcon(newimg);
         } else {
             this.image = null;
             System.err.println("Error: Resource not found!");
         }
         this.x = width; // Desired width
         this.y = height; // Desired height
-        setBounds(x, y, image.getWidth(null), image.getHeight(null)); // Set initial bounds
     }
 
     /**
@@ -51,17 +52,7 @@ public class Sprite extends JComponent {
         repaint();
     }
 
-    /**
-     * Paints the sprite's image on the screen at its current position.
-     * Method is automatically called whenever the component is repainted.
-     *
-     * @param g The Graphics object used to paint the sprite.
-     */
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        g.drawImage(image, 0, 0, this); // Draw the image at the component's position
-    }
+
 
     /**
      * Get current x-coordinate position of the sprite.
@@ -86,7 +77,7 @@ public class Sprite extends JComponent {
      *
      * @return the image sprite
      */
-    public Image getImage() {
+    public ImageIcon getImageIcon() {
         return image;
     }
 
@@ -95,7 +86,9 @@ public class Sprite extends JComponent {
      *
      * @param image is the new image or sprite being converted
      */
-    public void setImage(Image image) {
+    public void setImage(ImageIcon image) {
         this.image = image;
     }
+
+
 }

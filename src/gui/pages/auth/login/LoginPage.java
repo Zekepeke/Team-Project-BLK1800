@@ -5,23 +5,51 @@ import src.gui.components.Sprite;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.AffineTransform;
+
 
 public class LoginPage extends JComponent implements Runnable {
 
     private Image image; // Canvas
     private Graphics2D graphics2D; // Enables drawing
     private Sprite macBookSprite;
-    private Image spriteImage;
+    private Image imageOfMac;
 
-    Color backgroundColor = new Color(33, 36, 45);
+    JTextField username;
+    JTextField password;
+
+    JButton loginButton;
+
+    Color backgroundColor = new Color(24,24,26);
+
+    LoginPage login;
+    LoginUI loginUI;
 
 
     public LoginPage() {
         // Load the image
-        this.macBookSprite = new Sprite("/src/gui/assets/macbook.png", 300, 300);
+        this.macBookSprite = new Sprite("/src/gui/assets/images/macbook.png", 5000, 5000);
+        if (macBookSprite.getImageIcon() != null) {
+            this.imageOfMac = macBookSprite.getImageIcon().getImage();
+        } else {
+            this.imageOfMac = null;
+            System.err.println("Error: Resource not found");
+        }
 
-        // Add mouse listeners (if needed)
+
+        loginUI = new LoginUI(300, 400);
+        loginUI.setPreferredSize(new Dimension(300, 400));
+
+        // Add the login button functionality
+        loginUI.getLoginButton().addActionListener(e -> {
+            String username = loginUI.getUsernameField().getText();
+            String password = new String(loginUI.getPasswordField().getPassword());
+            System.out.println("Username: " + username);
+            System.out.println("Password: " + password);
+        });
+
+        add(loginUI);
+
+        // Add mouse listeners (later)
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -43,12 +71,18 @@ public class LoginPage extends JComponent implements Runnable {
 
     public void run() {
         JFrame frame = new JFrame("Login");
-        frame.setSize(600, 400);
+        frame.setSize(800, 600);
+        Container content = frame.getContentPane();
+        content.setLayout(new BorderLayout());
         frame.setLocationRelativeTo(null);
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        LoginPage loginPage = new LoginPage();
+        content.add(loginPage, BorderLayout.CENTER);
 
-        Container content = frame.getContentPane();
+
+
         content.setLayout(new BorderLayout());
         content.add(this, BorderLayout.CENTER);
 
@@ -67,26 +101,27 @@ public class LoginPage extends JComponent implements Runnable {
         g2d.fillRect(0, 0, getWidth(), getHeight());
 
         // Draw the image (scaled to fit proportionally)
-        if (macBookSprite.getImage() != null) {
+        if (imageOfMac != null) {
             int componentWidth = getWidth();
             int componentHeight = getHeight();
 
-            // Calculate scaling factors
-            int imageWidth = macBookSprite.getImage().getWidth(null);
-            int imageHeight = macBookSprite.getImage().getHeight(null);
+            int imageWidth = imageOfMac.getWidth(null);
+            int imageHeight = imageOfMac.getHeight(null);
 
-            double scaleX = (double) componentWidth / imageWidth;
-            double scaleY = (double) componentHeight / imageHeight;
-            double scale = Math.min(scaleX, scaleY); // Maintain aspect ratio
+            // Scale MacBook image proportionally
+            double scale = Math.min((double) componentWidth / imageWidth, (double) componentHeight / imageHeight) / 2;
+            int scaledWidth = (int) (imageWidth * scale);
+            int scaledHeight = (int) (imageHeight * scale);
 
-            // Calculate centered position
-            int newWidth = (int) (imageWidth * scale);
-            int newHeight = (int) (imageHeight * scale);
-            int x = (componentWidth - newWidth) / 2;
-            int y = (componentHeight - newHeight) / 2;
+            // Position the MacBook image (left-aligned)
+            int x = (componentWidth - scaledWidth) / 6;
+            int y = (componentHeight - scaledHeight) / 6;
 
-            // Draw scaled image
-            g2d.drawImage(macBookSprite.getImage(), x, y, newWidth, newHeight, this);
+            g2d.drawImage(imageOfMac, x, y, scaledWidth, scaledHeight, this);
+
+            // Position LoginUI panel (right-aligned)
+            loginUI.setBounds(x + scaledWidth + 50, y + (scaledHeight / 2 - loginUI.getPreferredSize().height / 2),
+                    loginUI.getPreferredSize().width, loginUI.getPreferredSize().height);
         }
     }
 }
