@@ -134,4 +134,8 @@ public class SignUpUI extends JPanel implements CustomColors {
     public JButton getLoginButton() {
         return loginButton;
     }
+
+    public JButton getSignUpButton() {
+        return signUpButton;
+    }
 }

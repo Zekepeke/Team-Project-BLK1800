@@ -9,20 +9,12 @@ import java.awt.event.*;
 
 public class SignUpPage extends JPanel implements CustomColors {
 
-    private Image image; // Canvas
-    private Graphics2D graphics2D; // Enables drawing
-
     boolean isVisible;
-
-    JTextField username;
-    JTextField password;
-
-    JButton loginButton;
+    boolean signUpWasVisible;
 
     Color backgroundColor = BACKGROUND;
 
-    SignUpPage SingUpPage;
-    SignUpUI singUpUI;
+    SignUpUI signUpUI;
 
     int width;
     int height;
@@ -36,20 +28,22 @@ public class SignUpPage extends JPanel implements CustomColors {
         this.height = height;
 
         isVisible = true;
+        signUpWasVisible = false;
 
 
-        singUpUI = new SignUpUI(300, 400);
-        singUpUI.setPreferredSize(new Dimension(300, 400));
+        signUpUI = new SignUpUI(300, 400);
+        signUpUI.setPreferredSize(new Dimension(300, 400));
 
         // Add the login button functionality
-        singUpUI.getLoginButton().addActionListener(e -> {
-            usernameString = singUpUI.getUsernameField().getText();
-            passwordString = new String(singUpUI.getPasswordField().getPassword());
+        signUpUI.getSignUpButton().addActionListener(e -> {
+            usernameString = signUpUI.getUsernameField().getText();
+            passwordString = new String(signUpUI.getPasswordField().getPassword());
             System.out.println("Username: " + usernameString);
             System.out.println("Password: " + passwordString);
         });
 
-        add(singUpUI);
+        add(signUpUI);
+        setVisible(false);
 
         // Add mouse listeners (later)
         addMouseListener(new MouseAdapter() {
@@ -80,26 +74,6 @@ public class SignUpPage extends JPanel implements CustomColors {
         // Fill background
         g2d.setPaint(backgroundColor);
         g2d.fillRect(0, 0, width, height);
-
-
-        int componentWidth = width;
-        int componentHeight = height;
-
-        int panelWidth = singUpUI.getWidth();
-        int panelHeight = singUpUI.getHeight();
-
-        // Scale MacBook image proportionally
-        double scale = Math.min((double) componentWidth / panelWidth, (double) componentHeight / panelHeight) / 2;
-        int scaledWidth = (int) (panelWidth * scale);
-        int scaledHeight = (int) (panelHeight * scale);
-
-        // Position the MacBook image (left-aligned)
-        int x = (componentWidth - scaledWidth) / 6;
-        int y = (componentHeight - scaledHeight) / 6;
-
-        // Position LoginUI panel (right-aligned)
-        singUpUI.setPreferredSize(new Dimension(scaledWidth, scaledHeight));
-
     }
 
     public void setWidth(int width) {
@@ -109,16 +83,16 @@ public class SignUpPage extends JPanel implements CustomColors {
         this.height = height;
     }
 
-    public void setIsVisible(boolean visible) {
-        setVisible(visible);
-    }
-
     public String getUsername() {
         return usernameString;
     }
 
     public String getPassword() {
         return passwordString;
+    }
+
+    public SignUpUI getSignUpUI() {
+        return signUpUI;
     }
 
 }

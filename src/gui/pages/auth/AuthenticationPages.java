@@ -12,14 +12,20 @@ public class AuthenticationPages extends JPanel implements Runnable {
     private int height = 600;
     private int width = 800;
     public AuthenticationPages () {
-        loginPage = new LoginPage(width, height);
         signUpPage = new SignUpPage(width, height);
+        loginPage = new LoginPage(width, height);
 
         add(signUpPage);
         add(loginPage);
-        signUpPage.setVisible(false);
 
-
+        loginPage.getLoginUI().getSignUpButton().addActionListener(e -> {
+            signUpPage.setVisible(true);
+            loginPage.setVisible(false);
+        });
+        signUpPage.getSignUpUI().getLoginButton().addActionListener(e -> {
+            signUpPage.setVisible(false);
+            loginPage.setVisible(true);
+        });
     }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new AuthenticationPages());
@@ -54,6 +60,7 @@ public class AuthenticationPages extends JPanel implements Runnable {
         signUpPage.setHeight(height);
         signUpPage.setWidth(width);
         signUpPage.setPreferredSize(new Dimension(width, height));
+
 
 
     }

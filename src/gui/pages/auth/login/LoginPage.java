@@ -10,21 +10,13 @@ import java.awt.event.*;
 
 public class LoginPage extends JPanel implements CustomColors {
 
-    private Image image; // Canvas
-    private Graphics2D graphics2D; // Enables drawing
     private Sprite macBookSprite;
     private Image imageOfMac;
 
-    boolean isVisible;
-
-    JTextField username;
-    JTextField password;
-
-    JButton loginButton;
+    boolean loginWasVisible;
 
     Color backgroundColor = BACKGROUND;
 
-    LoginPage login;
     LoginUI loginUI;
 
     int width;
@@ -32,6 +24,8 @@ public class LoginPage extends JPanel implements CustomColors {
 
     String usernameString = "Username";
     String passwordString = "Password";
+
+    boolean SignUpButtonState = false;
 
     public LoginPage(int width, int height) {
         setPreferredSize(new Dimension(width, height));
@@ -46,7 +40,7 @@ public class LoginPage extends JPanel implements CustomColors {
             System.err.println("Error: Resource not found");
         }
 
-        isVisible = true;
+        loginWasVisible = false;
 
 
         loginUI = new LoginUI(300, 400);
@@ -61,6 +55,7 @@ public class LoginPage extends JPanel implements CustomColors {
         });
 
         add(loginUI);
+        setVisible(true);
 
         // Add mouse listeners (later)
         addMouseListener(new MouseAdapter() {
@@ -124,10 +119,6 @@ public class LoginPage extends JPanel implements CustomColors {
         this.height = height;
     }
 
-    public void setIsVisible(boolean visible) {
-        setVisible(visible);
-    }
-
     public String getUsername() {
         return usernameString;
     }
@@ -136,4 +127,7 @@ public class LoginPage extends JPanel implements CustomColors {
         return passwordString;
     }
 
+    public LoginUI getLoginUI() {
+        return loginUI;
+    }
 }
