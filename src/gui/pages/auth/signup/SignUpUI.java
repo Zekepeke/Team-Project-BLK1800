@@ -1,4 +1,4 @@
-package src.gui.pages.auth.login;
+package src.gui.pages.auth.signup;
 
 import interfaces.gui.CustomColors;
 import src.gui.components.FontLoader;
@@ -6,10 +6,11 @@ import src.gui.components.FontLoader;
 import javax.swing.*;
 import java.awt.*;
 
-public class LoginUI extends JPanel implements CustomColors {
+public class SignUpUI extends JPanel implements CustomColors {
     int width;
     int height;
     private JLabel logoLabel;
+    private JLabel textLabel;
     private JLabel goToSignUp;
 
     private JTextField usernameField; // Make usernameField accessible
@@ -23,7 +24,7 @@ public class LoginUI extends JPanel implements CustomColors {
     private Font instaMediumFont;
     private Font instaBoldSmallFont;
 
-    public LoginUI(int width, int height) {
+    public SignUpUI(int width, int height) {
         // Set up the frame
         this.width = width;
         this.height = height;
@@ -35,7 +36,8 @@ public class LoginUI extends JPanel implements CustomColors {
 
         // Main panel with dark background
         JPanel mainPanel = new JPanel();
-        mainPanel.setBackground(BACKGROUND);
+        Color backgroundColor = BACKGROUND;
+        mainPanel.setBackground(backgroundColor);
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
@@ -44,6 +46,12 @@ public class LoginUI extends JPanel implements CustomColors {
         logoLabel.setFont(instaBoldFont);
         logoLabel.setForeground(GRAY_400);
         logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Instagram bottom text from logo
+        textLabel = new JLabel("Sing up and make new friends!");
+        textLabel.setFont(instaBoldSmallFont);
+        textLabel.setForeground(GRAY_200);
+        textLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Username or email input field
         usernameField = new JTextField("Username");
@@ -73,38 +81,41 @@ public class LoginUI extends JPanel implements CustomColors {
                 BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
 
-        // Login button
-        loginButton = new JButton("Log in");
-        loginButton.setPreferredSize(new Dimension(width, height / 10));
-        loginButton.setMaximumSize(new Dimension(width, height / 10));
-        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        loginButton.setBackground(BLUE_200);
-        loginButton.setOpaque(true);
-        loginButton.setForeground(GRAY_300);
-        loginButton.setFont(instaBoldFont);
-        loginButton.setFocusPainted(false);
-        loginButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        // Sing up button
-        signUpButton = new JButton("Click to sign up");
+        // Sign Up button
+        signUpButton = new JButton("Sign up");
         signUpButton.setPreferredSize(new Dimension(width, height / 10));
         signUpButton.setMaximumSize(new Dimension(width, height / 10));
         signUpButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        signUpButton.setForeground(BLUE_300);
-        signUpButton.setFont(instaBoldSmallFont);
+        signUpButton.setBackground(BLUE_200);
+        signUpButton.setOpaque(true);
+        signUpButton.setForeground(GRAY_300);
+        signUpButton.setFont(instaBoldFont);
         signUpButton.setFocusPainted(false);
         signUpButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        // Login button
+        loginButton = new JButton("Click here to login");
+        loginButton.setPreferredSize(new Dimension(width, height / 10));
+        loginButton.setMaximumSize(new Dimension(width, height / 10));
+        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loginButton.setForeground(BLUE_300);
+        loginButton.setFont(instaBoldSmallFont);
+        loginButton.setFocusPainted(false);
+        loginButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
         // Add components to the main panel
         mainPanel.add(logoLabel);
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 50))); // Spacer
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Spacer
+        mainPanel.add(textLabel);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 50)));
         mainPanel.add(usernameField);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 15))); // Spacer
         mainPanel.add(passwordField);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 30))); // Spacer
+        mainPanel.add(signUpButton);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         mainPanel.add(loginButton);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        mainPanel.add(signUpButton);
 
         // Add the main panel to the frame
         add(mainPanel);
@@ -123,5 +134,4 @@ public class LoginUI extends JPanel implements CustomColors {
     public JButton getLoginButton() {
         return loginButton;
     }
-
 }
