@@ -48,7 +48,7 @@ public class SignUpUI extends JPanel implements CustomColors {
         logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Instagram bottom text from logo
-        textLabel = new JLabel("Sing up and make new friends!");
+        textLabel = new JLabel("Sign up and make new friends!");
         textLabel.setFont(instaBoldSmallFont);
         textLabel.setForeground(GRAY_200);
         textLabel.setAlignmentX(Component.CENTER_ALIGNMENT);

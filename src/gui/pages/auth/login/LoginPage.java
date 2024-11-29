@@ -50,6 +50,7 @@ public class LoginPage extends JPanel implements CustomColors {
         loginUI.getLoginButton().addActionListener(e -> {
             usernameString = loginUI.getUsernameField().getText();
             passwordString = new String(loginUI.getPasswordField().getPassword());
+            System.out.println("From Login:");
             System.out.println("Username: " + usernameString);
             System.out.println("Password: " + passwordString);
         });

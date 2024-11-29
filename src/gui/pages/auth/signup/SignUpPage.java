@@ -38,6 +38,7 @@ public class SignUpPage extends JPanel implements CustomColors {
         signUpUI.getSignUpButton().addActionListener(e -> {
             usernameString = signUpUI.getUsernameField().getText();
             passwordString = new String(signUpUI.getPasswordField().getPassword());
+            System.out.println("From Sign up:");
             System.out.println("Username: " + usernameString);
             System.out.println("Password: " + passwordString);
         });
