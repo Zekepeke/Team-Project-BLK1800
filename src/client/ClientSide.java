@@ -109,8 +109,8 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
         String[] stream = {name, password};
         if (write(stream, TYPE_LOGIN)) {
             String [] info = read();
-            System.out.println("In the searchNameAdnPsswordLogin Method:" + Arrays.toString(info));
-            System.out.println("In the searchNameAdnPsswordLogin Array lize:" + info.length);
+            System.out.println("In the searchNameAndPasswordLogin Method:" + Arrays.toString(info));
+            System.out.println("In the searchNameAndPasswordLogin Array size:" + info.length);
 
             String condition = readCondition();
 
@@ -135,8 +135,27 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
     // returns true if successfully signed up, false otherwise
     public boolean searchNameAndPasswordSignUp (String name, String password){
         String[] stream = {name, password};
-        boolean success = write(stream, TYPE_SIGNUP);
-        return !success;
+        if (write(stream, TYPE_SIGNUP)) {
+            String [] info = read();
+            System.out.println("In the searchNameAndPasswordSignUp Method:" + Arrays.toString(info));
+            System.out.println("In the searchNameAndPasswordSignUp Array size:" + info.length);
+
+            String condition = readCondition();
+
+            if (condition == null) {
+                return false;
+            }
+
+            switch (condition) {
+                case ERROR_USER_EXISTS:
+                    return false;
+                case SUCCESS_USER_SIGNUP:
+                    return true;
+            }
+        } else {
+            return false;
+        }
+        return false;
     }
 
     /**

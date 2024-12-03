@@ -64,6 +64,7 @@ public class User implements UserBased {
         usernames.add(name);
     }
 
+
     /**
      * Constructs a User with the specified name and password, and an empty bio.
      * Initializes empty lists for friends and blocked users.
@@ -74,9 +75,13 @@ public class User implements UserBased {
     public User(String name, String password) {
         this.name = name;
         try {
-            File f = new File(name + ".txt");
+            File f = new File("USER_DATABASE/" + name + ".txt");
             f.createNewFile();
-            f.delete();
+            PrintWriter pw = new PrintWriter(f);
+            pw.println(name);
+            pw.println(password);
+            pw.println("Bio of " + name);
+            pw.close();
         } catch (Exception e) {
             this.name = "";
         }

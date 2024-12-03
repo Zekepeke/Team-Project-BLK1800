@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 
 public class Test123 {
     public static void main(String[] args) {
-        try(PrintWriter p = new PrintWriter(new FileWriter("MESSAGE_DATABASE" + "/Alice-@@Bob.txt"));){
+        try(PrintWriter p = new PrintWriter(new FileWriter("MESSAGE_DATABASE" + "/Alice-@@bob.txt"));){
             p.printf("hey hey hey");
         } catch (IOException e){
             System.out.println("Oh no!!");

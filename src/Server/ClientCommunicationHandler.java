@@ -8,6 +8,7 @@ import java.lang.Thread;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Arrays;
 
 /**
  * Handles communication between the server and a single client.
@@ -156,7 +157,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
 
         try {
             // Create a new user and save to file
-            User newUser = new User(data[0], data[1], data[2]);
+            User newUser = new User(data[0], data[1]);
             this.setUser(newUser);
             messager.writeCondition(SocketIO.SUCCESS_USER_SIGNUP);
         } catch (UserChatActiveException e) {
