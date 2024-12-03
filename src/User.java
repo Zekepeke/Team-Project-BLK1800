@@ -1,9 +1,8 @@
 package src;
 
 import interfaces.UserBased;
-
-import java.util.ArrayList;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -65,6 +64,7 @@ public class User implements UserBased {
         usernames.add(name);
     }
 
+
     /**
      * Constructs a User with the specified name and password, and an empty bio.
      * Initializes empty lists for friends and blocked users.
@@ -75,9 +75,13 @@ public class User implements UserBased {
     public User(String name, String password) {
         this.name = name;
         try {
-            File f = new File(name + ".txt");
+            File f = new File("USER_DATABASE/" + name + ".txt");
             f.createNewFile();
-            f.delete();
+            PrintWriter pw = new PrintWriter(f);
+            pw.println(name);
+            pw.println(password);
+            pw.println("Bio of " + name);
+            pw.close();
         } catch (Exception e) {
             this.name = "";
         }
@@ -337,15 +341,34 @@ public class User implements UserBased {
      */
     @Override
     public boolean pushToDatabase() {
-        try (PrintWriter p = new PrintWriter(new FileWriter(name + ".txt"))) {
+        try (PrintWriter p = new PrintWriter(new FileWriter(name + ".txt")); PrintWriter a = new PrintWriter(new FileWriter(USERS_LIST_PATH))) {
             synchronized (usernames) {
                 p.println(this);
+                a.println(this.name);
             }
         } catch (Exception e) {
             System.out.println("Bad IO Exception");
             return false;
         }
         return true;
+    }
+
+    /**
+     * Retrieves all the stored users names within the database
+     */
+    public static ArrayList<String> storedUsers() {
+        ArrayList<String> users = new ArrayList<String>();
+        try(BufferedReader a = new BufferedReader(new FileReader(USERS_LIST_PATH))) {
+            String input = null;
+            while((input = a.readLine()) != null) {
+                users.add(input);
+            }
+            return users;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return users;
     }
 
     /**

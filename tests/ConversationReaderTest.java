@@ -46,7 +46,7 @@ public class ConversationReaderTest {
 
     @Test
     public void testFileParsing() {
-        // This test assumes that the MESSAGE_DATABASE/Alice-Bob.txt file exists and has valid content.
+        // This test assumes that the MESSAGE_DATABASE/Alice-bob.txt file exists and has valid content.
         // Add your test setup for any expected number of messages in the file if the file is present.
         ArrayList<Message> messages = c.getMessages();
         assertTrue(messages.size() > 0, "There should be messages parsed from the file.");
