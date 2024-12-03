@@ -1,6 +1,8 @@
 package src.gui.pages.auth.login;
 
 import interfaces.gui.CustomColors;
+import src.client.ClientSide;
+import src.gui.components.FontLoader;
 import src.gui.components.Sprite;
 
 import javax.swing.*;
@@ -10,6 +12,7 @@ import java.awt.event.*;
 
 public class LoginPage extends JPanel implements CustomColors {
 
+    private ClientSide client;
     private Sprite macBookSprite;
     private Image imageOfMac;
 
@@ -26,11 +29,14 @@ public class LoginPage extends JPanel implements CustomColors {
     String passwordString = "Password";
 
     boolean SignUpButtonState = false;
+    boolean validUsernameAndPassword = true;
 
-    public LoginPage(int width, int height) {
+    public LoginPage(int width, int height, ClientSide client) {
         setPreferredSize(new Dimension(width, height));
         this.width = width;
         this.height = height;
+        this.client = client;
+
         // Load the image
         this.macBookSprite = new Sprite("/src/gui/assets/images/macbook.png", 5000, 5000);
         if (macBookSprite.getImageIcon() != null) {
@@ -53,6 +59,22 @@ public class LoginPage extends JPanel implements CustomColors {
             System.out.println("From Login:");
             System.out.println("Username: " + usernameString);
             System.out.println("Password: " + passwordString);
+            System.out.println("Valid: " + ClientSide.validUserAndPassword(usernameString, passwordString));
+            validUsernameAndPassword = ClientSide.validUserAndPassword(usernameString, passwordString);
+
+            if (!validUsernameAndPassword) {
+                System.out.println("Error: Invalid username/password");
+                loginUI.setErrorVisible(true);
+            } else {
+                boolean working = client.searchNameAndPasswordLogin(usernameString, passwordString);
+                System.out.println("Testing the server search for client: " + working);
+                if (working) {
+                    client.setUsername(usernameString);
+                    client.setPassword(passwordString);
+                } else {
+                    loginUI.setErrorVisible(true);
+                }
+            }
         });
 
         add(loginUI);

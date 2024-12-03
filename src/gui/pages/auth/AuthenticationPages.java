@@ -1,34 +1,44 @@
 package src.gui.pages.auth;
 
+import src.client.ClientSide;
 import src.gui.pages.auth.login.LoginPage;
 import src.gui.pages.auth.signup.SignUpPage;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.net.Socket;
 
 public class AuthenticationPages extends JPanel implements Runnable {
     LoginPage loginPage;
     SignUpPage signUpPage;
     private int height = 600;
     private int width = 800;
-    public AuthenticationPages () {
-        signUpPage = new SignUpPage(width, height);
-        loginPage = new LoginPage(width, height);
+
+    ClientSide client;
+
+    public AuthenticationPages () throws IOException {
+        Socket socket = new Socket("localhost", 8282);
+        client = new ClientSide(socket);
+
+        signUpPage = new SignUpPage(width, height, client);
+        loginPage = new LoginPage(width, height, client);
 
         add(signUpPage);
         add(loginPage);
 
+
         loginPage.getLoginUI().getSignUpButton().addActionListener(e -> {
-            signUpPage.setVisible(true);
             loginPage.setVisible(false);
+            signUpPage.getSignUpUI().setErrorVisible(false);
+            signUpPage.setVisible(true);
+
         });
         signUpPage.getSignUpUI().getLoginButton().addActionListener(e -> {
             signUpPage.setVisible(false);
+            loginPage.getLoginUI().setErrorVisible(false);
             loginPage.setVisible(true);
         });
-    }
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new AuthenticationPages());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package src.gui.pages.auth.signup;
 
 import interfaces.gui.CustomColors;
+import src.client.ClientSide;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,6 +10,7 @@ import java.awt.event.*;
 
 public class SignUpPage extends JPanel implements CustomColors {
 
+    private ClientSide client;
     boolean isVisible;
     boolean signUpWasVisible;
 
@@ -22,17 +24,20 @@ public class SignUpPage extends JPanel implements CustomColors {
     String usernameString = "Username";
     String passwordString = "Password";
 
-    public SignUpPage(int width, int height) {
+    boolean validUsernameAndPassword = true;
+
+    public SignUpPage(int width, int height, ClientSide client) {
         setPreferredSize(new Dimension(width, height));
         this.width = width;
         this.height = height;
+        this.client = client;
 
         isVisible = true;
         signUpWasVisible = false;
 
 
-        signUpUI = new SignUpUI(300, 400);
-        signUpUI.setPreferredSize(new Dimension(300, 400));
+        signUpUI = new SignUpUI(300, 430);
+        signUpUI.setPreferredSize(new Dimension(300, 450));
 
         // Add the login button functionality
         signUpUI.getSignUpButton().addActionListener(e -> {
@@ -41,6 +46,13 @@ public class SignUpPage extends JPanel implements CustomColors {
             System.out.println("From Sign up:");
             System.out.println("Username: " + usernameString);
             System.out.println("Password: " + passwordString);
+            System.out.println("Valid: " + ClientSide.validUserAndPassword(usernameString, passwordString));
+            validUsernameAndPassword = ClientSide.validUserAndPassword(usernameString, passwordString);
+
+            if (!validUsernameAndPassword) {
+                signUpUI.setErrorVisible(true);
+            }
+
         });
 
         add(signUpUI);

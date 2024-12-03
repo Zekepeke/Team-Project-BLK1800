@@ -1,16 +1,17 @@
 package src.gui.pages.auth.login;
 
 import interfaces.gui.CustomColors;
+import interfaces.gui.CustomFonts;
 import src.gui.components.FontLoader;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class LoginUI extends JPanel implements CustomColors {
+public class LoginUI extends JPanel implements CustomColors, CustomFonts {
     int width;
     int height;
     private JLabel logoLabel;
-    private JLabel goToSignUp;
+    private JLabel error;
 
     private JTextField usernameField; // Make usernameField accessible
 
@@ -19,18 +20,13 @@ public class LoginUI extends JPanel implements CustomColors {
     private JButton loginButton;
     private JButton signUpButton;
 
-    private Font instaBoldFont;
-    private Font instaMediumFont;
-    private Font instaBoldSmallFont;
+
 
     public LoginUI(int width, int height) {
         // Set up the frame
         this.width = width;
         this.height = height;
         setSize(width, height);
-        instaBoldFont = FontLoader.loadCustomFont("/src/gui/assets/fonts/SansBold.ttf", 34f);
-        instaMediumFont = FontLoader.loadCustomFont("/src/gui/assets/fonts/InstagramSansMedium.ttf", 16f);
-        instaBoldSmallFont = FontLoader.loadCustomFont("/src/gui/assets/fonts/SansBold.ttf", 16f);
 
 
         // Main panel with dark background
@@ -41,9 +37,16 @@ public class LoginUI extends JPanel implements CustomColors {
 
         // Instagram logo text
         logoLabel = new JLabel("Demo");
-        logoLabel.setFont(instaBoldFont);
+        logoLabel.setFont(INSTA_BOLD_FONT);
         logoLabel.setForeground(GRAY_400);
         logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Error
+        error = new JLabel("Error, the password or username is invalid");
+        error.setFont(INSTA_Bold_XSMALL_FONT);
+        error.setForeground(RED_100);
+        error.setAlignmentX(Component.CENTER_ALIGNMENT);
+        error.setVisible(false);
 
         // Username or email input field
         usernameField = new JTextField("Username");
@@ -53,7 +56,7 @@ public class LoginUI extends JPanel implements CustomColors {
         usernameField.setBackground(GRAY_100);
         usernameField.setForeground(GRAY_200);
         usernameField.setCaretColor(GRAY_200);
-        usernameField.setFont(instaMediumFont);
+        usernameField.setFont(INSTA_MEDIUM_FONT);
         usernameField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.DARK_GRAY, 1),
                 BorderFactory.createEmptyBorder(5, 10, 5, 10)
@@ -67,7 +70,7 @@ public class LoginUI extends JPanel implements CustomColors {
         passwordField.setBackground(GRAY_100);
         passwordField.setForeground(GRAY_200);
         passwordField.setCaretColor(GRAY_200);
-        passwordField.setFont(instaMediumFont);
+        passwordField.setFont(INSTA_MEDIUM_FONT);
         passwordField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.DARK_GRAY, 1),
                 BorderFactory.createEmptyBorder(5, 10, 5, 10)
@@ -81,7 +84,7 @@ public class LoginUI extends JPanel implements CustomColors {
         loginButton.setBackground(BLUE_200);
         loginButton.setOpaque(true);
         loginButton.setForeground(GRAY_300);
-        loginButton.setFont(instaBoldFont);
+        loginButton.setFont(INSTA_BOLD_FONT);
         loginButton.setFocusPainted(false);
         loginButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -91,7 +94,7 @@ public class LoginUI extends JPanel implements CustomColors {
         signUpButton.setMaximumSize(new Dimension(width, height / 10));
         signUpButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         signUpButton.setForeground(BLUE_300);
-        signUpButton.setFont(instaBoldSmallFont);
+        signUpButton.setFont(INSTA_BOLD_SMALL_FONT);
         signUpButton.setFocusPainted(false);
         signUpButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -105,11 +108,18 @@ public class LoginUI extends JPanel implements CustomColors {
         mainPanel.add(loginButton);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         mainPanel.add(signUpButton);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        mainPanel.add(error);
+
 
         // Add the main panel to the frame
         add(mainPanel);
 
         setVisible(true);
+    }
+
+    public void setErrorVisible(boolean visible) {
+        error.setVisible(visible);
     }
 
     public JTextField getUsernameField() {
