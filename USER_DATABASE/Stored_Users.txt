@@ -1,4 +1,4 @@
-Alice
-Bob
-Joe
-TestUser
+alice
+bob
+joe
+testUser
