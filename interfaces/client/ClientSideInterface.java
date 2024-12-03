@@ -7,7 +7,11 @@ package interfaces.client;
 public interface ClientSideInterface {
     static final String HOST = "localhost";
     static final int PORT = 5000;
-    boolean validUserAndPassword(String username, String password);
+
+    static boolean validUserAndPassword(String username, String password) {
+        return false;
+    }
+
     boolean connectToServer();
     String[] search(String name);
     String[] profile();

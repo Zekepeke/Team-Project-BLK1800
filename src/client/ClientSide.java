@@ -40,6 +40,10 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
     }
     public ClientSide(Socket userClient) throws IOException {
         super(userClient);
+        sendHandShake();
+        if (checkForHandShake()) {
+            System.out.println("Handshake successful");
+        }
 
     }
 
@@ -52,7 +56,7 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
      * @param password The user making a password that is unique
      * @return True if it is a valid sign-up and false if it is invalid
      */
-    public boolean validUserAndPassword(String username, String password) {
+    public static boolean validUserAndPassword(String username, String password) {
         boolean validUsername = username != null && !username.contains(" ") && username.length() >= 3 && username.length() <= 14;
         boolean validPassword = password.length() >= 3 && password.length() <= 14 && !password.contains(" ");
 
@@ -98,6 +102,41 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
         }
 
         return null;
+    }
+
+    // returns true if logined, false otherwise
+    public boolean searchNameAndPasswordLogin (String name, String password) {
+        String[] stream = {name, password};
+        if (write(stream, TYPE_LOGIN)) {
+            String [] info = read();
+            System.out.println("In the searchNameAdnPsswordLogin Method:" + Arrays.toString(info));
+            System.out.println("In the searchNameAdnPsswordLogin Array lize:" + info.length);
+
+            String condition = readCondition();
+
+            if (condition == null) {
+                return false;
+            }
+
+            switch (condition) {
+                case ERROR_USER_DNE:
+                    return false;
+                case ERROR_PASSWORD:
+                    return false;
+                case SUCCESS_USER_LOGIN:
+                    return true;
+            }
+        } else {
+            return false;
+        }
+        return false;
+    }
+
+    // returns true if successfully signed up, false otherwise
+    public boolean searchNameAndPasswordSignUp (String name, String password){
+        String[] stream = {name, password};
+        boolean success = write(stream, TYPE_SIGNUP);
+        return !success;
     }
 
     /**
@@ -192,138 +231,6 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
         this.password = password;
     }
 
-
-
-
-
-
-
-//    public static void main(String[] args) throws Exception{
-//        // Create a client socket
-//        Socket userClient = new Socket(HOST, PORT);
-//
-//
-//        // Testing
-//        String user1Username = "somethinguser";
-//        String user1Password = "KSILOVER";
-//        ClientSide client1 = new ClientSide();
-//
-//        String user2Username = "Bob";
-//        String user2Password = "password456";
-//        ClientSide client2 = new ClientSide();
-//
-//        String user3Username = "Johnis∑&Cool";
-//        String user3Password = "password456";
-//        ClientSide client3 = new ClientSide();
-//
-//        if (client3.validUserAndPassword(user3Username, user3Password)) {
-//            System.out.println("valid user and password");
-//        } else {
-//            System.out.println("invalid user and password");
-//        }
-//
-//
-//
-//        // Checking if signup works for the server and client
-//        if (client1.validUserAndPassword(user1Username, user1Password)) {
-//            System.out.println("User registered successfully");
-//            client1 = new ClientSide(userClient, user1Username, user1Password);
-//            // Sending if made a connection  with the sever
-//            client1.sendHandShake();
-//            // Sending Signup data to the server
-//            boolean success = client1.write(
-//                    new String [] {client1.getUsername(), client1.getPassword()},
-//                    ClientSide.TYPE_USER_SIGNUP_INFORMATION);
-//
-//            String conditionForUser = client2.readCondition();
-//
-//            if (success) {
-//                    if (conditionForUser != null) {
-//                        System.out.println(conditionForUser);
-//                    } else if (conditionForUser.equals(SocketIO.SUCCESS_USER_SIGNUP)) {
-//                        System.out.println("User sign up was successfully");
-//
-//                    } else if (conditionForUser.equals(SocketIO.ERROR_USER_EXISTS)) {
-//                        System.out.println("Wrong password");
-//
-//                    }
-//            } else {
-//                System.out.println("User not registered successfully");
-//            }
-//        } else {
-//            System.out.println("Username or password is incorrect");
-//        }
-//
-//        // checking login works for server and client
-//        if (client2.validUserAndPassword(user2Username, user2Password)) {
-//            System.out.println("User registered successfully");
-//            client2 = new ClientSide(userClient, user2Username, user2Password);
-//            // Sending if made a connection  with the sever
-//            client2.sendHandShake();
-//            // Sending login data to the server
-//            boolean success = client2.write(
-//                    new String [] {client2.getUsername(), client2.getPassword()},
-//                    SocketIO.TYPE_LOGIN);
-//
-//            String conditionForUser = client2.readCondition();
-//
-//            if (success) {
-//                if (conditionForUser != null) {
-//                    System.out.println(conditionForUser);
-//                } else if (conditionForUser.equals(SocketIO.SUCCESS_USER_LOGIN)) {
-//                    System.out.println("User login was successfully");
-//                } else if (conditionForUser.equals(SocketIO.ERROR_PASSWORD)) {
-//                    System.out.println("Wrong password");
-//                } else if (conditionForUser.equals(SocketIO.ERROR_USER_DNE)) {
-//                    System.out.println("User does not exists");
-//                }
-//            } else {
-//                System.out.println("User not registered successfully");
-//            }
-//        } else {
-//            System.out.println("Username or password is incorrect");
-//        }
-//
-//        String[] userCommands = {"search", "profile", "list of friends"};
-//
-//        if (userCommands[2].equals("profile")) {
-//
-//        }
-
-
-
-
-
-
-        /*
-         * TODO: Make sure to read in the data from the user and sent it to the user
-         *
-         * */
-
-
-        /*
-         * TODO: MAKE A GUIForApp object
-         * */
-
-
-        boolean keepRunningUntilExit = true;
-
-        // Repeat as long as exit Is not typed at client
-//        while (keepRunningUntilExit) {
-//            /*
-//             * TODO:Implement the GUI for the client side
-//             *
-//             *  */
-//
-//            boolean userWantsToExist = guiForClient.exist;
-//
-//            if (userWantsToExist) {
-//                keepRunningUntilExit = false;
-//                break;
-//            }
-//        }
-
-//    }
 
 
 }
