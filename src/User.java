@@ -29,6 +29,7 @@ public class User implements UserBased {
                 new FileReader("USER_DATABASE/" + filename));) {
             this.name = br.readLine();
             this.password = br.readLine();
+            this.bio = br.readLine();
             this.friends = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
             this.friendRequestsIn = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
             this.friendRequestsOut = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
