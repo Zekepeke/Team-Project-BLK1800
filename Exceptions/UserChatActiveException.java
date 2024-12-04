@@ -1,4 +1,4 @@
-package src.server.ServerExceptions;
+package Exceptions;
 import src.SocketIO;
 
 public class UserChatActiveException extends Exception {

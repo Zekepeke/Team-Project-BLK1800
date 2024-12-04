@@ -2,7 +2,7 @@ package src.Server;
 
 import interfaces.ClientHandlerInterface;
 import src.*;
-import src.server.ServerExceptions.UserChatActiveException;
+import Exceptions.UserChatActiveException;
 
 import java.lang.Thread;
 import java.util.ArrayList;
