@@ -7,6 +7,9 @@ import src.gui.components.FontLoader;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the graphical user interface for login functionality.
+ */
 public class LoginUI extends JPanel implements CustomColors, CustomFonts {
     int width;
     int height;
@@ -22,6 +25,12 @@ public class LoginUI extends JPanel implements CustomColors, CustomFonts {
 
 
 
+    /**
+     * Constructs a new LoginUI with specified dimensions.
+     *
+     * @param width  the width of the UI.
+     * @param height the height of the UI.
+     */
     public LoginUI(int width, int height) {
         // Set up the frame
         this.width = width;
@@ -118,22 +127,47 @@ public class LoginUI extends JPanel implements CustomColors, CustomFonts {
         setVisible(true);
     }
 
+    /**
+     * Sets the visibility of the error message.
+     *
+     * @param visible true to show the error message, false to hide it.
+     */
     public void setErrorVisible(boolean visible) {
         error.setVisible(visible);
     }
 
+    /**
+     * Gets the username input field.
+     *
+     * @return the username JTextField.
+     */
     public JTextField getUsernameField() {
         return usernameField;
     }
 
+    /**
+     * Gets the password input field.
+     *
+     * @return the password JPasswordField.
+     */
     public JPasswordField getPasswordField() {
         return passwordField;
     }
 
+    /**
+     * Gets the login button.
+     *
+     * @return the login JButton.
+     */
     public JButton getLoginButton() {
         return loginButton;
     }
 
+    /**
+     * Gets the sign-up button.
+     *
+     * @return the sign-up JButton.
+     */
     public JButton getSignUpButton() {
         return signUpButton;
     }

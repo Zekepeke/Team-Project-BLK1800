@@ -9,7 +9,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-
+/**
+ * Represents the login page of the application.
+ * It includes user authentication functionality and graphical components.
+ */
 public class LoginPage extends JPanel implements CustomColors {
 
     private ClientSide client;
@@ -31,6 +34,13 @@ public class LoginPage extends JPanel implements CustomColors {
     boolean SignUpButtonState = false;
     boolean validUsernameAndPassword = true;
 
+    /**
+     * Constructs a new LoginPage with specified dimensions and a client.
+     *
+     * @param width  the width of the login page.
+     * @param height the height of the login page.
+     * @param client the client object for handling server communication.
+     */
     public LoginPage(int width, int height, ClientSide client) {
         setPreferredSize(new Dimension(width, height));
         this.width = width;
@@ -97,6 +107,11 @@ public class LoginPage extends JPanel implements CustomColors {
     }
 
 
+    /**
+     * Paints the graphical components of the LoginPage.
+     *
+     * @param g the Graphics object used for painting.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -135,21 +150,47 @@ public class LoginPage extends JPanel implements CustomColors {
         }
     }
 
+    /**
+     * Sets the width of the login page.
+     *
+     * @param width the new width.
+     */
     public void setWidth(int width) {
         this.width = width;
     }
+
+    /**
+     * Sets the height of the login page.
+     *
+     * @param height the new height.
+     */
     public void setHeight(int height) {
         this.height = height;
     }
 
+    /**
+     * Gets the username entered by the user.
+     *
+     * @return the username as a String.
+     */
     public String getUsername() {
         return usernameString;
     }
 
+    /**
+     * Gets the password entered by the user.
+     *
+     * @return the password as a String.
+     */
     public String getPassword() {
         return passwordString;
     }
 
+    /**
+     * Gets the LoginUI instance for the login page.
+     *
+     * @return the LoginUI instance.
+     */
     public LoginUI getLoginUI() {
         return loginUI;
     }
