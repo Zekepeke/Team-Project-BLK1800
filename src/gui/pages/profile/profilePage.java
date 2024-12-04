@@ -1,5 +1,6 @@
 package src.gui.pages.profile;
 
+import interfaces.ProfilePageInterface;
 import interfaces.gui.CustomColors;
 import src.User;
 import src.client.ClientSide;
@@ -9,7 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class profilePage extends JPanel implements CustomColors {
+public class profilePage extends JPanel implements CustomColors, ProfilePageInterface {
 
     private ClientSide client;
     private String username;
@@ -148,7 +149,7 @@ public class profilePage extends JPanel implements CustomColors {
     }
 
     // Example method for navigating to the Friends page
-    private void navigateToFriendsPage() {
+    public void navigateToFriendsPage() {
         System.out.println("Navigating to Friends Page...");
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         parentFrame.getContentPane().removeAll();
@@ -158,17 +159,26 @@ public class profilePage extends JPanel implements CustomColors {
     }
 
     // Example method for navigating to the Friend Requests page
-    private void navigateToFriendRequestsPage() {
+    public void navigateToFriendRequestsPage() {
         System.out.println("Navigating to Friend Requests Page...");
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        parentFrame.getContentPane().removeAll();
+        parentFrame.add(new FriendRequestsPage(width, height, client));
+        parentFrame.revalidate();
+        parentFrame.repaint();
 
     }
 
     // Example method for navigating to the Blocked Users page
-    private void navigateToBlockedUsersPage() {
+    public void navigateToBlockedUsersPage() {
         System.out.println("Navigating to Blocked Users Page...");
-        // Implement navigation logic (e.g., switch to another JPanel or load a new page)
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        parentFrame.getContentPane().removeAll();
+        parentFrame.add(new BlockedUsersPage(width, height, client));
+        parentFrame.revalidate();
+        parentFrame.repaint();
     }
-    private void navigateToSearchUsersPage() {
+    public void navigateToSearchUsersPage() {
         System.out.println("Navigating to Search Users Page...");
         // Implement navigation logic (e.g., switch to another JPanel or load a new page)
     }
