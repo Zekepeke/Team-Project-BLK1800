@@ -12,7 +12,6 @@ import java.util.Arrays;
  */
 public class User implements UserBased {
     private static ArrayList<String> usernames = new ArrayList<>();
-    private static ArrayList<String> storedUsers = new ArrayList<>();
     private String name;
     private ArrayList<String> friends;
     private ArrayList<String> friendRequestsIn;
@@ -70,7 +69,6 @@ public class User implements UserBased {
      */
     public User(String name, String bio, String password) {
         this.name = name;
-        usernames.add(name);
         try {
             File f = new File(name + ".txt");
             f.createNewFile();
@@ -84,8 +82,7 @@ public class User implements UserBased {
         this.friendRequestsIn = new ArrayList<>();
         this.friendRequestsOut = new ArrayList<>();
         this.blocked = new ArrayList<>();
-        usernames.add(name);
-        storedUsers.add(this.name);
+        addUser(name);
     }
 
 
@@ -115,7 +112,6 @@ public class User implements UserBased {
         this.friendRequestsIn = new ArrayList<>();
         this.friendRequestsOut = new ArrayList<>();
         this.blocked = new ArrayList<>();
-        storedUsers.add(this.name);
     }
 
     /**
@@ -380,6 +376,8 @@ public class User implements UserBased {
 
     /**
      * Retrieves all the stored users names within the database
+     *
+     * @return success or error.
      */
     public static boolean initstoredUsers() {
         try(BufferedReader a = new BufferedReader(new FileReader(USERS_LIST_PATH))) {
@@ -394,24 +392,37 @@ public class User implements UserBased {
     }
 
     /**
-     * Retrieves the number of blocked users for this user.
+     * Adds a User to the list and the file
      *
-     * @return The number of blocked users.
+     * @return success or error.
+     */
+    public static boolean addUser(String name) {
+        try(PrintWriter a = new PrintWriter(new FileWriter(USERS_LIST_PATH, true))) {
+            usernames.add(name);
+            a.println(name);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    /**
+     * Retrieves the number of users within the databse.
+     *
+     * @return The number of stored users.
      */
     public static int getNumberUsers() {
         return usernames.size();
     }
 
     /**
-     * Retrieves the number of blocked users for this user.
+     * Retrieves the number stored users for this user.
      *
-     * @return The number of blocked users.
+     * @return The array list of stored users.
      */
     public static ArrayList<String> getUsernames() {
         return usernames;
     }
 
-    public static boolean usernameExists(String username){
-        return storedUsers.contains(username);
-    }
+    public static boolean userIsStored(String name) {return usernames.contains(name);}
 }

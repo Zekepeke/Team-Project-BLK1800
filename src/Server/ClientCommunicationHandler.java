@@ -150,15 +150,25 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
      * @param data The data containing the username, bio, and password.
      */
     public void handleSignup(String[] data) {
-        if (User.con.contains(data[0])) {
+        String name = data[0];
+        String bio = data[1];
+        String password = data[2];
+
+        if (User.userIsStored(name)) {
             messager.writeCondition(SocketIO.ERROR_USER_EXISTS);
             return;
         }
 
         try {
             // Create a new user and save to file
-            User newUser = new User(data[0], data[1]);
+            User newUser;
+            if(bio == null) {
+                newUser = new User(name, password);
+            } else {
+                newUser = new User(name, bio, password);
+            }
             this.setUser(newUser);
+            newUser.pushToDatabase();
             messager.writeCondition(SocketIO.SUCCESS_USER_SIGNUP);
         } catch (UserChatActiveException e) {
             messager.writeCondition(e.getMessage());
@@ -171,15 +181,18 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
      * @param data The data containing the username and password.
      */
     public void handleLogin(String[] data) {
+        String name = data[0];
+        String password = data[1];
+
         try {
             // Validate username and password
-            if (!User.storedUsers().contains(data[0])) {
+            if (!User.userIsStored(name)) {
                 messager.writeCondition(SocketIO.ERROR_USER_DNE);
                 return;
             }
 
-            User tempUser = new User(data[0] + ".txt");
-            if (!data[1].equals(tempUser.getPassword())) {
+            User tempUser = new User(name + ".txt");
+            if (!password.equals(tempUser.getPassword())) {
                 messager.writeCondition(SocketIO.ERROR_PASSWORD);
                 return;
             }
@@ -234,7 +247,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
     public void searchUsers(String[] data) {
         String query = data[0].toLowerCase();
         ArrayList<String> matchingNames = new ArrayList<>();
-        for (String userName : User.storedUsers()) {
+        for (String userName : User.getUsernames()) {
             if (userName.toLowerCase().contains(query)) {
                 matchingNames.add(userName);
             }
