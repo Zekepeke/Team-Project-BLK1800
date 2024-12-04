@@ -14,6 +14,8 @@ public class profilePage extends JPanel implements CustomColors {
     private ClientSide client;
     private String username;
     private String bio;
+    private int width;
+    private int height;
     private String[] friends;
     private String[] friendRequests;
     private String[] blocked;
@@ -22,6 +24,8 @@ public class profilePage extends JPanel implements CustomColors {
     Color backgroundColor = BACKGROUND;
 
     public profilePage(int width, int height, ClientSide client) {
+        this.width = width;
+        this.height = height;
         this.user = client.getUser();
         this.friends = this.user.getFriends().toArray(new String[0]);
         this.friendRequests = this.user.getFriendRequestsIn().toArray(new String[0]);
@@ -110,7 +114,7 @@ public class profilePage extends JPanel implements CustomColors {
         });
 
         // Button 4 - Go to Search Users Page
-        JButton searchButton = new JButton("Blocked Users");
+        JButton searchButton = new JButton("Search Users");
         searchButton.setFont(new Font("Arial", Font.PLAIN, 16));
         searchButton.setBackground(Color.CYAN); // Red background for the button
         searchButton.setForeground(Color.WHITE);
@@ -125,6 +129,7 @@ public class profilePage extends JPanel implements CustomColors {
         buttonPanel.add(friendsButton);
         buttonPanel.add(friendRequestsButton);
         buttonPanel.add(blockedButton);
+        buttonPanel.add(searchButton);
 
         // Add the button panel below the profile section
         add(buttonPanel, BorderLayout.CENTER);
@@ -139,7 +144,11 @@ public class profilePage extends JPanel implements CustomColors {
     // Example method for navigating to the Friend Requests page
     private void navigateToFriendRequestsPage() {
         System.out.println("Navigating to Friend Requests Page...");
-        // Implement navigation logic (e.g., switch to another JPanel or load a new page)
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        parentFrame.getContentPane().removeAll();
+        parentFrame.add(new FriendsPage(width, height, client));
+        parentFrame.revalidate();
+        parentFrame.repaint();
     }
 
     // Example method for navigating to the Blocked Users page
