@@ -150,7 +150,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
      * @param data The data containing the username, bio, and password.
      */
     public void handleSignup(String[] data) {
-        if (User.storedUsers().contains(data[0])) {
+        if (User.con.contains(data[0])) {
             messager.writeCondition(SocketIO.ERROR_USER_EXISTS);
             return;
         }

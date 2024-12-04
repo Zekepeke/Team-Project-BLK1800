@@ -43,6 +43,8 @@ public class Server implements ServerInterface {
      */
     public boolean startup() {
         System.out.println("Server is running...");
+        User.initstoredUsers();
+
         while (true) {
             try {
                 // Accept incoming client connections

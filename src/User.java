@@ -12,6 +12,7 @@ import java.util.Arrays;
  */
 public class User implements UserBased {
     private static ArrayList<String> usernames = new ArrayList<>();
+    private static ArrayList<String> storedUsers = new ArrayList<>();
     private String name;
     private ArrayList<String> friends;
     private ArrayList<String> friendRequestsIn;
@@ -19,6 +20,7 @@ public class User implements UserBased {
     private ArrayList<String> blocked;
     private String bio;
     private String password;
+
     /**
      * Reads in a user object from a database
      * Reads in the name, password, and all relevant information for the user
@@ -83,6 +85,7 @@ public class User implements UserBased {
         this.friendRequestsOut = new ArrayList<>();
         this.blocked = new ArrayList<>();
         usernames.add(name);
+        storedUsers.add(this.name);
     }
 
 
@@ -112,6 +115,7 @@ public class User implements UserBased {
         this.friendRequestsIn = new ArrayList<>();
         this.friendRequestsOut = new ArrayList<>();
         this.blocked = new ArrayList<>();
+        storedUsers.add(this.name);
     }
 
     /**
@@ -377,19 +381,16 @@ public class User implements UserBased {
     /**
      * Retrieves all the stored users names within the database
      */
-    public static ArrayList<String> storedUsers() {
-        ArrayList<String> users = new ArrayList<String>();
+    public static boolean initstoredUsers() {
         try(BufferedReader a = new BufferedReader(new FileReader(USERS_LIST_PATH))) {
             String input = null;
             while((input = a.readLine()) != null) {
-                users.add(input);
+                usernames.add(input);
             }
-            return users;
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return users;
+        return true;
     }
 
     /**
@@ -411,6 +412,6 @@ public class User implements UserBased {
     }
 
     public static boolean usernameExists(String username){
-        return usernames.contains(username);
+        return storedUsers.contains(username);
     }
 }
