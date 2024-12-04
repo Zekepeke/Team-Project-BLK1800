@@ -8,13 +8,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.net.Socket;
-
+/**
+ * This class represents a container for authentication-related pages,
+ * including login and sign-up pages. It manages navigation between pages.
+ */
 public class AuthenticationPages extends JPanel implements Runnable {
+    /** Login page component. */
     LoginPage loginPage;
+    /** Sign-up page component. */
     SignUpPage signUpPage;
+
+
+    /** Height of the authentication panel. */
     private int height = 600;
+    /** Width of the authentication panel. */
     private int width = 800;
 
+    /** Client-side connection for handling authentication requests. */
     ClientSide client;
 
     public AuthenticationPages () throws IOException {
@@ -28,6 +38,7 @@ public class AuthenticationPages extends JPanel implements Runnable {
         add(loginPage);
 
 
+        // Set up navigation between login and sign-up pages
         loginPage.getLoginUI().getSignUpButton().addActionListener(e -> {
             loginPage.setVisible(false);
             signUpPage.getSignUpUI().setErrorVisible(false);
@@ -41,6 +52,9 @@ public class AuthenticationPages extends JPanel implements Runnable {
         });
     }
 
+    /**
+     * Runs the authentication pages within a JFrame.
+     */
     @Override
     public void run() {
         JFrame frame = new JFrame("Login");
@@ -56,6 +70,12 @@ public class AuthenticationPages extends JPanel implements Runnable {
         frame.setVisible(true);
     }
 
+    /**
+     * Overrides the default paint method to ensure components are resized
+     * dynamically based on the panel's dimensions.
+     *
+     * @param g the {@code Graphics} object to protect.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
