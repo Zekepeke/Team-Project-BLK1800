@@ -29,10 +29,31 @@ public class User implements UserBased {
                 new FileReader("USER_DATABASE/" + filename));) {
             this.name = br.readLine();
             this.password = br.readLine();
-            this.friends = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
-            this.friendRequestsIn = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
-            this.friendRequestsOut = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
-            this.blocked = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
+            this.bio = br.readLine();
+            String s = br.readLine();
+            if (s == null) {
+                this.friends = null;
+            } else {
+                this.friends = new ArrayList<>(Arrays.asList(s.split(" ")));
+            }
+            s = br.readLine();
+            if (s == null) {
+                this.friendRequestsIn = null;
+            } else {
+                this.friendRequestsIn = new ArrayList<>(Arrays.asList(s.split(" ")));
+            }
+            s = br.readLine();
+            if (s == null) {
+                this.friendRequestsOut = null;
+            } else {
+                this.friendRequestsOut = new ArrayList<>(Arrays.asList(s.split(" ")));
+            }
+            s = br.readLine();
+            if (s == null) {
+                this.blocked = null;
+            } else {
+                this.blocked = new ArrayList<>(Arrays.asList(s.split(" ")));
+            }
         } catch (IOException e) {
             throw new IOException(e.getMessage());
         }

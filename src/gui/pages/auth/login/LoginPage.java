@@ -4,6 +4,7 @@ import interfaces.gui.CustomColors;
 import src.client.ClientSide;
 import src.gui.components.FontLoader;
 import src.gui.components.Sprite;
+import src.gui.pages.profile.profilePage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -81,6 +82,12 @@ public class LoginPage extends JPanel implements CustomColors {
                 if (working) {
                     client.setUsername(usernameString);
                     client.setPassword(passwordString);
+
+                    JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+                    parentFrame.getContentPane().removeAll();
+                    parentFrame.add(new profilePage(width, height, client));
+                    parentFrame.revalidate();
+                    parentFrame.repaint();
                 } else {
                     loginUI.setErrorVisible(true);
                 }

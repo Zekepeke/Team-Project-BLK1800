@@ -2,6 +2,7 @@ package src.client;
 import Exceptions.BadClientException;
 import interfaces.client.ClientSideInterface;
 import src.SocketIO;
+import src.User;
 
 import java.io.*;
 import java.net.*;
@@ -44,7 +45,6 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
         if (checkForHandShake()) {
             System.out.println("Handshake successful");
         }
-
     }
 
     /**
@@ -175,7 +175,14 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
         }
         return null;
     }
-
+    public User getUser() {
+        try {
+            return new User(username + ".txt");
+        }
+        catch (IOException e) {
+            return null;
+        }
+    }
     /**
      * Retrieves the list of friends for the current user by communicating with the server.
      *

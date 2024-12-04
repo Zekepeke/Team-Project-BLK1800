@@ -1,7 +1,0 @@
-bob
-password456
-Bio of Bob
-alice
-charlie
-thing
-charlie
