@@ -17,7 +17,7 @@ import java.util.ArrayList;
  */
 public interface UserBased {
     String USER_DATABASE = "USER_DATABASE";
-    String USERS_LIST_PATH = USER_DATABASE + "/Stored_Users.txt";
+    String USERS_LIST_PATH = USER_DATABASE + "/stored_users.txt";
     // Users name for the app should be lowercase letters or numbers and without specials charcters
     public String getName();
     public void setName(String name);
