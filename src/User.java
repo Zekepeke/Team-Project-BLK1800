@@ -30,25 +30,29 @@ public class User implements UserBased {
             this.name = br.readLine();
             this.password = br.readLine();
             this.bio = br.readLine();
-            if (br.readLine() == null) {
+            String s = br.readLine();
+            if (s == null) {
                 this.friends = null;
             } else {
-                this.friends = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
+                this.friends = new ArrayList<>(Arrays.asList(s.split(" ")));
             }
-            if (br.readLine() == null) {
+            s = br.readLine();
+            if (s == null) {
                 this.friendRequestsIn = null;
             } else {
-                this.friendRequestsIn = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
+                this.friendRequestsIn = new ArrayList<>(Arrays.asList(s.split(" ")));
             }
-            if (br.readLine() == null) {
+            s = br.readLine();
+            if (s == null) {
                 this.friendRequestsOut = null;
             } else {
-                this.friendRequestsOut = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
+                this.friendRequestsOut = new ArrayList<>(Arrays.asList(s.split(" ")));
             }
-            if (br.readLine() == null) {
+            s = br.readLine();
+            if (s == null) {
                 this.blocked = null;
             } else {
-                this.blocked = new ArrayList<>(Arrays.asList(br.readLine().split(" ")));
+                this.blocked = new ArrayList<>(Arrays.asList(s.split(" ")));
             }
         } catch (IOException e) {
             throw new IOException(e.getMessage());

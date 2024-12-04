@@ -27,9 +27,21 @@ public class profilePage extends JPanel implements CustomColors {
         this.width = width;
         this.height = height;
         this.user = client.getUser();
-        this.friends = this.user.getFriends().toArray(new String[0]);
-        this.friendRequests = this.user.getFriendRequestsIn().toArray(new String[0]);
-        this.blocked = this.user.getBlocked().toArray(new String[0]);
+        if (user.getFriends() == null){
+            this.friends = new String[0];
+        } else {
+            this.friends = this.user.getFriends().toArray(new String[0]);
+        }
+        if (user.getFriendRequestsIn() == null){
+            this.friendRequests = new String[0];
+        } else {
+            this.friendRequests = this.user.getFriendRequestsIn().toArray(new String[0]);
+        }
+        if (user.getBlocked() == null){
+            blocked = new String[0];
+        } else {
+            this.blocked = this.user.getBlocked().toArray(new String[0]);
+        }
         setPreferredSize(new Dimension(width, height));
         this.client = client;
 
@@ -138,17 +150,17 @@ public class profilePage extends JPanel implements CustomColors {
     // Example method for navigating to the Friends page
     private void navigateToFriendsPage() {
         System.out.println("Navigating to Friends Page...");
-        // Implement navigation logic (e.g., switch to another JPanel or load a new page)
-    }
-
-    // Example method for navigating to the Friend Requests page
-    private void navigateToFriendRequestsPage() {
-        System.out.println("Navigating to Friend Requests Page...");
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         parentFrame.getContentPane().removeAll();
         parentFrame.add(new FriendsPage(width, height, client));
         parentFrame.revalidate();
         parentFrame.repaint();
+    }
+
+    // Example method for navigating to the Friend Requests page
+    private void navigateToFriendRequestsPage() {
+        System.out.println("Navigating to Friend Requests Page...");
+
     }
 
     // Example method for navigating to the Blocked Users page
