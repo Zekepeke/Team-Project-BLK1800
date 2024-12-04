@@ -139,9 +139,29 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
                 sendConversationHistory(data);
                 break;
 
+            case SocketIO.TYPE_UPDATE_BLOCKED_USERS :
+                updateBlockedUsers(data);
+
+            case SocketIO.TYPE_SEND_FRIEND_REQUEST:
+                sendFriendRequest(data);
+
+            case SocketIO.TYPE_ACCEPT_FRIEND_REQUEST:
+                acceptFriendRequest(data);
+                break;
+
+            case SocketIO.TYPE_GET_INCOMING_FRIEND_REQUESTS:
+                sendIncomingFriendRequests();
+                break;
+
+            case SocketIO.TYPE_GET_OUTGOING_FRIEND_REQUESTS:
+                sendOutgoingFriendRequests();
+                break;
+
             default:
                 break;
         }
+
+        this.user.pushToDatabase();
     }
 
     /**
@@ -168,7 +188,6 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
                 newUser = new User(name, bio, password);
             }
             this.setUser(newUser);
-            newUser.pushToDatabase();
             messager.writeCondition(SocketIO.SUCCESS_USER_SIGNUP);
         } catch (UserChatActiveException e) {
             messager.writeCondition(e.getMessage());
@@ -236,7 +255,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
      */
     public void sendFriendList() {
         ArrayList<String> friends = this.user.getFriends();
-        messager.write(friends.toArray(new String[0]), SocketIO.TYPE_LIST_FRIENDS);
+        messager.write(friends.toArray(new String[0]), SocketIO.TYPE_GET_FRIEND_LIST);
     }
 
     /**
@@ -271,4 +290,84 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
             e.printStackTrace();
         }
     }
+
+    /**
+     * Updates the list of blocked users sent by the client.
+     *
+     * @param data The data containing the list of new blocked users.
+     */
+    public void updateBlockedUsers(String[] data) {
+        this.user.setBlocked(new ArrayList<>(Arrays.asList(data)));
+    }
+
+    /**
+     * Adds an outgoing friend request to the current user and updates incoming requests of recipient
+     *
+     * @param data The data containing the recipient's username.
+     */
+    public void sendFriendRequest(String[] data) {
+        String name = data[0];
+        User recipient;
+
+        try {
+            recipient = new User(name + ".txt");
+        } catch (IOException e) {
+            messager.writeCondition(SocketIO.ERROR_IO_EXCEPTION);
+            return;
+        }
+
+        // updating the outgoing friend request list of the current user
+        if(this.user.sendFriendRequest(recipient)) {
+            // updating the incoming friend request list of the person that sent the friend request
+            recipient.getFriendRequestsIn().add(this.user.getName());
+            messager.writeCondition(SocketIO.SUCCESS_GENERAL);
+        } else {
+            messager.writeCondition(SocketIO.ERROR_GENERAL);
+        }
+
+    }
+
+    /**
+     * Accepts friend request of the specified user and updates the specified user's friend list.
+     *
+     * @param data The data containing the specified user's username.
+     */
+    public void acceptFriendRequest(String[] data) {
+        String name = data[0];
+        User newFriend;
+
+        try {
+            newFriend = new User(name + ".txt");
+        } catch (IOException e) {
+            messager.writeCondition(SocketIO.ERROR_IO_EXCEPTION);
+            return;
+        }
+
+        // accepting the friend request sent by another user
+        if(this.user.acceptFriendRequest(newFriend)) {
+
+            // updating the friends list of the person that sent the friend request (accepted their request)
+            newFriend.getFriends().add(this.user.getName());
+            messager.writeCondition(SocketIO.SUCCESS_GENERAL);
+        } else {
+            messager.writeCondition(SocketIO.ERROR_GENERAL);
+        }
+    }
+
+    /**
+     * Sends the client a list of the incoming friend requests
+     *
+     */
+    public void sendIncomingFriendRequests() {
+        messager.write(this.user.getFriendRequestsIn().toArray(new String[0]), SocketIO.TYPE_GET_INCOMING_FRIEND_REQUESTS);
+    }
+
+    /**
+     * Sends the client a list of the outgoing friend requests
+     *
+     */
+    public void sendOutgoingFriendRequests() {
+        messager.write(this.user.getFriendRequestsOut().toArray(new String[0]), SocketIO.TYPE_GET_OUTGOING_FRIEND_REQUESTS);
+    }
+
 }

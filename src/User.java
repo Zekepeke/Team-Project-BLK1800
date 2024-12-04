@@ -296,7 +296,7 @@ public class User implements UserBased {
     }
 
     /**
-     * Sends a friend request to the specified user, adding them to the friend list if they are not already a friend
+     * Sends a friend request to the specified user, adding them to the outgoing friend requests list if they are not already a friend
      * or blocked.
      *
      * @param potentialFriend The user to whom the friend request is sent.
@@ -356,7 +356,7 @@ public class User implements UserBased {
     }
 
     /**
-     * Pushes user.toString() to the database
+     * Pushes user.toString() to the d  atabase
      *
      * @return true if push was successful, false otherwise
      */
