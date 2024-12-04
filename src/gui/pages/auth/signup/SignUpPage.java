@@ -8,6 +8,10 @@ import java.awt.*;
 import java.awt.event.*;
 
 
+/**
+ * Represents the sign-up page of the application.
+ * It includes user registration functionality and graphical components.
+ */
 public class SignUpPage extends JPanel implements CustomColors {
 
     private ClientSide client;
@@ -26,6 +30,13 @@ public class SignUpPage extends JPanel implements CustomColors {
 
     boolean validUsernameAndPassword = true;
 
+    /**
+     * Constructs a new SignUpPage with specified dimensions and a client.
+     *
+     * @param width  the width of the sign-up page.
+     * @param height the height of the sign-up page.
+     * @param client the client object for handling server communication.
+     */
     public SignUpPage(int width, int height, ClientSide client) {
         setPreferredSize(new Dimension(width, height));
         this.width = width;
@@ -85,6 +96,11 @@ public class SignUpPage extends JPanel implements CustomColors {
     }
 
 
+    /**
+     * Paints the graphical components of the SignUpPage.
+     *
+     * @param g the Graphics object used for painting.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -99,21 +115,47 @@ public class SignUpPage extends JPanel implements CustomColors {
         g2d.fillRect(0, 0, width, height);
     }
 
+    /**
+     * Sets the width of the sign-up page.
+     *
+     * @param width the new width.
+     */
     public void setWidth(int width) {
         this.width = width;
     }
+
+    /**
+     * Sets the height of the sign-up page.
+     *
+     * @param height the new height.
+     */
     public void setHeight(int height) {
         this.height = height;
     }
 
+    /**
+     * Gets the username entered by the user.
+     *
+     * @return the username as a String.
+     */
     public String getUsername() {
         return usernameString;
     }
 
+    /**
+     * Gets the password entered by the user.
+     *
+     * @return the password as a String.
+     */
     public String getPassword() {
         return passwordString;
     }
 
+    /**
+     * Gets the SignUpUI instance for the sign-up page.
+     *
+     * @return the SignUpUI instance.
+     */
     public SignUpUI getSignUpUI() {
         return signUpUI;
     }
