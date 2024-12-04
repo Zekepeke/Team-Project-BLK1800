@@ -51,7 +51,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
             }
         }
 
-        if(count > 1) {
+        if(count > 0) {
             throw new UserChatActiveException();
         }
     }
