@@ -86,7 +86,7 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
      * Searches for users matching the given name by communicating with the server.
      *
      * @param name the name to search for.
-     * @return an array of user names matching the search criteria if the operation is successful;
+     * @return an array of usernames matching the search criteria if the operation is successful;
      *         {@code null} if the search fails or no results are found.
      *
      * @implNote Ensure the {@code SocketIO} class is updated so the search method
