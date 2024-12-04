@@ -9,6 +9,7 @@ import src.User;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Scanner;
 
 import static org.junit.Assert.*;
 
@@ -17,7 +18,7 @@ import static org.junit.Assert.*;
  */
 public class ClientCommunicationHandlerTest {
 
-    private static final int TEST_PORT = 8484;
+    private static final int TEST_PORT = 8282;
     private Server testServer;
     private Thread serverThread;
     private Socket clientSocket;
@@ -27,6 +28,7 @@ public class ClientCommunicationHandlerTest {
     @Before
     public void setUp() throws IOException {
         // Start a test server
+        Scanner scanner = new Scanner(System.in);
         testServer = new Server(TEST_PORT);
         serverThread = new Thread(() -> testServer.startup());
         serverThread.start();

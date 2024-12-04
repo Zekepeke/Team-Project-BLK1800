@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import static org.junit.Assert.*;
 
@@ -28,6 +29,7 @@ public class ServerTest {
         // Start the Server in a separate thread
         serverThread = new Thread(() -> testServer.startup());
         serverThread.start();
+
     }
 
     @After
