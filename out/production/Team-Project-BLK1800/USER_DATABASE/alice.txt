@@ -1,8 +1,7 @@
 alice
 password123
 Bio of Alice
-bob
-charlie
-guy
-
-
+[bob]
+[charlie]
+[guy]
+[]
