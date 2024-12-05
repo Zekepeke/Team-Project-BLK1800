@@ -70,9 +70,13 @@ public class User implements UserBased {
     public User(String name, String bio, String password) {
         this.name = name;
         try {
-            File f = new File(name + ".txt");
+            File f = new File("USER_DATABASE/" + name + ".txt");
             f.createNewFile();
-            f.delete();
+            PrintWriter pw = new PrintWriter(f);
+            pw.println(name);
+            pw.println(password);
+            pw.println("Bio of " + name);
+            pw.close();
         } catch (Exception e) {
             this.name = "";
         }
@@ -82,7 +86,7 @@ public class User implements UserBased {
         this.friendRequestsIn = new ArrayList<>();
         this.friendRequestsOut = new ArrayList<>();
         this.blocked = new ArrayList<>();
-        addUser(name);
+        addUser(this.name);
     }
 
 
@@ -94,25 +98,7 @@ public class User implements UserBased {
      * @param password The user's password.
      */
     public User(String name, String password) {
-        this.name = name;
-        try {
-            File f = new File("USER_DATABASE/" + name + ".txt");
-            f.createNewFile();
-            PrintWriter pw = new PrintWriter(f);
-            pw.println(name);
-            pw.println(password);
-            pw.println("Bio of " + name);
-            pw.close();
-        } catch (Exception e) {
-            this.name = "";
-        }
-        this.bio = "";
-        this.password = password;
-        this.friends = new ArrayList<>();
-        this.friendRequestsIn = new ArrayList<>();
-        this.friendRequestsOut = new ArrayList<>();
-        this.blocked = new ArrayList<>();
-        addUser(this.name);
+        this(name, "", password);
     }
 
     /**

@@ -1,6 +1,7 @@
 package src.Server;
 
 import interfaces.ClientHandlerInterface;
+import interfaces.IO;
 import src.*;
 import Exceptions.UserChatActiveException;
 
@@ -112,6 +113,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
         String informationType = dataFromClient[0];
         String[] data = new String[dataFromClient.length - 1];
         System.arraycopy(dataFromClient, 1, data, 0, dataFromClient.length - 1);
+        boolean push_condition = false;
 
         switch (informationType) {
             case SocketIO.TYPE_SIGNUP:
@@ -142,13 +144,33 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
                 sendConversationHistory(data);
                 break;
 
-            case SocketIO.TYPE_UPDATE_BLOCKED_USERS :
+            case SocketIO.TYPE_UPDATE_BLOCKED_USERS:
+                push_condition = true;
                 updateBlockedUsers(data);
+                break;
+
+            case SocketIO.TYPE_BLOCK_USER:
+                push_condition = true;
+                blockUnblockUser(data, SocketIO.TYPE_BLOCK_USER);
+                break;
+
+            case SocketIO.TYPE_UNBLOCK_USER:
+                push_condition = true;
+                blockUnblockUser(data, SocketIO.TYPE_UNBLOCK_USER);
+                break;
+
+            case SocketIO.TYPE_UNBLOCK_ALL_USERS:
+                push_condition = true;
+                blockUnblockUser(data, SocketIO.TYPE_UNBLOCK_ALL_USERS);
+                break;
 
             case SocketIO.TYPE_SEND_FRIEND_REQUEST:
+                push_condition = true;
                 sendFriendRequest(data);
+                break;
 
             case SocketIO.TYPE_ACCEPT_FRIEND_REQUEST:
+                push_condition = true;
                 acceptFriendRequest(data);
                 break;
 
@@ -164,7 +186,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
                 break;
         }
 
-        if(this.user != null) {
+        if(this.user != null && push_condition){
             if(!this.user.pushToDatabase()) {
                 throw new RuntimeException();
             }
@@ -245,8 +267,6 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
      * Sends the current user's information to the client.
      */
     public void sendUserInfo() {
-        String name = this.user.getName();
-        String bio = this.user.getBio();
         String[] userInfo = new String[]{this.user.getName(), this.user.getBio()};
         messager.write(userInfo, SocketIO.TYPE_USER_INFORMATION);
     }
@@ -260,7 +280,9 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
         try {
             Message message = new Message(user, new User(data[0] + ".txt"), null, data[1]);
             message.pushToDatabase();
+            messager.writeCondition(SocketIO.SUCCESS_GENERAL);
         } catch (IOException e) {
+            messager.writeCondition(SocketIO.ERROR_IO_EXCEPTION);
             e.printStackTrace();
         }
     }
@@ -302,6 +324,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
             messager.write(messages.stream().map(Message::toString).toArray(String[]::new),
                     SocketIO.TYPE_FRIEND_CONVERSATION_HISTORY);
         } catch (IOException e) {
+            messager.writeCondition(SocketIO.ERROR_IO_EXCEPTION);
             e.printStackTrace();
         }
     }
@@ -313,6 +336,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
      */
     public void updateBlockedUsers(String[] data) {
         this.user.setBlocked(new ArrayList<>(Arrays.asList(data)));
+        messager.writeCondition(SocketIO.SUCCESS_GENERAL);
     }
 
     /**
@@ -383,6 +407,27 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
      */
     public void sendOutgoingFriendRequests() {
         messager.write(this.user.getFriendRequestsOut().toArray(new String[0]), SocketIO.TYPE_GET_OUTGOING_FRIEND_REQUESTS);
+    }
+
+    public void blockUnblockUser(String[] data, String type) {
+        String username = data[0];
+        try {
+            if(type.equals(SocketIO.TYPE_UNBLOCK_USER)) {
+                this.user.unblock(new User(username + ".txt"));
+            }
+            else if(type.equals(SocketIO.TYPE_BLOCK_USER)) {
+                this.user.block(new User(username + ".txt"));
+            }
+
+            else if(type.equals(SocketIO.TYPE_UNBLOCK_ALL_USERS)) {
+                this.user.setBlocked(new ArrayList<>());
+            }
+
+            messager.writeCondition(SocketIO.SUCCESS_GENERAL);
+
+        } catch (IOException e) {
+            messager.writeCondition(SocketIO.ERROR_IO_EXCEPTION);
+        }
     }
 
 }

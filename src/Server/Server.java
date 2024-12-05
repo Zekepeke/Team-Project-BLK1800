@@ -54,13 +54,9 @@ public class Server implements ServerInterface {
 
                 // Create and start a new thread for the client
                 ClientCommunicationHandler handler = new ClientCommunicationHandler(clientSocket);
-                handler.run();
-
-                /*
                 Thread thread = new Thread(handler);
                 activeConversations.add(thread);
                 thread.start();
-                */
 
             } catch (IOException e) {
                 System.err.println("Error while accepting a client connection: " + e.getMessage());
