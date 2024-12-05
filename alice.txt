@@ -1,6 +1,0 @@
-alice
-Bio of Alice
-[bob]
-[charlie]
-[guy]
-[]

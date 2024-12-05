@@ -82,7 +82,6 @@ public class SocketIO implements IO {
             String input = reader.readLine();
 
             input = input.substring(DELIMITER_START.length(), input.length() - DELIMITER_END.length());
-            System.out.println(input);
 
             if(!input.contains(SPLITTER)) {return new String[]{input};};
 

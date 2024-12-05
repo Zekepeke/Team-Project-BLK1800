@@ -99,6 +99,8 @@ public class User implements UserBased {
             File f = new File("USER_DATABASE/" + name + ".txt");
             f.createNewFile();
             PrintWriter pw = new PrintWriter(f);
+            System.out.println("name: " + name);
+            System.out.println("password: " + password);
             pw.println(name);
             pw.println(password);
             pw.println("Bio of " + name);
@@ -401,6 +403,7 @@ public class User implements UserBased {
     public static boolean addUser(String name) {
         try(PrintWriter a = new PrintWriter(new FileWriter(USERS_LIST_PATH, true))) {
             usernames.add(name);
+            a.println();
             a.println(name);
         } catch (IOException e) {
             e.printStackTrace();
