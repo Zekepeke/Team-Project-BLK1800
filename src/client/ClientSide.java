@@ -111,8 +111,7 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
             String [] info = read();
             System.out.println("In the searchNameAndPasswordLogin Method:" + Arrays.toString(info));
             System.out.println("In the searchNameAndPasswordLogin Array size:" + info.length);
-
-            String condition = readCondition();
+            String condition = info[0];
 
             if (condition == null) {
                 return false;

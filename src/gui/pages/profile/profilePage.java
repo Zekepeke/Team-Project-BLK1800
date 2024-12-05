@@ -2,6 +2,7 @@ package src.gui.pages.profile;
 
 import interfaces.ProfilePageInterface;
 import interfaces.gui.CustomColors;
+import interfaces.gui.ProfileInterface;
 import src.User;
 import src.client.ClientSide;
 
@@ -10,7 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class profilePage extends JPanel implements CustomColors, ProfilePageInterface {
+public class profilePage extends JPanel implements CustomColors, ProfilePageInterface, ProfileInterface {
 
     private ClientSide client;
     private String username;
@@ -55,6 +56,7 @@ public class profilePage extends JPanel implements CustomColors, ProfilePageInte
         // Layout
         setLayout(new BorderLayout());
         setBackground(backgroundColor);
+        setOpaque(true);
 
         // Profile Section
         JPanel profileSection = new JPanel();
@@ -64,7 +66,7 @@ public class profilePage extends JPanel implements CustomColors, ProfilePageInte
         // Username
         JLabel usernameLabel = new JLabel(username);
         usernameLabel.setFont(new Font("Arial", Font.BOLD, 30));
-        usernameLabel.setForeground(new Color(52, 152, 219)); // A blue color for the username
+        usernameLabel.setForeground(BLUE_150); // A blue color for the username
         usernameLabel.setAlignmentX(CENTER_ALIGNMENT);
         usernameLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
 
@@ -90,8 +92,10 @@ public class profilePage extends JPanel implements CustomColors, ProfilePageInte
         // Button 1 - Go to Friends Page
         JButton friendsButton = new JButton("Friends");
         friendsButton.setFont(new Font("Arial", Font.PLAIN, 16));
-        friendsButton.setBackground(new Color(52, 152, 219)); // Blue background for the button
+        friendsButton.setBackground(BLUE_150); // Blue background for the button
+        friendsButton.setOpaque(true);
         friendsButton.setForeground(Color.WHITE);
+        friendsButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         friendsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -102,9 +106,11 @@ public class profilePage extends JPanel implements CustomColors, ProfilePageInte
 
         // Button 2 - Go to Friend Requests Page
         JButton friendRequestsButton = new JButton("Friend Requests");
-        friendRequestsButton.setFont(new Font("Arial", Font.PLAIN, 16));
-        friendRequestsButton.setBackground(new Color(46, 204, 113)); // Green background for the button
+        friendRequestsButton.setBackground(GREEN_100); // Green background for the button
+        friendRequestsButton.setOpaque(true);
         friendRequestsButton.setForeground(Color.WHITE);
+        friendRequestsButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        friendRequestsButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         friendRequestsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -116,8 +122,10 @@ public class profilePage extends JPanel implements CustomColors, ProfilePageInte
         // Button 3 - Go to Blocked Users Page
         JButton blockedButton = new JButton("Blocked Users");
         blockedButton.setFont(new Font("Arial", Font.PLAIN, 16));
-        blockedButton.setBackground(new Color(231, 76, 60)); // Red background for the button
+        blockedButton.setBackground(RED_150); // Red background for the button
+        blockedButton.setOpaque(true);
         blockedButton.setForeground(Color.WHITE);
+        blockedButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         blockedButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -130,7 +138,9 @@ public class profilePage extends JPanel implements CustomColors, ProfilePageInte
         JButton searchButton = new JButton("Search Users");
         searchButton.setFont(new Font("Arial", Font.PLAIN, 16));
         searchButton.setBackground(Color.CYAN); // Red background for the button
+        searchButton.setOpaque(true);
         searchButton.setForeground(Color.WHITE);
+        searchButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
