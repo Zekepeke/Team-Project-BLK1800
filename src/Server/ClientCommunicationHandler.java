@@ -53,6 +53,8 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
 
         if(count > 0) {
             throw new UserChatActiveException();
+        } else {
+            this.user = user;
         }
     }
 
@@ -92,6 +94,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
 
                 case EXECUTE:
                     processClientData(dataFromClient);
+                    state = State.READ_DATA;
                     break;
 
                 default:
@@ -161,7 +164,11 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
                 break;
         }
 
-        this.user.pushToDatabase();
+        if(this.user != null) {
+            if(!this.user.pushToDatabase()) {
+                throw new RuntimeException();
+            }
+        }
     }
 
     /**
@@ -171,8 +178,16 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
      */
     public void handleSignup(String[] data) {
         String name = data[0];
-        String bio = data[1];
-        String password = data[2];
+        String bio = "";
+        String password = "";
+
+        if(data.length < 3) {
+         name = data[0];
+         password = data[1];
+        } else {
+            bio = data[1];
+            password = data[2];
+        }
 
         if (User.userIsStored(name)) {
             messager.writeCondition(SocketIO.ERROR_USER_EXISTS);
@@ -182,7 +197,7 @@ public class ClientCommunicationHandler extends Thread implements ClientHandlerI
         try {
             // Create a new user and save to file
             User newUser;
-            if(bio == null) {
+            if(bio.isEmpty()) {
                 newUser = new User(name, password);
             } else {
                 newUser = new User(name, bio, password);

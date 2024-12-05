@@ -112,6 +112,7 @@ public class User implements UserBased {
         this.friendRequestsIn = new ArrayList<>();
         this.friendRequestsOut = new ArrayList<>();
         this.blocked = new ArrayList<>();
+        addUser(this.name);
     }
 
     /**
@@ -356,16 +357,15 @@ public class User implements UserBased {
     }
 
     /**
-     * Pushes user.toString() to the d  atabase
+     * Pushes user.toString() to the database
      *
      * @return true if push was successful, false otherwise
      */
     @Override
     public boolean pushToDatabase() {
-        try (PrintWriter p = new PrintWriter(new FileWriter(name + ".txt")); PrintWriter a = new PrintWriter(new FileWriter(USERS_LIST_PATH))) {
+        try (PrintWriter p = new PrintWriter(new FileWriter(USER_DATABASE+ "/" + name + ".txt"))) {
             synchronized (usernames) {
                 p.println(this);
-                a.println(this.name);
             }
         } catch (Exception e) {
             System.out.println("Bad IO Exception");
@@ -383,7 +383,9 @@ public class User implements UserBased {
         try(BufferedReader a = new BufferedReader(new FileReader(USERS_LIST_PATH))) {
             String input = null;
             while((input = a.readLine()) != null) {
-                usernames.add(input);
+                if(!input.isEmpty()) {
+                    usernames.add(input);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
