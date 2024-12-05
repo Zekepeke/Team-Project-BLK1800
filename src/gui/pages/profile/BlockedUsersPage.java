@@ -2,6 +2,7 @@ package src.gui.pages.profile;
 
 import interfaces.BlockedUsersPageInterface;
 import interfaces.gui.CustomColors;
+import interfaces.gui.ProfileInterface;
 import src.User;
 import src.client.ClientSide;
 
@@ -10,7 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUsersPageInterface {
+public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUsersPageInterface, ProfileInterface {
 
     private ClientSide client;
     private String[] blockedUsers;
@@ -34,6 +35,7 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
         // Layout
         setLayout(new BorderLayout());
         setBackground(backgroundColor);
+        setOpaque(true);
 
         // Title section
         JLabel titleLabel = new JLabel("Blocked Users");
@@ -48,7 +50,6 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
         // Panel to hold blocked users list with buttons
         JPanel blockedUsersPanel = new JPanel();
         blockedUsersPanel.setLayout(new BoxLayout(blockedUsersPanel, BoxLayout.Y_AXIS));
-        blockedUsersPanel.setOpaque(false);
         JButton backToProfile = createButton("Back To Profile", Color.BLUE);
         backToProfile.addActionListener(new ActionListener() {
             @Override
@@ -65,6 +66,7 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
             // Blocked user name label
             JLabel userLabel = new JLabel(blockedUser);
             userLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+            userLabel.setForeground(GRAY_100);
             userLabel.setPreferredSize(new Dimension(200, 30));
 
             // Buttons for Unblock and View Profile
@@ -117,6 +119,7 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
         JButton button = new JButton(text);
         button.setFont(new Font("Arial", Font.PLAIN, 14));
         button.setBackground(backgroundColor);
+        button.setOpaque(true);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));

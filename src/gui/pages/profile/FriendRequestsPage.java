@@ -2,6 +2,7 @@ package src.gui.pages.profile;
 
 import interfaces.FriendRequestsPageInterface;
 import interfaces.gui.CustomColors;
+import interfaces.gui.ProfileInterface;
 import src.User;
 import src.client.ClientSide;
 
@@ -10,7 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class FriendRequestsPage extends JPanel implements CustomColors, FriendRequestsPageInterface {
+public class FriendRequestsPage extends JPanel implements CustomColors, FriendRequestsPageInterface, ProfileInterface {
 
     private ClientSide client;
     private String[] friends;
@@ -48,7 +49,6 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
         // Panel to hold friend list with buttons
         JPanel friendsListPanel = new JPanel();
         friendsListPanel.setLayout(new BoxLayout(friendsListPanel, BoxLayout.Y_AXIS));
-        friendsListPanel.setOpaque(false);
         JButton backToProfile = createButton("Back To Profile", Color.BLUE);
         backToProfile.addActionListener(new ActionListener() {
             @Override
@@ -65,6 +65,7 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
             // Friend name label
             JLabel friendLabel = new JLabel(friend);
             friendLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+            friendLabel.setForeground(GRAY_100);
             friendLabel.setPreferredSize(new Dimension(200, 30));
 
             // Buttons for Remove, Block, and View Profile
@@ -114,6 +115,7 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
         JButton button = new JButton(text);
         button.setFont(new Font("Arial", Font.PLAIN, 14));
         button.setBackground(backgroundColor);
+        button.setOpaque(true);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));

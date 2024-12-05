@@ -97,7 +97,7 @@ public class LoginUI extends JPanel implements CustomColors, CustomFonts {
         loginButton.setFocusPainted(false);
         loginButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Sing up button
+        // Sign up button
         signUpButton = new JButton("Click to sign up");
         signUpButton.setPreferredSize(new Dimension(width, height / 10));
         signUpButton.setMaximumSize(new Dimension(width, height / 10));

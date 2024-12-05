@@ -29,11 +29,13 @@ public class FriendsPage extends JPanel implements CustomColors {
         // Layout
         setLayout(new BorderLayout());
         setBackground(backgroundColor);
+        setOpaque(true);
+        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         // Title section
         JLabel titleLabel = new JLabel("Friends List");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 30));
-        titleLabel.setForeground(new Color(52, 152, 219)); // Blue color for the title
+        titleLabel.setForeground(BLUE_150); // Blue color for the title
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
@@ -43,7 +45,6 @@ public class FriendsPage extends JPanel implements CustomColors {
         // Panel to hold friend list with buttons
         JPanel friendsListPanel = new JPanel();
         friendsListPanel.setLayout(new BoxLayout(friendsListPanel, BoxLayout.Y_AXIS));
-        friendsListPanel.setOpaque(false);
         JButton backToProfile = createButton("Back To Profile", Color.BLUE);
         backToProfile.addActionListener(new ActionListener() {
             @Override
@@ -60,6 +61,9 @@ public class FriendsPage extends JPanel implements CustomColors {
             // Friend name label
             JLabel friendLabel = new JLabel(friend);
             friendLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+
+            friendLabel.setForeground(GRAY_100);
+
             friendLabel.setPreferredSize(new Dimension(200, 30));
 
             // Buttons for Remove, Block, and View Profile
@@ -109,6 +113,7 @@ public class FriendsPage extends JPanel implements CustomColors {
         JButton button = new JButton(text);
         button.setFont(new Font("Arial", Font.PLAIN, 14));
         button.setBackground(backgroundColor);
+        button.setOpaque(true);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
