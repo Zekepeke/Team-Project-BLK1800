@@ -104,15 +104,15 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
             if (names.length == 1) {
                 return names;
             } else {
-               System.out.println("Something went wrong with array");
-               System.out.println("searchUsers data sent back to client: " + Arrays.toString(names));
-               return null;
+
+                System.out.println("Something went wrong with array");
+                System.out.println("searchUsers data sent back to client: " + Arrays.toString(names));
+                return null;
             }
         }
 
         return null;
     }
-
     // returns true if logined, false otherwise
     public Boolean searchNameAndPasswordLogin (String name, String password) {
         String[] stream = {name, password};
