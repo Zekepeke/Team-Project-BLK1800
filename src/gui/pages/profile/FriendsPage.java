@@ -19,13 +19,20 @@ public class FriendsPage extends JPanel implements CustomColors {
     private int height;
 
     public FriendsPage(int width, int height, ClientSide client) {
-        this.width = width;
-        this.height = height;
-        this.user = client.getUser();
-        this.client = client;
-        this.friends = client.getUser().getFriends().toArray(new String[0]);
-        setPreferredSize(new Dimension(width, height));
-
+        try {
+            this.width = width;
+            this.height = height;
+            this.user = client.getUser();
+            this.client = client;
+            this.friends = client.getUser().getFriends().toArray(new String[0]);
+            setPreferredSize(new Dimension(width, height));
+        } catch (Exception e) {
+            this.width = width;
+            this.height = height;
+            this.client = client;
+            this.friends = new String[0];
+            setPreferredSize(new Dimension(width, height));
+        }
         // Layout
         setLayout(new BorderLayout());
         setBackground(backgroundColor);

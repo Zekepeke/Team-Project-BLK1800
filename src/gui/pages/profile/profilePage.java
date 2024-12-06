@@ -5,11 +5,15 @@ import interfaces.gui.CustomColors;
 import interfaces.gui.ProfileInterface;
 import src.User;
 import src.client.ClientSide;
+import src.gui.pages.auth.AuthenticationPages;
+import src.gui.pages.auth.login.LoginPage;
+import src.gui.pages.auth.signup.SignUpPage;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class profilePage extends JPanel implements CustomColors, ProfilePageInterface, ProfileInterface {
 
@@ -23,37 +27,23 @@ public class profilePage extends JPanel implements CustomColors, ProfilePageInte
     private String[] blocked;
     private User user;
 
+    private JTextArea bioTextArea; // For editing the bio
+    private JButton saveBioButton; // Save button for bio changes
+
     Color backgroundColor = BACKGROUND;
 
     public profilePage(int width, int height, ClientSide client) {
         this.width = width;
         this.height = height;
         this.user = client.getUser();
-        if (user.getFriends() == null){
-            this.friends = new String[0];
-        } else {
-            this.friends = this.user.getFriends().toArray(new String[0]);
-        }
-        if (user.getFriendRequestsIn() == null){
-            this.friendRequests = new String[0];
-        } else {
-            this.friendRequests = this.user.getFriendRequestsIn().toArray(new String[0]);
-        }
-        if (user.getBlocked() == null){
-            blocked = new String[0];
-        } else {
-            this.blocked = this.user.getBlocked().toArray(new String[0]);
-        }
-        setPreferredSize(new Dimension(width, height));
         this.client = client;
 
-        // Fetch user details from the client
+        // Initialize fields
         this.username = client.getUsername();
         this.bio = this.user.getBio();
-        System.out.println(this.user);
-        System.out.println(this.bio);
 
-        // Layout
+        // Set layout and background
+        setPreferredSize(new Dimension(width, height));
         setLayout(new BorderLayout());
         setBackground(backgroundColor);
         setOpaque(true);
@@ -66,100 +56,105 @@ public class profilePage extends JPanel implements CustomColors, ProfilePageInte
         // Username
         JLabel usernameLabel = new JLabel(username);
         usernameLabel.setFont(new Font("Arial", Font.BOLD, 30));
-        usernameLabel.setForeground(BLUE_150); // A blue color for the username
+        usernameLabel.setForeground(BLUE_150);
         usernameLabel.setAlignmentX(CENTER_ALIGNMENT);
         usernameLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
 
-        // Bio
-        JLabel bioLabel = new JLabel("<html><div style='text-align: center;'>" + bio + "</div></html>");
-        bioLabel.setFont(new Font("Arial", Font.ITALIC, 18));
-        bioLabel.setForeground(new Color(44, 62, 80)); // A dark color for the bio
-        bioLabel.setAlignmentX(CENTER_ALIGNMENT);
-        bioLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
+        // Editable Bio Section
+        bioTextArea = new JTextArea(bio);
+        bioTextArea.setFont(new Font("Arial", Font.ITALIC, 18));
+        bioTextArea.setForeground(new Color(44, 62, 80));
+        bioTextArea.setLineWrap(true);
+        bioTextArea.setWrapStyleWord(true);
+        bioTextArea.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        bioTextArea.setAlignmentX(CENTER_ALIGNMENT);
+        bioTextArea.setBackground(Color.WHITE);
+
+        // Save Button
+        saveBioButton = new JButton("Save Bio");
+        saveBioButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        saveBioButton.setBackground(GREEN_100);
+        saveBioButton.setForeground(Color.WHITE);
+        saveBioButton.setAlignmentX(CENTER_ALIGNMENT);
+        saveBioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveBio();
+            }
+        });
 
         // Add components to the profile section
         profileSection.add(usernameLabel);
-        profileSection.add(bioLabel);
+        profileSection.add(Box.createRigidArea(new Dimension(0, 10))); // Spacer
+        profileSection.add(bioTextArea);
+        profileSection.add(Box.createRigidArea(new Dimension(0, 10))); // Spacer
+        profileSection.add(saveBioButton);
 
-        // Add the profile section near the top
+        // Add profile section to the top
         add(profileSection, BorderLayout.NORTH);
 
-        // Buttons Section
+        // Additional Buttons Section
+        add(createButtonPanel(), BorderLayout.CENTER);
+    }
+
+    // Method to save the updated bio
+    private void saveBio() {
+        String updatedBio = bioTextArea.getText().trim();
+        if (!updatedBio.isEmpty() && !updatedBio.equals(bio)) {
+            bio = updatedBio;
+            user.setBio(bio); // Update the local User object
+            user.pushToDatabase();
+            JOptionPane.showMessageDialog(this, "Bio updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "No changes made to the bio.", "Info", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    // Create the button panel
+    private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 3, 10, 0)); // Three buttons in one row
-        buttonPanel.setOpaque(false); // Make the panel transparent
+        buttonPanel.setLayout(new GridLayout(1, 5, 10, 0));
+        buttonPanel.setOpaque(false);
 
-        // Button 1 - Go to Friends Page
-        JButton friendsButton = new JButton("Friends");
-        friendsButton.setFont(new Font("Arial", Font.PLAIN, 16));
-        friendsButton.setBackground(BLUE_150); // Blue background for the button
-        friendsButton.setOpaque(true);
-        friendsButton.setForeground(Color.WHITE);
-        friendsButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        friendsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Code to navigate to the Friends page (example method call)
-                navigateToFriendsPage();
-            }
-        });
+        // Friends Button
+        JButton friendsButton = createNavButton("Friends", BLUE_150, e -> navigateToFriendsPage());
 
-        // Button 2 - Go to Friend Requests Page
-        JButton friendRequestsButton = new JButton("Friend Requests");
-        friendRequestsButton.setBackground(GREEN_100); // Green background for the button
-        friendRequestsButton.setOpaque(true);
-        friendRequestsButton.setForeground(Color.WHITE);
-        friendRequestsButton.setFont(new Font("Arial", Font.PLAIN, 16));
-        friendRequestsButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        friendRequestsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Code to navigate to the Friend Requests page (example method call)
-                navigateToFriendRequestsPage();
-            }
-        });
+        // Friend Requests Button
+        JButton friendRequestsButton = createNavButton("Friend Requests", GREEN_100, e -> navigateToFriendRequestsPage());
 
-        // Button 3 - Go to Blocked Users Page
-        JButton blockedButton = new JButton("Blocked Users");
-        blockedButton.setFont(new Font("Arial", Font.PLAIN, 16));
-        blockedButton.setBackground(RED_150); // Red background for the button
-        blockedButton.setOpaque(true);
-        blockedButton.setForeground(Color.WHITE);
-        blockedButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        blockedButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Code to navigate to the Blocked Users page (example method call)
-                navigateToBlockedUsersPage();
-            }
-        });
+        // Blocked Users Button
+        JButton blockedButton = createNavButton("Blocked Users", RED_150, e -> navigateToBlockedUsersPage());
 
-        // Button 4 - Go to Search Users Page
-        JButton searchButton = new JButton("Search Users");
-        searchButton.setFont(new Font("Arial", Font.PLAIN, 16));
-        searchButton.setBackground(Color.CYAN); // Red background for the button
-        searchButton.setOpaque(true);
-        searchButton.setForeground(Color.WHITE);
-        searchButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                navigateToSearchUsersPage();
-            }
-        });
+        // Search Users Button
+        JButton searchButton = createNavButton("Search Users", Color.CYAN, e -> navigateToSearchUsersPage());
 
-        // Add buttons to the panel
+        JButton logoutButton = createNavButton("Logout", Color.BLACK, e -> logout());
+
         buttonPanel.add(friendsButton);
         buttonPanel.add(friendRequestsButton);
         buttonPanel.add(blockedButton);
         buttonPanel.add(searchButton);
+        buttonPanel.add(logoutButton);
 
-        // Add the button panel below the profile section
-        add(buttonPanel, BorderLayout.CENTER);
+
+        return buttonPanel;
     }
 
-    // Example method for navigating to the Friends page
-    public void navigateToFriendsPage() {
+    // Helper method to create navigation buttons
+    private JButton createNavButton(String text, Color bgColor, ActionListener actionListener) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Arial", Font.PLAIN, 16));
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setOpaque(true);
+        button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        button.addActionListener(actionListener);
+        return button;
+    }
+
+
+
+public void navigateToFriendsPage() {
         System.out.println("Navigating to Friends Page...");
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         parentFrame.getContentPane().removeAll();
@@ -168,7 +163,6 @@ public class profilePage extends JPanel implements CustomColors, ProfilePageInte
         parentFrame.repaint();
     }
 
-    // Example method for navigating to the Friend Requests page
     public void navigateToFriendRequestsPage() {
         System.out.println("Navigating to Friend Requests Page...");
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -179,7 +173,6 @@ public class profilePage extends JPanel implements CustomColors, ProfilePageInte
 
     }
 
-    // Example method for navigating to the Blocked Users page
     public void navigateToBlockedUsersPage() {
         System.out.println("Navigating to Blocked Users Page...");
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -191,5 +184,16 @@ public class profilePage extends JPanel implements CustomColors, ProfilePageInte
     public void navigateToSearchUsersPage() {
         System.out.println("Navigating to Search Users Page...");
         // Implement navigation logic (e.g., switch to another JPanel or load a new page)
+    }
+    public void logout()  {
+        try {
+            JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            parentFrame.getContentPane().removeAll();
+            parentFrame.add(new LoginPage(width, height, client));
+            parentFrame.revalidate();
+            parentFrame.repaint();
+        } catch (Exception e) {
+            System.out.println("OH NO!");
+        }
     }
 }

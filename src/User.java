@@ -335,13 +335,22 @@ public class User implements UserBased {
     @Override
     public String toString() {
         return name + "\n" +
+                password + "\n" +
                 bio + "\n" +
-                friends + "\n" +
-                friendRequestsIn + "\n" +
-                friendRequestsOut + "\n" +
-                blocked;
+                tauString(friends) + "\n" +
+                tauString(friendRequestsIn) + "\n" +
+                tauString(friendRequestsOut) + "\n" +
+                tauString(blocked);
     }
 
+    private String tauString(ArrayList<String> a){
+        if (a==null) {return "";}
+        String s = "";
+        for (int i = 0; i < a.size(); i++) {
+            s += a.get(i) + " ";
+        }
+        return s;
+    }
     /**
      * Pushes user.toString() to the database
      *
