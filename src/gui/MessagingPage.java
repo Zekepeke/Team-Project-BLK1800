@@ -1,5 +1,6 @@
 package src.gui; //package src.gui.pages.messaging;
 
+import interfaces.MessagingPageable;
 import src.ConversationReader;
 import src.Message;
 import src.User;
@@ -13,7 +14,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class MessagingPage extends JPanel {
+public class MessagingPage extends JPanel implements MessagingPageable {
     private User currentUser;
     private User chatPartner;
     private ClientSide client;
