@@ -98,12 +98,21 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
         boolean success = write(stream, TYPE_USER_LIST_SEARCH);
         if (success) {
             String[] names = read();
-            return names;
+            if (names == null) {
+                return null;
+            }
+            if (names.length == 1) {
+                return names;
+            } else {
+
+                System.out.println("Something went wrong with array");
+                System.out.println("searchUsers data sent back to client: " + Arrays.toString(names));
+                return null;
+            }
         }
 
         return null;
     }
-
     // returns true if logined, false otherwise
     public Boolean searchNameAndPasswordLogin (String name, String password) {
         String[] stream = {name, password};
