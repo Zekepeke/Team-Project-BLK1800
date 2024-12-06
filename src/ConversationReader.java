@@ -1,4 +1,5 @@
 package src;
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,6 +35,14 @@ public class ConversationReader implements ConversationReaderInterface {
             fileName = user2 + "-" + user1;
         }
         fileName = "MESSAGE_DATABASE" + "/" + fileName + ".txt";
+        File f = new File(fileName);
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         try (BufferedReader b = new BufferedReader(new FileReader(fileName));){
             User sender = new User(user1 + ".txt");
             User receiver = new User(user2 + ".txt");

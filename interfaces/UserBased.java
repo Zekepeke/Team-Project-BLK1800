@@ -64,5 +64,8 @@ public interface UserBased {
 
     public boolean pushToDatabase();
 
+    public boolean getExclusiveToFriends();
+
+    public void setExclusiveToFriends(boolean exclusiveToFriends);
 
 }

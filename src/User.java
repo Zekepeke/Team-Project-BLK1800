@@ -20,12 +20,14 @@ public class User implements UserBased {
     private String bio;
     private String password;
 
+    private boolean exclusiveToFriends = false;
     /**
      * Reads in a user object from a database
      * Reads in the name, password, and all relevant information for the user
      * @param filename     The user's name.
      */
     public User(String filename) throws IOException {
+
         try (BufferedReader br = new BufferedReader(
                 new FileReader("USER_DATABASE/" + filename));) {
             this.name = br.readLine();
@@ -129,6 +131,24 @@ public class User implements UserBased {
     @Override
     public ArrayList<String> getFriends() {
         return friends;
+    }
+    /**
+     * Gets status
+     *
+     * @return An ArrayList of friends.
+     */
+    @Override
+    public boolean getExclusiveToFriends(){
+        return exclusiveToFriends;
+    }
+    /**
+     * Sets status
+     *
+     * @return An ArrayList of friends.
+     */
+    @Override
+    public void setExclusiveToFriends(boolean exclusiveToFriends){
+        this.exclusiveToFriends = exclusiveToFriends;
     }
 
     /**
@@ -403,6 +423,14 @@ public class User implements UserBased {
         return true;
     }
 
+
+    @Override
+    public boolean equals(Object o){
+        if (o instanceof User){
+            return ((User) o).toString().equals(this.toString());
+        }
+        return false;
+    }
     /**
      * Retrieves the number of users within the databse.
      *
