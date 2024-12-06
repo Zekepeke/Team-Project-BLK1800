@@ -1,6 +1,7 @@
 bob
-Hey my name is Bob \n This is everything that you should know about me. I am a cool guy!
-[alice, joe, rando1, rando2, rando3, rando4, rando, 5, rando, 6, rando, 7]
-[charlie]
-[thing]
-[charlie]
+123
+123123123
+1 2 3 4 5 charles 
+1 2 
+d s a d f d 
+a b d s s d sd d f sd d d f d d f d 

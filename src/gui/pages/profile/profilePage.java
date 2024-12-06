@@ -189,7 +189,7 @@ public void navigateToFriendsPage() {
         try {
             JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
             parentFrame.getContentPane().removeAll();
-            parentFrame.add(new LoginPage(width, height, client));
+            parentFrame.add(new AuthenticationPages(width, height, client));
             parentFrame.revalidate();
             parentFrame.repaint();
         } catch (Exception e) {

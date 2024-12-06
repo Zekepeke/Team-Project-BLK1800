@@ -52,6 +52,32 @@ public class AuthenticationPages extends JPanel implements Runnable {
         });
     }
 
+    public AuthenticationPages (int width, int height, ClientSide client) throws IOException {
+        this.width = width;
+        this.height = height;
+        this.client = client;
+
+        signUpPage = new SignUpPage(width, height, client);
+        loginPage = new LoginPage(width, height, client);
+
+        add(signUpPage);
+        add(loginPage);
+
+
+        // Set up navigation between login and sign-up pages
+        loginPage.getLoginUI().getSignUpButton().addActionListener(e -> {
+            loginPage.setVisible(false);
+            signUpPage.getSignUpUI().setErrorVisible(false);
+            signUpPage.setVisible(true);
+
+        });
+        signUpPage.getSignUpUI().getLoginButton().addActionListener(e -> {
+            signUpPage.setVisible(false);
+            loginPage.getLoginUI().setErrorVisible(false);
+            loginPage.setVisible(true);
+        });
+    }
+
     /**
      * Runs the authentication pages within a JFrame.
      */
