@@ -5,6 +5,7 @@ import interfaces.gui.CustomColors;
 import interfaces.gui.ProfileInterface;
 import src.User;
 import src.client.ClientSide;
+import src.gui.MessagingPage;
 import src.gui.pages.auth.AuthenticationPages;
 import src.gui.pages.auth.login.LoginPage;
 import src.gui.pages.auth.signup.SignUpPage;
@@ -130,11 +131,16 @@ public class profilePage extends JPanel implements CustomColors, ProfilePageInte
 
         JButton logoutButton = createNavButton("Logout", Color.BLACK, e -> logout());
 
+
+        JButton chatButton = createNavButton("Chat! :D", Color.LIGHT_GRAY, e -> chat());
+
         buttonPanel.add(friendsButton);
         buttonPanel.add(friendRequestsButton);
         buttonPanel.add(blockedButton);
         buttonPanel.add(searchButton);
         buttonPanel.add(logoutButton);
+        buttonPanel.add(chatButton);
+
 
 
         return buttonPanel;
@@ -196,4 +202,18 @@ public void navigateToFriendsPage() {
             System.out.println("OH NO!");
         }
     }
+
+    public void chat() {
+        try {
+            System.out.println("Navigating to Blocked Users Page...");
+            JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            parentFrame.getContentPane().removeAll();
+            parentFrame.add(new MessagingPage(width, height, client, new User("alice.txt")));
+            parentFrame.revalidate();
+            parentFrame.repaint();
+        } catch (Exception e) {
+            System.out.println("OH NO!");
+        }
+    }
+
 }

@@ -1,8 +1,10 @@
-package src.gui;//package src.gui.pages.messaging;
+package src.gui; //package src.gui.pages.messaging;
 
 import src.ConversationReader;
 import src.Message;
 import src.User;
+import src.client.ClientSide;
+import src.gui.pages.profile.profilePage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,29 +13,30 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class MessagingPage extends JFrame {
+public class MessagingPage extends JPanel {
     private User currentUser;
     private User chatPartner;
-
+    private ClientSide client;
     private JTextArea chatDisplayArea;
     private JTextField messageInputField;
     private JButton sendButton;
     private JButton switchChatButton;
+    private JButton backToProfileButton;
     private JComboBox<String> filterComboBox;
     private ArrayList<Message> currentMessages;
     private int width;
     private int height;
     private static final String[] FILTER_OPTIONS = {"All Messages", "Sent by Me", "Received by Me"};
 
-    public MessagingPage(int width, int height, User currentUser, User chatPartner) {
+    public MessagingPage(int width, int height, ClientSide client, User chatPartner) {
         this.width = width;
         this.height = height;
-        this.currentUser = currentUser;
+        this.client = client;
+        this.currentUser = client.getUser();
         this.chatPartner = chatPartner;
 
-        setTitle("Messaging with " + chatPartner.getName());
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 800);
+        // Set preferred size for the panel
+        setPreferredSize(new Dimension(width, height));
         setLayout(new BorderLayout());
 
         // Chat Display Panel
@@ -57,10 +60,12 @@ public class MessagingPage extends JFrame {
         filterComboBox.addActionListener(new FilterMessagesListener());
         switchChatButton = new JButton("Switch Chat");
         switchChatButton.addActionListener(new SwitchChatListener());
+        backToProfileButton = new JButton("Back to Home");
+        backToProfileButton.addActionListener(new backToProfileListener());
         filterPanel.add(filterComboBox, BorderLayout.CENTER);
         filterPanel.add(switchChatButton, BorderLayout.EAST);
-
-        // Adding Components to the Frame
+        filterPanel.add(backToProfileButton, BorderLayout.WEST);
+        // Adding Components to the Panel
         add(chatScrollPane, BorderLayout.CENTER);
         add(inputPanel, BorderLayout.SOUTH);
         add(filterPanel, BorderLayout.NORTH);
@@ -95,9 +100,6 @@ public class MessagingPage extends JFrame {
             } else if (filterOption.equals("Received by Me") && message.getReceiver().equals(currentUser)) {
                 appendMessageToChatDisplay(message);
             }
-            System.out.println(message.getSender());
-            System.out.println(message.getReceiver());
-            System.out.println(currentUser);
         }
     }
 
@@ -141,7 +143,6 @@ public class MessagingPage extends JFrame {
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
-                        setTitle("Messaging with " + chatPartner.getName());
                         loadChatHistory();
                     } else {
                         JOptionPane.showMessageDialog(null,
@@ -164,6 +165,30 @@ public class MessagingPage extends JFrame {
         }
     }
 
+    private class backToProfileListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("Navigating to Profile Page");
+
+            // Assuming you're working within a JFrame and you want to switch the content to the Profile Page.
+            JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(MessagingPage.this);
+
+            if (parentFrame != null) {
+                // Remove current content
+                parentFrame.getContentPane().removeAll();
+
+                // Assuming ProfilePage is a JPanel and needs current user and dimensions
+                profilePage profilePage = new profilePage(width, height, client); // Adjust constructor as necessary
+                parentFrame.add(profilePage);
+
+                // Revalidate and repaint to apply changes
+                parentFrame.revalidate();
+                parentFrame.repaint();
+            } else {
+                System.out.println("Parent frame not found.");
+            }
+        }
+    }
     /**
      * Filters messages based on the selected filter option in the filterComboBox.
      */
@@ -175,18 +200,5 @@ public class MessagingPage extends JFrame {
                 filterMessages(selectedFilter);
             }
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-        // Example users
-        User alice = new User("alice.txt");
-        User bob = new User("bob.txt");
-
-        // Launch GUI
-        SwingUtilities.invokeLater(() -> {
-            MessagingPage messagingPage = new MessagingPage(1,2,alice, bob);
-
-            messagingPage.setVisible(true);
-        });
     }
 }
