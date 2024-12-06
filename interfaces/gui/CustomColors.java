@@ -10,7 +10,9 @@ public interface CustomColors {
     /** Background color used for the application. */
     Color BACKGROUND = new Color(0,0,0);
 
+    Color GREEN_50 = new Color(92, 184, 92);
     Color GREEN_100 = new Color(46, 204, 113);
+
 
     Color BLUE_100 = new Color(10, 105, 173);
     Color BLUE_150 = new Color(52, 152, 219);

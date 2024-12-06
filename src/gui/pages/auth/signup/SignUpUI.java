@@ -16,6 +16,7 @@ public class SignUpUI extends JPanel implements CustomColors, CustomFonts {
     private JLabel logoLabel;
     private JLabel textLabel;
     private JLabel error;
+    private JLabel success;
 
     private JTextField usernameField; // Make usernameField accessible
 
@@ -62,6 +63,13 @@ public class SignUpUI extends JPanel implements CustomColors, CustomFonts {
         error.setForeground(RED_100);
         error.setAlignmentX(Component.CENTER_ALIGNMENT);
         error.setVisible(false);
+
+        // Success
+        success = new JLabel("Login to your new account!");
+        success.setFont(INSTA_Bold_XSMALL_FONT);
+        success.setForeground(GREEN_50);
+        success.setAlignmentX(Component.CENTER_ALIGNMENT);
+        success.setVisible(false);
 
         // Username or email input field
         usernameField = new JTextField("Username");
@@ -127,6 +135,7 @@ public class SignUpUI extends JPanel implements CustomColors, CustomFonts {
         mainPanel.add(loginButton);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 2)));
         mainPanel.add(error);
+        mainPanel.add(success);
 
         // Add the main panel to the frame
         add(mainPanel);
@@ -141,6 +150,22 @@ public class SignUpUI extends JPanel implements CustomColors, CustomFonts {
      */
     public void setErrorVisible(boolean visible) {
         error.setVisible(visible);
+    }
+
+    /**
+     * Gets the error message.
+     *
+     * @return error
+     */
+    public JLabel getError() { return error;}
+
+    /**
+     * Sets the visibility of the success message.
+     *
+     * @param visible true to show the success message, false to hide it.
+     */
+    public void setSuccessVisible(boolean visible) {
+        success.setVisible(visible);
     }
 
     /**

@@ -77,9 +77,18 @@ public class LoginPage extends JPanel implements CustomColors {
                 System.out.println("Error: Invalid username/password");
                 loginUI.setErrorVisible(true);
             } else {
-                boolean working = client.searchNameAndPasswordLogin(usernameString, passwordString);
+                Boolean working = client.searchNameAndPasswordLogin(usernameString, passwordString);
+
                 System.out.println("Testing the server search for client: " + working);
-                if (working) {
+
+                if (working == null) {
+                    loginUI.getError().setText("User not found");
+                    loginUI.setErrorVisible(true);
+                } else if (!working) {
+                    loginUI.getError().setText("Enter in wrong password");
+                    loginUI.setErrorVisible(true);
+
+                } else {
                     client.setUsername(usernameString);
                     client.setPassword(passwordString);
 
@@ -88,8 +97,6 @@ public class LoginPage extends JPanel implements CustomColors {
                     parentFrame.add(new profilePage(width, height, client));
                     parentFrame.revalidate();
                     parentFrame.repaint();
-                } else {
-                    loginUI.setErrorVisible(true);
                 }
             }
         });

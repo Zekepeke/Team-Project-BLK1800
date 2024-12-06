@@ -105,7 +105,7 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
     }
 
     // returns true if logined, false otherwise
-    public boolean searchNameAndPasswordLogin (String name, String password) {
+    public Boolean searchNameAndPasswordLogin (String name, String password) {
         String[] stream = {name, password};
         if (write(stream, TYPE_LOGIN)) {
             String [] info = read();
@@ -119,7 +119,7 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
 
             switch (condition) {
                 case ERROR_USER_DNE:
-                    return false;
+                    return null;
                 case ERROR_PASSWORD:
                     return false;
                 case SUCCESS_USER_LOGIN:
@@ -132,17 +132,17 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
     }
 
     // returns true if successfully signed up, false otherwise
-    public boolean searchNameAndPasswordSignUp (String name, String password){
+    public Boolean searchNameAndPasswordSignUp (String name, String password){
         String[] stream = {name, password};
         if (write(stream, TYPE_SIGNUP)) {
             String [] info = read();
             System.out.println("In the searchNameAndPasswordSignUp Method:" + Arrays.toString(info));
             System.out.println("In the searchNameAndPasswordSignUp Array size:" + info.length);
 
-            String condition = readCondition();
+            String condition = info[0];
 
             if (condition == null) {
-                return false;
+                return null;
             }
 
             switch (condition) {

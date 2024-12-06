@@ -137,6 +137,15 @@ public class LoginUI extends JPanel implements CustomColors, CustomFonts {
     }
 
     /**
+     * Gets the error message.
+     *
+     * @return error.
+     */
+    public JLabel getError() {
+        return error;
+    }
+
+    /**
      * Gets the username input field.
      *
      * @return the username JTextField.

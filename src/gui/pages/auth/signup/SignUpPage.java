@@ -64,12 +64,19 @@ public class SignUpPage extends JPanel implements CustomColors {
             if (!validUsernameAndPassword) {
                 signUpUI.setErrorVisible(true);
             } else {
-                boolean working = client.searchNameAndPasswordSignUp(usernameString, passwordString);
+                Boolean working = client.searchNameAndPasswordSignUp(usernameString, passwordString);
                 System.out.println("Testing the server search for client: " + working);
-                if (working) {
+                if (working == null) {
+                    signUpUI.getError().setText("Something went wrong");
+                    signUpUI.setErrorVisible(true);
+                } else if (working)  {
                     client.setUsername(usernameString);
                     client.setPassword(passwordString);
+
+                    signUpUI.setErrorVisible(false);
+                    signUpUI.setSuccessVisible(true);
                 } else {
+                    signUpUI.getError().setText("That name already exists");
                     signUpUI.setErrorVisible(true);
                 }
             }
