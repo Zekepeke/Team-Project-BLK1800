@@ -11,6 +11,27 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * The {@code BlockedUsersPage} class represents a graphical user interface (GUI) panel
+ * for displaying and managing the list of users blocked by the current user.
+ * It provides options to unblock users and view their profiles.
+ *
+ * <h2>Features:</h2>
+ * <ul>
+ *   <li>Displays a list of blocked users with options for interaction.</li>
+ *   <li>Allows unblocking a user and refreshes the panel dynamically.</li>
+ *   <li>Includes navigation to return to the profile page.</li>
+ * </ul>
+ *
+ * <h2>Usage:</h2>
+ * This class is used as part of a larger GUI application where users can manage
+ * their blocked user list. It integrates with the {@code ClientSide} and {@code User} classes
+ * to fetch and update data.
+ *
+ * @see JPanel
+ * @see ClientSide
+ * @see User
+ */
 public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUsersPageInterface, ProfileInterface {
 
     private ClientSide client;
@@ -20,6 +41,13 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
     private int width;
     private int height;
 
+    /**
+     * Constructs a new {@code BlockedUsersPage}.
+     *
+     * @param width  the width of the panel.
+     * @param height the height of the panel.
+     * @param client the {@code ClientSide} instance for user data interactions.
+     */
     public BlockedUsersPage(int width, int height, ClientSide client) {
         this.width = width;
         this.height = height;
@@ -32,7 +60,7 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
         }
         setPreferredSize(new Dimension(width, height));
 
-        // Layout
+        // Layout setup
         setLayout(new BorderLayout());
         setBackground(backgroundColor);
         setOpaque(true);
@@ -47,7 +75,7 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
         // Add title to the top of the panel
         add(titleLabel, BorderLayout.NORTH);
 
-        // Panel to hold blocked users list with buttons
+        // Panel for blocked users list
         JPanel blockedUsersPanel = new JPanel();
         blockedUsersPanel.setLayout(new BoxLayout(blockedUsersPanel, BoxLayout.Y_AXIS));
         JButton backToProfile = createButton("Back To Profile", Color.BLUE);
@@ -58,22 +86,20 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
             }
         });
         add(backToProfile, BorderLayout.NORTH);
-        // Loop through the blockedUsers array and create a panel for each user
+
+        // Populate blocked users list
         for (String blockedUser : blockedUsers) {
             JPanel userPanel = new JPanel();
             userPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-            // Blocked user name label
             JLabel userLabel = new JLabel(blockedUser);
             userLabel.setFont(new Font("Arial", Font.PLAIN, 18));
             userLabel.setForeground(GRAY_100);
             userLabel.setPreferredSize(new Dimension(200, 30));
 
-            // Buttons for Unblock and View Profile
             JButton unblockButton = createButton("Unblock", new Color(39, 174, 96)); // Green for unblock
             JButton viewProfileButton = createButton("View Profile", new Color(52, 152, 219)); // Blue for view profile
 
-            // Action listeners for each button
             unblockButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -88,16 +114,13 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
                 }
             });
 
-            // Add components to the user panel
             userPanel.add(userLabel);
             userPanel.add(unblockButton);
             userPanel.add(viewProfileButton);
 
-            // Add user panel to the blocked users list panel
             blockedUsersPanel.add(userPanel);
         }
 
-        // Add the blocked users panel to the center of the main panel
         JScrollPane scrollPane = new JScrollPane(blockedUsersPanel,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -107,6 +130,10 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
 
         add(scrollPane, BorderLayout.CENTER);
     }
+
+    /**
+     * Navigates back to the profile page.
+     */
     public void returnHome() {
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         parentFrame.getContentPane().removeAll();
@@ -114,7 +141,14 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
         parentFrame.revalidate();
         parentFrame.repaint();
     }
-    // Helper method to create buttons with consistent styling
+
+    /**
+     * Creates a styled button with the specified text and background color.
+     *
+     * @param text            the text to display on the button.
+     * @param backgroundColor the background color of the button.
+     * @return the created {@code JButton}.
+     */
     public JButton createButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -126,6 +160,11 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
         return button;
     }
 
+    /**
+     * Unblocks the specified user and refreshes the panel.
+     *
+     * @param blockedUser the username of the user to unblock.
+     */
     public void unblockUser(String blockedUser) {
         System.out.println("Unblocking user: " + blockedUser);
         try {
@@ -142,8 +181,13 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
         parentFrame.repaint();
     }
 
+    /**
+     * Displays the profile of the specified user.
+     *
+     * @param blockedUser the username of the user whose profile to display.
+     */
     public void viewProfile(String blockedUser) {
         System.out.println("Viewing profile of: " + blockedUser);
-        // Implement view profile logic (e.g., open the user's profile page)
+        // Implement view profile logic (e.g., open a new panel)
     }
 }

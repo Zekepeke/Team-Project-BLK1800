@@ -11,6 +11,28 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Represents the page displaying the user's incoming friend requests.
+ * The user can view, accept, remove, or block friend requests.
+ * This class provides a graphical user interface for managing friend requests.
+ *
+ * It implements {@link FriendRequestsPageInterface} and {@link ProfileInterface},
+ * and extends {@link JPanel} for custom layout and rendering.
+ *
+ * The class includes:
+ * <ul>
+ *   <li>Rendering friend requests as a list with buttons to accept, remove, or view profiles.</li>
+ *   <li>Navigation to and from the user's profile page.</li>
+ *   <li>Interaction with the user's friend requests through button actions.</li>
+ * </ul>
+ *
+ * The layout consists of:
+ * <ul>
+ *   <li>A title section for the page.</li>
+ *   <li>A scrollable list of incoming friend requests.</li>
+ *   <li>Buttons for each friend request with actions for removal, addition, or profile viewing.</li>
+ * </ul>
+ */
 public class FriendRequestsPage extends JPanel implements CustomColors, FriendRequestsPageInterface, ProfileInterface {
 
     private ClientSide client;
@@ -20,11 +42,20 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
     private int width;
     private int height;
 
+    /**
+     * Constructs a {@code FriendRequestsPage} to display incoming friend requests.
+     *
+     * @param width the width of the panel
+     * @param height the height of the panel
+     * @param client the client-side application instance to manage user data and interactions
+     */
     public FriendRequestsPage(int width, int height, ClientSide client) {
         this.width = width;
         this.height = height;
         this.user = client.getUser();
         this.client = client;
+
+        // Initialize friend requests from the user
         if (client.getUser().getFriendRequestsIn() == null){
             this.friends = new String[0];
         } else {
@@ -32,7 +63,7 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
         }
         setPreferredSize(new Dimension(width, height));
 
-        // Layout
+        // Layout configuration
         setLayout(new BorderLayout());
         setBackground(backgroundColor);
 
@@ -43,12 +74,12 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        // Add title to the top of the panel
         add(titleLabel, BorderLayout.NORTH);
 
-        // Panel to hold friend list with buttons
+        // Panel for holding friend list and buttons
         JPanel friendsListPanel = new JPanel();
         friendsListPanel.setLayout(new BoxLayout(friendsListPanel, BoxLayout.Y_AXIS));
+
         JButton backToProfile = createButton("Back To Profile", Color.BLUE);
         backToProfile.addActionListener(new ActionListener() {
             @Override
@@ -57,7 +88,8 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
             }
         });
         add(backToProfile, BorderLayout.NORTH);
-        // Loop through the friends array and create a panel for each friend
+
+        // Iterate over friend requests and create UI components for each
         for (String friend : friends) {
             JPanel friendPanel = new JPanel();
             friendPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -68,10 +100,10 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
             friendLabel.setForeground(GRAY_100);
             friendLabel.setPreferredSize(new Dimension(200, 30));
 
-            // Buttons for Remove, Block, and View Profile
+            // Action buttons for Remove, Add (block), and View Profile
             JButton removeButton = createButton("Remove", Color.RED);
-            JButton addButton = createButton("Add", new Color(231, 76, 60)); // Block button in red
-            JButton viewProfileButton = createButton("View Profile", new Color(52, 152, 219)); // View profile in blue
+            JButton addButton = createButton("Add", new Color(231, 76, 60));
+            JButton viewProfileButton = createButton("View Profile", new Color(52, 152, 219));
 
             // Action listeners for each button
             removeButton.addActionListener(new ActionListener() {
@@ -95,22 +127,28 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
                 }
             });
 
-            // Add components to friend panel
+            // Add buttons and friend label to the friend panel
             friendPanel.add(friendLabel);
             friendPanel.add(addButton);
             friendPanel.add(removeButton);
             friendPanel.add(viewProfileButton);
 
-            // Add friend panel to the friends list panel
+            // Add the friend panel to the list
             friendsListPanel.add(friendPanel);
         }
 
-        // Add the friends list panel to the center of the main panel
+        // Add the scrollable list of friends to the main panel
         JScrollPane scrollPane = new JScrollPane(friendsListPanel);
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    // Helper method to create buttons with consistent styling
+    /**
+     * Creates a styled button with specified text and background color.
+     *
+     * @param text the text to display on the button
+     * @param backgroundColor the background color of the button
+     * @return a newly created {@link JButton}
+     */
     public JButton createButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -122,6 +160,10 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
         return button;
     }
 
+    /**
+     * Navigates back to the user's profile page.
+     * This removes the current content and adds the profile page to the frame.
+     */
     public void returnHome() {
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         parentFrame.getContentPane().removeAll();
@@ -129,6 +171,13 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
         parentFrame.revalidate();
         parentFrame.repaint();
     }
+
+    /**
+     * Removes a friend request from the user's incoming friend requests.
+     * The user is then redirected to the updated friends page.
+     *
+     * @param friend the name of the friend to be removed
+     */
     public void removeFriend(String friend) {
         System.out.println("Removing friend: " + friend);
         try {
@@ -136,23 +185,6 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(user);
-        user.pushToDatabase();
-        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        parentFrame.getContentPane().removeAll();
-        parentFrame.add(new FriendsPage(width, height, client));
-        parentFrame.revalidate();
-        parentFrame.repaint();
-    }
-    public void addFriend(String friend) {
-        System.out.println("Blocking friend: " + friend);
-        try {
-            user.getFriendRequestsIn().remove(friend);
-            user.getFriends().add(friend);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println(user);
         user.pushToDatabase();
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         parentFrame.getContentPane().removeAll();
@@ -161,6 +193,35 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
         parentFrame.repaint();
     }
 
+    /**
+     * Accepts a friend request by adding the friend to the user's friend list.
+     * The user is then redirected to the updated friends page.
+     *
+     * @param friend the name of the friend to be added
+     */
+    public void addFriend(String friend) {
+        System.out.println("Blocking friend: " + friend);
+        try {
+            user.getFriendRequestsIn().remove(friend);
+            user.getFriends().add(friend);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        user.pushToDatabase();
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        parentFrame.getContentPane().removeAll();
+        parentFrame.add(new FriendsPage(width, height, client));
+        parentFrame.revalidate();
+        parentFrame.repaint();
+    }
+
+    /**
+     * Displays the profile of a friend.
+     * Currently, this method only prints the friend's name to the console.
+     * Further functionality can be implemented to navigate to a friend's profile page.
+     *
+     * @param friend the name of the friend whose profile is to be viewed
+     */
     public void viewProfile(String friend) {
         System.out.println("Viewing profile of: " + friend);
         // Implement view profile logic (e.g., open friend's profile page)
