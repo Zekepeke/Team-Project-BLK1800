@@ -16,16 +16,7 @@ import java.util.Arrays;
  * This class extends the SocketIO class for socket communication
  * and implements clientSideInterface.
  */
-public class ClientSide extends SocketIO implements ClientSideInterface, Runnable {
-
-    public enum State {
-        PULL_DATA;
-    }
-
-    public static ArrayList<String> blockedUsers;
-    public static ArrayList<String> outGoingFriendRequests;
-    public static ArrayList<String> incomingFriendRequests;
-
+public class ClientSide extends SocketIO implements ClientSideInterface {
 
     private static final String HOST = "localhost";
     private static final int PORT = 8282;
@@ -275,14 +266,4 @@ public class ClientSide extends SocketIO implements ClientSideInterface, Runnabl
         this.password = password;
     }
 
-    public void run() {
-        State state = State.PULL_DATA;
-        while(true) {
-            switch (state) {
-                case PULL_DATA:
-
-            }
-        }
-
-    }
 }
