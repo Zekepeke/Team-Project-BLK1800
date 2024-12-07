@@ -50,6 +50,7 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
      * @param client the client-side application instance to manage user data and interactions
      */
     public FriendRequestsPage(int width, int height, ClientSide client) {
+
         this.width = width;
         this.height = height;
         this.user = client.getUser();
@@ -76,7 +77,7 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
 
         add(titleLabel, BorderLayout.NORTH);
 
-        // Panel for holding friend list and buttons
+            // Panel for holding friend list and buttons
         JPanel friendsListPanel = new JPanel();
         friendsListPanel.setLayout(new BoxLayout(friendsListPanel, BoxLayout.Y_AXIS));
 

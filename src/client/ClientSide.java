@@ -6,6 +6,7 @@ import src.User;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 /**
  * Handles the client-side operations, including validating user credentials,
@@ -15,7 +16,17 @@ import java.util.Arrays;
  * This class extends the SocketIO class for socket communication
  * and implements clientSideInterface.
  */
-public class ClientSide extends SocketIO implements ClientSideInterface {
+public class ClientSide extends SocketIO implements ClientSideInterface, Runnable {
+
+    public enum State {
+        PULL_DATA;
+    }
+
+    public static ArrayList<String> blockedUsers;
+    public static ArrayList<String> outGoingFriendRequests;
+    public static ArrayList<String> incomingFriendRequests;
+
+
     private static final String HOST = "localhost";
     private static final int PORT = 8282;
     Socket userClient;
@@ -262,5 +273,16 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void run() {
+        State state = State.PULL_DATA;
+        while(true) {
+            switch (state) {
+                case PULL_DATA:
+
+            }
+        }
+
     }
 }
