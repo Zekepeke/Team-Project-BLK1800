@@ -41,10 +41,10 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
     }
     public ClientSide(Socket userClient) throws IOException {
         super(userClient);
-        sendHandShake();
         if (checkForHandShake()) {
             System.out.println("Handshake successful");
         }
+        sendHandShake();
     }
 
     /**
@@ -104,7 +104,6 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
             if (names.length == 1) {
                 return names;
             } else {
-
                 System.out.println("Something went wrong with array");
                 System.out.println("searchUsers data sent back to client: " + Arrays.toString(names));
                 return null;
@@ -264,8 +263,4 @@ public class ClientSide extends SocketIO implements ClientSideInterface {
     public void setPassword(String password) {
         this.password = password;
     }
-
-
-
-
 }
