@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class Server implements ServerInterface {
     private static final int PORT_NUMBER = 8282;
     private final ServerSocket serverSocket;
+    public static int threadCount;
 
     // Stores active conversation threads
     public static final ArrayList<Thread> activeConversations = new ArrayList<>();
@@ -31,6 +32,7 @@ public class Server implements ServerInterface {
         try {
             serverSocket = new ServerSocket(portNumber);
             System.out.println("ServerInterface started on port " + portNumber);
+            threadCount = 1;
         } catch (IOException e) {
             throw new RuntimeException("Unable to start server: " + e.getMessage());
         }
@@ -51,13 +53,11 @@ public class Server implements ServerInterface {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Client connected: " + clientSocket.getInetAddress());
                 sockets.add(clientSocket);
-
                 // Create and start a new thread for the client
                 ClientCommunicationHandler handler = new ClientCommunicationHandler(clientSocket);
                 Thread thread = new Thread(handler);
                 activeConversations.add(thread);
                 thread.start();
-
             } catch (IOException e) {
                 System.err.println("Error while accepting a client connection: " + e.getMessage());
             }

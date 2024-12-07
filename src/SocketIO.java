@@ -1,6 +1,7 @@
 package src;
-
+import Exceptions.DisconnectException;
 import interfaces.IO;
+import jdk.jshell.Diag;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,6 +43,19 @@ public class SocketIO implements IO {
         }
     }
 
+    public SocketIO(String host, int port) {
+        Socket socketTemp;
+        try {
+            socketTemp = new Socket(host, port);
+            this.reader = new BufferedReader(new InputStreamReader(socketTemp.getInputStream()));
+            this.writer = new PrintWriter(socketTemp.getOutputStream(), true);
+        } catch (IOException e) {
+            logError("Failed to initialize socket IO streams.", e);
+            socketTemp = null;
+        }
+        this.socket = socketTemp;
+    }
+
     /**
      * Writes data to the client socket.
      * Writes a data stream to the server with a specified information type.
@@ -51,21 +65,46 @@ public class SocketIO implements IO {
      * @return {@code true} if the data was successfully written;
      * {@code false} otherwise.
      */
-    public boolean write(String[] stream, String informationType) {
+    public boolean write(String[] stream, String informationType) throws DisconnectException {
         if (writer == null) {
-            logError(ERROR_SOCKET_CLOSED, null);
-            return false;
+            throw new DisconnectException("Failed to write");
         }
 
         StringBuilder message = new StringBuilder(DELIMITER_START).append(informationType);
         if (stream != null && stream.length > 0) {
             for (String part : stream) {
-                message.append(SPLITTER).append(part);
+                message.append(SPLITTER);
+
+                if(part.contains("\n")) {
+                    message.append(String.join(NEW_LINE, part.split("\n")));
+                } else {
+                    message.append(part);
+                }
             }
         }
         message.append(DELIMITER_END);
 
         writer.println(message);
+        return true;
+    }
+
+    public boolean write(String... data) throws DisconnectException {
+
+        if(data.length == 1) {
+            write(null, data[0]);
+        }
+        else if(data.length > 1){
+            String[] rawData = new String[data.length - 1];
+            System.arraycopy(data, 0, rawData, 0, data.length - 1);
+
+            String informationType = data[data.length - 1];
+
+            write(rawData, informationType);
+        }
+        else {
+            return false;
+        }
+
         return true;
     }
 
@@ -77,7 +116,7 @@ public class SocketIO implements IO {
      *
      * @return The data read as a string array, or null if reading fails.
      */
-    public String[] read() {
+    public String[] read() throws DisconnectException {
         try {
             String input = reader.readLine();
 
@@ -85,10 +124,18 @@ public class SocketIO implements IO {
 
             if(!input.contains(SPLITTER)) {return new String[]{input};};
 
-            return input.split(SPLITTER);
+            String[] a = input.split(SPLITTER);
+            
+            for(int i = 1; i < a.length; i++) {
+                if(a[i].contains(NEW_LINE)) {
+                    String[] split = a[i].split(NEW_LINE);
+                    a[i] = String.join("\n", split);
+                }
+            }
+            return a;
+
         } catch (IOException e) {
-            logError("Failed to read from socket.", e);
-            return null;
+            throw new DisconnectException("Failed to read from socket.");
         }
     }
 
@@ -190,7 +237,7 @@ public class SocketIO implements IO {
      * @param conditionType The type of condition to write.
      * @return {@code true} if the condition type is successfully written; {@code false} otherwise.
      */
-    public boolean writeCondition(String conditionType) {
+    public boolean writeCondition(String conditionType) throws DisconnectException {
         if (!validInformation(conditionType)) {
             logError(ERROR_INVALID_INFORMATION, null);
             return false;
@@ -205,7 +252,7 @@ public class SocketIO implements IO {
      *
      * @return The condition message as a string, or null if reading fails.
      */
-    public String readCondition() {
+    public String readCondition() throws DisconnectException {
         return read()[0];
     }
 
@@ -219,6 +266,18 @@ public class SocketIO implements IO {
         System.err.println(message);
         if (e != null) {
             e.printStackTrace();
+        }
+    }
+
+    public boolean close() {
+        try {
+            this.socket.close();
+            reader.close();
+            writer.close();
+            return true;
+        } catch (IOException e) {
+            logError("Failed to close socket stream", e);
+            return false;
         }
     }
 }
