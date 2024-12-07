@@ -1,7 +1,3 @@
-package src;
-
-import interfaces.IO;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +38,19 @@ public class SocketIO implements IO {
         }
     }
 
+    public SocketIO(String host, int port) {
+        Socket socketTemp;
+        try {
+            socketTemp = new Socket(host, port);
+            this.reader = new BufferedReader(new InputStreamReader(socketTemp.getInputStream()));
+            this.writer = new PrintWriter(socketTemp.getOutputStream(), true);
+        } catch (IOException e) {
+            logError("Failed to initialize socket IO streams.", e);
+            socketTemp = null;
+        }
+        this.socket = socketTemp;
+    }
+
     /**
      * Writes data to the client socket.
      * Writes a data stream to the server with a specified information type.
@@ -60,12 +69,36 @@ public class SocketIO implements IO {
         StringBuilder message = new StringBuilder(DELIMITER_START).append(informationType);
         if (stream != null && stream.length > 0) {
             for (String part : stream) {
-                message.append(SPLITTER).append(part);
+                message.append(SPLITTER);
+
+                if(part.contains("\n")) {
+                    message.append(String.join(NEW_LINE, part.split("\n")));
+                } else {
+                    message.append(part);
+                }
             }
         }
         message.append(DELIMITER_END);
 
         writer.println(message);
+        return true;
+    }
+
+    public boolean write(String... data) {
+
+        if(data.length > 1) {
+            String[] rawData = new String[data.length - 1];
+            System.arraycopy(data, 0, rawData, 0, data.length - 1);
+
+            String informationType = data[data.length - 1];
+
+            write(rawData, informationType);
+        } else if(data.length == 1) {
+            write(null, data[0]);
+        }
+        else {
+            return false;
+        }
         return true;
     }
 
@@ -85,7 +118,16 @@ public class SocketIO implements IO {
 
             if(!input.contains(SPLITTER)) {return new String[]{input};};
 
-            return input.split(SPLITTER);
+            String[] a = input.split(SPLITTER);
+            
+            for(int i = 1; i < a.length; i++) {
+                if(a[i].contains(NEW_LINE)) {
+                    String[] split = a[i].split(NEW_LINE);
+                    a[i] = String.join("\n", split);
+                }
+            }
+            return a;
+
         } catch (IOException e) {
             logError("Failed to read from socket.", e);
             return null;
@@ -219,6 +261,18 @@ public class SocketIO implements IO {
         System.err.println(message);
         if (e != null) {
             e.printStackTrace();
+        }
+    }
+
+    public boolean close() {
+        try {
+            this.socket.close();
+            reader.close();
+            writer.close();
+            return true;
+        } catch (IOException e) {
+            logError("Failed to close socket stream", e);
+            return false;
         }
     }
 }
