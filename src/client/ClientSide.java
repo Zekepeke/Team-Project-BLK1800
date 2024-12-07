@@ -3,11 +3,13 @@ import Exceptions.BadClientException;
 import interfaces.client.ClientSideInterface;
 import src.SocketIO;
 import src.User;
-
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * Handles the client-side operations, including validating user credentials,
  * connecting to the server, and managing user-related functionalities like search,
@@ -16,26 +18,39 @@ import java.util.Arrays;
  * This class extends the SocketIO class for socket communication
  * and implements clientSideInterface.
  */
-public class ClientSide extends SocketIO implements ClientSideInterface, Runnable {
+public class ClientSide implements ClientSideInterface, Runnable {
 
     public enum State {
         PULL_DATA;
     }
 
-    public static ArrayList<String> blockedUsers;
-    public static ArrayList<String> outGoingFriendRequests;
-    public static ArrayList<String> incomingFriendRequests;
+    private static Queue<RequestNode> requests = new LinkedList<>();
+    private static boolean lock = false;
 
+    public static ArrayList<String> blockedUsers = new ArrayList<>();
+    public static ArrayList<String> outGoingFriendRequests = new ArrayList<>();
+    public static String[] incomingFriendRequests = new String[0];
+
+    private static boolean signedin = false;
+
+    private static boolean write(String[] content, String type) {
+        lock = true;
+        requests.add(new RequestNode(content, type));
+        lock = false;
+
+        return true;
+    }
 
     private static final String HOST = "localhost";
     private static final int PORT = 8282;
+    private static SocketIO client = new SocketIO(HOST, PORT);
+
     Socket userClient;
 
     String username;
     String password;
 
     public ClientSide(Socket userClient, String username, String password) throws IOException {
-        super(userClient);
         try {
             if (validUserAndPassword(username, password)) {
                 this.username = username;
@@ -51,11 +66,10 @@ public class ClientSide extends SocketIO implements ClientSideInterface, Runnabl
 
     }
     public ClientSide(Socket userClient) throws IOException {
-        super(userClient);
-        if (checkForHandShake()) {
+        if (client.checkForHandShake()) {
             System.out.println("Handshake successful");
         }
-        sendHandShake();
+        client.sendHandShake();
     }
 
     /**
@@ -106,7 +120,7 @@ public class ClientSide extends SocketIO implements ClientSideInterface, Runnabl
 
     public String[] search(String name){
         String[] stream = {name};
-        boolean success = write(stream, TYPE_USER_LIST_SEARCH);
+        boolean success = client.write(stream, SocketIO.TYPE_USER_LIST_SEARCH);
         if (success) {
             String[] names = read();
             if (names == null) {
@@ -126,8 +140,8 @@ public class ClientSide extends SocketIO implements ClientSideInterface, Runnabl
     // returns true if logined, false otherwise
     public Boolean searchNameAndPasswordLogin (String name, String password) {
         String[] stream = {name, password};
-        if (write(stream, TYPE_LOGIN)) {
-            String [] info = read();
+        if (client.write(stream, SocketIO.TYPE_LOGIN)) {
+            String [] info = client.read();
             System.out.println("In the searchNameAndPasswordLogin Method:" + Arrays.toString(info));
             System.out.println("In the searchNameAndPasswordLogin Array size:" + info.length);
             String condition = info[0];
@@ -137,11 +151,11 @@ public class ClientSide extends SocketIO implements ClientSideInterface, Runnabl
             }
 
             switch (condition) {
-                case ERROR_USER_DNE:
+                case SocketIO.ERROR_USER_DNE:
                     return null;
-                case ERROR_PASSWORD:
+                case SocketIO.ERROR_PASSWORD:
                     return false;
-                case SUCCESS_USER_LOGIN:
+                case SocketIO.SUCCESS_USER_LOGIN:
                     return true;
             }
         } else {
@@ -153,8 +167,8 @@ public class ClientSide extends SocketIO implements ClientSideInterface, Runnabl
     // returns true if successfully signed up, false otherwise
     public Boolean searchNameAndPasswordSignUp (String name, String password){
         String[] stream = {name, password};
-        if (write(stream, TYPE_SIGNUP)) {
-            String [] info = read();
+        if (client.write(stream, SocketIO.TYPE_SIGNUP)) {
+            String [] info = client.read();
             System.out.println("In the searchNameAndPasswordSignUp Method:" + Arrays.toString(info));
             System.out.println("In the searchNameAndPasswordSignUp Array size:" + info.length);
 
@@ -165,9 +179,9 @@ public class ClientSide extends SocketIO implements ClientSideInterface, Runnabl
             }
 
             switch (condition) {
-                case ERROR_USER_EXISTS:
+                case SocketIO.ERROR_USER_EXISTS:
                     return false;
-                case SUCCESS_USER_SIGNUP:
+                case SocketIO.SUCCESS_USER_SIGNUP:
                     return true;
             }
         } else {
@@ -185,14 +199,21 @@ public class ClientSide extends SocketIO implements ClientSideInterface, Runnabl
 
     public String[] profile(){
         String [] stream = {"String"};
-        boolean success = write(stream, TYPE_USER_INFORMATION);
+        boolean success = client.write(stream, SocketIO.TYPE_USER_INFORMATION);
         if (success) {
-            String [] info = read();
+            String [] info = client.read();
             System.out.println(Arrays.toString(info));
             return info;
         }
         return null;
     }
+
+    public boolean getProfile() {
+        boolean success = client.write(SocketIO.TYPE_USER_INFORMATION);
+        String status = client.read()[0];
+        return status.equals(SocketIO.SUCCESS_GENERAL);
+    }
+
     public User getUser() {
         try {
             return new User(username + ".txt");
@@ -210,14 +231,34 @@ public class ClientSide extends SocketIO implements ClientSideInterface, Runnabl
      */
     public String[] listOfFriends(){
         String [] stream = {"String"};
-        boolean success = write(stream, TYPE_FRIEND_LIST);
+        boolean success = client.write(stream, SocketIO.TYPE_FRIEND_LIST);
         if (success) {
-            String [] info = read();
+            String [] info = client.read();
             System.out.println(Arrays.toString(info));
             return info;
         }
-
         return null;
+    }
+
+    private boolean blockUser(String user) {
+        blockedUsers.add(user);
+        client.write(user, SocketIO.TYPE_BLOCK_USER);
+        String status = client.read()[0];
+        return status.equals(SocketIO.SUCCESS_GENERAL);
+    }
+
+    private boolean unblockUser(String user) {
+        blockedUsers.remove(user);
+        client.write(user, SocketIO.TYPE_UNBLOCK_USER);
+        String status = client.read()[0];
+        return status.equals(SocketIO.SUCCESS_GENERAL);
+    }
+
+    public static void logout() {
+        incomingFriendRequests = new String[0];
+        outGoingFriendRequests = new ArrayList<>();
+        blockedUsers = new ArrayList<>();
+        signedin = false;
     }
 
 
@@ -275,14 +316,39 @@ public class ClientSide extends SocketIO implements ClientSideInterface, Runnabl
         this.password = password;
     }
 
-    public void run() {
-        State state = State.PULL_DATA;
-        while(true) {
-            switch (state) {
-                case PULL_DATA:
+    private void removeFriend(String name) {
 
+    }
+
+
+    @Override
+    public void run() {
+
+        while(true) {
+            if (signedin) {
+                String default_send = SocketIO.TYPE_GET_INCOMING_FRIEND_REQUESTS;
+                client.write(default_send);
+                incomingFriendRequests = client.read();
+
+                if (!lock && !requests.isEmpty()) {
+                    RequestNode request = requests.remove();
+                    String name = request.content[0];
+                    switch (request.type) {
+                        case SocketIO.TYPE_BLOCK_USER:
+                            blockUser(name);
+                            System.out.println("Block " + name + blockUser(name));
+                            break;
+                        case SocketIO.TYPE_SEND_FRIEND_REQUEST:
+                            System.out.println("Send Request " + name + addFriend(name));
+                            break;
+                        case SocketIO.TYPE_UNBLOCK_USER:
+                            System.out.println("Unblock user " + name + unblockUser(name));
+                            break;
+                        case SocketIO.TYPE_FRIEND_LIST:
+                            System.out.println("Retrieve friend list: " + String.join(" ", listOfFriends()));
+                    }
+                }
             }
         }
-
     }
 }
