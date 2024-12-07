@@ -1,3 +1,8 @@
+package src;
+import Exceptions.DisconnectException;
+import interfaces.IO;
+import jdk.jshell.Diag;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,10 +65,9 @@ public class SocketIO implements IO {
      * @return {@code true} if the data was successfully written;
      * {@code false} otherwise.
      */
-    public boolean write(String[] stream, String informationType) {
+    public boolean write(String[] stream, String informationType) throws DisconnectException {
         if (writer == null) {
-            logError(ERROR_SOCKET_CLOSED, null);
-            return false;
+            throw new DisconnectException("Failed to write");
         }
 
         StringBuilder message = new StringBuilder(DELIMITER_START).append(informationType);
@@ -84,21 +88,23 @@ public class SocketIO implements IO {
         return true;
     }
 
-    public boolean write(String... data) {
+    public boolean write(String... data) throws DisconnectException {
 
-        if(data.length > 1) {
+        if(data.length == 1) {
+            write(null, data[0]);
+        }
+        else if(data.length > 1){
             String[] rawData = new String[data.length - 1];
             System.arraycopy(data, 0, rawData, 0, data.length - 1);
 
             String informationType = data[data.length - 1];
 
             write(rawData, informationType);
-        } else if(data.length == 1) {
-            write(null, data[0]);
         }
         else {
             return false;
         }
+
         return true;
     }
 
@@ -110,7 +116,7 @@ public class SocketIO implements IO {
      *
      * @return The data read as a string array, or null if reading fails.
      */
-    public String[] read() {
+    public String[] read() throws DisconnectException {
         try {
             String input = reader.readLine();
 
@@ -129,8 +135,7 @@ public class SocketIO implements IO {
             return a;
 
         } catch (IOException e) {
-            logError("Failed to read from socket.", e);
-            return null;
+            throw new DisconnectException("Failed to read from socket.");
         }
     }
 
@@ -232,7 +237,7 @@ public class SocketIO implements IO {
      * @param conditionType The type of condition to write.
      * @return {@code true} if the condition type is successfully written; {@code false} otherwise.
      */
-    public boolean writeCondition(String conditionType) {
+    public boolean writeCondition(String conditionType) throws DisconnectException {
         if (!validInformation(conditionType)) {
             logError(ERROR_INVALID_INFORMATION, null);
             return false;
@@ -247,7 +252,7 @@ public class SocketIO implements IO {
      *
      * @return The condition message as a string, or null if reading fails.
      */
-    public String readCondition() {
+    public String readCondition() throws DisconnectException {
         return read()[0];
     }
 

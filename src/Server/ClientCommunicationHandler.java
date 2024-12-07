@@ -1,5 +1,6 @@
     package src.Server;
 
+    import Exceptions.DisconnectException;
     import interfaces.ClientHandlerInterface;
     import src.*;
     import Exceptions.UserChatActiveException;
@@ -14,7 +15,8 @@
      * This includes signup, login, message parsing, and data delivery.
      */
     public class ClientCommunicationHandler extends Thread implements ClientHandlerInterface {
-
+        private static Object o = new Object();
+        private final int THREAD_NUMBER;
         public enum State {
             SEND_HANDSHAKE,
             READ_HANDSHAKE,
@@ -34,6 +36,8 @@
         public ClientCommunicationHandler(Socket socket) {
             this.userSocket = socket;
             this.messager = new SocketIO(socket);
+            THREAD_NUMBER = Server.threadCount;
+            Server.threadCount++;
         }
 
         /**
@@ -74,30 +78,39 @@
             State state = State.SEND_HANDSHAKE;
             String[] dataFromClient = null;
 
-            while (!this.userSocket.isClosed()) {
-                switch (state) {
-                    case SEND_HANDSHAKE:
-                        messager.sendHandShake();
-                        state = State.READ_HANDSHAKE;
-                        break;
+            try {
+                while (true) {
 
-                    case READ_HANDSHAKE:
-                        messager.checkForHandShake();
-                        state = State.READ_DATA;
-                        break;
+                    switch (state) {
+                        case SEND_HANDSHAKE:
+                            messager.sendHandShake();
+                            state = State.READ_HANDSHAKE;
+                            break;
 
-                    case READ_DATA:
-                        dataFromClient = messager.read();
-                        state = State.EXECUTE;
-                        break;
+                        case READ_HANDSHAKE:
+                            messager.checkForHandShake();
+                            state = State.READ_DATA;
+                            break;
 
-                    case EXECUTE:
-                        processClientData(dataFromClient);
-                        state = State.READ_DATA;
-                        break;
+                        case READ_DATA:
+                            dataFromClient = messager.read();
+                            state = State.EXECUTE;
+                            break;
 
-                    default:
-                        break;
+                        case EXECUTE:
+                            processClientData(dataFromClient);
+                            state = State.READ_DATA;
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            } catch (DisconnectException e) {
+                synchronized ( o ) {
+                    System.out.println("---------------------------------------------------------");
+                    System.out.println("Client " + this.THREAD_NUMBER + " terminated: " + e.getMessage());
+                    System.out.println("---------------------------------------------------------");
                 }
             }
         }
@@ -107,11 +120,17 @@
          *
          * @param dataFromClient The data received from the client.
          */
-        public void processClientData(String[] dataFromClient) {
+        public void processClientData(String[] dataFromClient) throws DisconnectException {
             String informationType = dataFromClient[0];
             String[] data = new String[dataFromClient.length - 1];
             System.arraycopy(dataFromClient, 1, data, 0, dataFromClient.length - 1);
             boolean push_condition = false;
+            synchronized ( o ) {
+                System.out.println("---------------------------------------------------------");
+                System.out.println("Client " + this.THREAD_NUMBER + " requests " + informationType);
+                System.out.println("Data: " + String.join(" ", data));
+                System.out.println("---------------------------------------------------------");
+            }
 
             switch (informationType) {
                 case SocketIO.TYPE_SIGNUP:
@@ -183,6 +202,9 @@
                 case SocketIO.TYPE_GET_OUTGOING_FRIEND_REQUESTS:
                     sendOutgoingFriendRequests();
                     break;
+                case SocketIO.TYPE_GET_BLOCKED_USERS:
+                    getBlockedUsers();
+                    break;
 
                 default:
                     break;
@@ -200,7 +222,7 @@
          *
          * @param data The data containing the username, bio, and password.
          */
-        public void handleSignup(String[] data) {
+        public void handleSignup(String[] data) throws DisconnectException {
             String name = data[0];
             String bio = "";
             String password = "";
@@ -238,7 +260,7 @@
          *
          * @param data The data containing the username and password.
          */
-        public void handleLogin(String[] data) {
+        public void handleLogin(String[] data) throws DisconnectException {
             String name = data[0];
             String password = data[1];
 
@@ -268,7 +290,7 @@
         /**
          * Sends the current user's information to the client.
          */
-        public void sendUserInfo() {
+        public void sendUserInfo() throws DisconnectException {
             if(this.user == null) {
                 messager.writeCondition(SocketIO.ERROR_USER_DNE);
                 return;
@@ -283,7 +305,7 @@
          *
          * @param data The data containing the recipient and the message.
          */
-        public void sendMessage(String[] data) {
+        public void sendMessage(String[] data) throws DisconnectException {
             try {
                 Message message = new Message(user, new User(data[0] + ".txt"), null, data[1]);
                 message.pushToDatabase();
@@ -294,7 +316,7 @@
             }
         }
 
-        public void getMessageData(String[] data) {
+        public void getMessageData(String[] data) throws DisconnectException {
             String friendName = data[0];
             ConversationReader reader = new ConversationReader(this.user.getName(), friendName);
             ArrayList<Message> messages = reader.getMessages();
@@ -315,8 +337,12 @@
         /**
          * Sends the list of the current user's friends to the client.
          */
-        public void sendFriendList() {
+        public void sendFriendList() throws DisconnectException {
             ArrayList<String> friends = this.user.getFriends();
+            if(friends == null) {
+                messager.write(null, SocketIO.TYPE_GET_FRIEND_LIST);
+                return;
+            }
             messager.write(friends.toArray(new String[0]), SocketIO.TYPE_GET_FRIEND_LIST);
         }
 
@@ -325,7 +351,7 @@
          *
          * @param data The data containing the search query.
          */
-        public void searchUsers(String[] data) {
+        public void searchUsers(String[] data) throws DisconnectException {
             String query = data[0].toLowerCase();
             ArrayList<String> matchingNames = new ArrayList<>();
             for (String userName : User.getUsernames()) {
@@ -341,7 +367,7 @@
          *
          * @param data The data containing the friend's username.
          */
-        public void sendConversationHistory(String[] data) {
+        public void sendConversationHistory(String[] data) throws DisconnectException {
             try {
                 User friend = new User(data[0] + ".txt");
                 ConversationReader reader = new ConversationReader(this.user.getName(), friend.getName());
@@ -359,9 +385,13 @@
          *
          * @param data The data containing the list of new blocked users.
          */
-        public void updateBlockedUsers(String[] data) {
+        public void updateBlockedUsers(String[] data) throws DisconnectException {
             this.user.setBlocked(new ArrayList<>(Arrays.asList(data)));
             messager.writeCondition(SocketIO.SUCCESS_GENERAL);
+        }
+
+        public void getBlockedUsers() throws DisconnectException {
+            messager.write(this.user.getBlocked().toArray(new String[0]), SocketIO.TYPE_GET_BLOCKED_USERS);
         }
 
         /**
@@ -369,7 +399,7 @@
          *
          * @param data The data containing the recipient's username.
          */
-        public void sendFriendRequest(String[] data) {
+        public void sendFriendRequest(String[] data) throws DisconnectException {
             String name = data[0];
             User recipient;
 
@@ -384,6 +414,7 @@
             if(this.user.sendFriendRequest(recipient)) {
                 // updating the incoming friend request list of the person that sent the friend request
                 recipient.getFriendRequestsIn().add(this.user.getName());
+                recipient.pushToDatabase();
                 messager.writeCondition(SocketIO.SUCCESS_GENERAL);
             } else {
                 messager.writeCondition(SocketIO.ERROR_GENERAL);
@@ -396,7 +427,7 @@
          *
          * @param data The data containing the specified user's username.
          */
-        public void acceptFriendRequest(String[] data) {
+        public void acceptFriendRequest(String[] data) throws DisconnectException {
             String name = data[0];
             User newFriend;
 
@@ -412,6 +443,7 @@
 
                 // updating the friends list of the person that sent the friend request (accepted their request)
                 newFriend.getFriends().add(this.user.getName());
+                newFriend.pushToDatabase();
                 messager.writeCondition(SocketIO.SUCCESS_GENERAL);
             } else {
                 messager.writeCondition(SocketIO.ERROR_GENERAL);
@@ -422,7 +454,7 @@
          * Sends the client a list of the incoming friend requests
          *
          */
-        public void sendIncomingFriendRequests() {
+        public void sendIncomingFriendRequests() throws DisconnectException {
             messager.write(this.user.getFriendRequestsIn().toArray(new String[0]), SocketIO.TYPE_GET_INCOMING_FRIEND_REQUESTS);
         }
 
@@ -430,11 +462,11 @@
          * Sends the client a list of the outgoing friend requests
          *
          */
-        public void sendOutgoingFriendRequests() {
+        public void sendOutgoingFriendRequests() throws DisconnectException {
             messager.write(this.user.getFriendRequestsOut().toArray(new String[0]), SocketIO.TYPE_GET_OUTGOING_FRIEND_REQUESTS);
         }
 
-        public void blockUnblockUser(String[] data, String type) {
+        public void blockUnblockUser(String[] data, String type) throws DisconnectException {
             String username = data[0];
             try {
                 if(type.equals(SocketIO.TYPE_UNBLOCK_USER)) {
