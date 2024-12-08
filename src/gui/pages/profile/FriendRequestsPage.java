@@ -56,12 +56,6 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
         this.user = client.getUser();
         this.client = client;
 
-        // Initialize friend requests from the user
-        if (client.getUser().getFriendRequestsIn() == null){
-            this.friends = new String[0];
-        } else {
-            this.friends = client.getUser().getFriendRequestsIn().toArray(new String[0]);
-        }
         setPreferredSize(new Dimension(width, height));
 
         // Layout configuration
@@ -91,7 +85,7 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
         add(backToProfile, BorderLayout.NORTH);
 
         // Iterate over friend requests and create UI components for each
-        for (String friend : friends) {
+        for (String friend : ClientSide.friends) {
             JPanel friendPanel = new JPanel();
             friendPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
@@ -208,7 +202,6 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
         } catch (Exception e) {
             e.printStackTrace();
         }
-        user.pushToDatabase();
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         parentFrame.getContentPane().removeAll();
         parentFrame.add(new FriendsPage(width, height, client));

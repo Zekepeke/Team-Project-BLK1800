@@ -79,6 +79,9 @@ public class App {
 //    }
 
     public static void main(String[] args) throws IOException {
+        ClientSide clientHandler = new ClientSide();
+        Thread clientHandlerThread = new Thread(clientHandler);
+
         SwingUtilities.invokeLater(new AuthenticationPages());
     }
 

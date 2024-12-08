@@ -5,10 +5,9 @@ import src.SocketIO;
 import src.User;
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
  * Handles the client-side operations, including validating user credentials,
@@ -24,22 +23,28 @@ public class ClientSide implements ClientSideInterface, Runnable {
         PULL_DATA;
     }
 
+    public static final int INVALID_PASSWORD = -1;
+    public static final int USER_DNE = 0;
+    public static final int USER_EXISTS = 1;
+    public static final int SUCCESS = 2;
+    public static final int ERROR = 3;
+
     private static Queue<RequestNode> requests = new LinkedList<>();
+
     private static boolean lock = false;
 
-    public static ArrayList<String> blockedUsers = new ArrayList<>();
-    public static ArrayList<String> outGoingFriendRequests = new ArrayList<>();
-    public static String[] incomingFriendRequests = new String[0];
+    public static List<String> blockedUsers = Collections.synchronizedList(new ArrayList<>());
+    public static List<String> outGoingFriendRequests = Collections.synchronizedList(new ArrayList<>());
+    public static List<String> userInformation = Collections.synchronizedList(new ArrayList<>());
+    public static List<String> messageHistory = Collections.synchronizedList(new ArrayList<>());
+
+    public static List<String>  friends = Collections.synchronizedList(new ArrayList<>());
+    public static List<String>  incomingFriendRequests = Collections.synchronizedList(new ArrayList<>());
+    public static AtomicBoolean friendExclusive = new AtomicBoolean();
+    public static AtomicBoolean userBlocked = new AtomicBoolean();
 
     private static boolean signedin = false;
 
-    private static boolean write(String[] content, String type) {
-        lock = true;
-        requests.add(new RequestNode(content, type));
-        lock = false;
-
-        return true;
-    }
 
     private static final String HOST = "localhost";
     private static final int PORT = 8282;
@@ -47,8 +52,9 @@ public class ClientSide implements ClientSideInterface, Runnable {
 
     Socket userClient;
 
-    String username;
-    String password;
+    public static String username;
+    public static String password;
+    public static String bio;
 
     public ClientSide(Socket userClient, String username, String password) throws IOException {
         try {
@@ -72,6 +78,36 @@ public class ClientSide implements ClientSideInterface, Runnable {
         client.sendHandShake();
     }
 
+    public ClientSide() {
+        if (client.checkForHandShake()) {
+            System.out.println("Handshake successful");
+        }
+        client.sendHandShake();
+    }
+
+    public static boolean command(String...content) {
+        return command(false, content);
+    }
+
+
+    public static boolean command(boolean block, String[] content) {
+        lock = true;
+        String[] data = new String[content.length - 1];
+
+        System.arraycopy(content, 1, data, 0, content.length - 1);
+
+        requests.add(new RequestNode(data, content[content.length - 1]));
+
+        lock = false;
+
+        if(block) {
+            while (!requests.isEmpty()) {
+                System.out.println("Waiting for client request to complete");
+            }
+        }
+        return true;
+    }
+
     /**
      * This method makes a new user and makes sure that the username and password is valid.
      * Username is valid if no special characters, lower case, no spaces, and should be in the bounds of 4 and 14.
@@ -81,21 +117,22 @@ public class ClientSide implements ClientSideInterface, Runnable {
      * @param password The user making a password that is unique
      * @return True if it is a valid sign-up and false if it is invalid
      */
+
     public static boolean validUserAndPassword(String username, String password) {
         boolean validUsername = username != null && !username.contains(" ") && username.length() >= 3 && username.length() <= 14;
-        boolean validPassword = password.length() >= 3 && password.length() <= 14 && !password.contains(" ");
+        boolean validPassword = password != null && password.length() >= 3 && password.length() <= 14 && !password.contains(" ");
 
         if (validUsername) {
-            for (int i = 0; i < username.length(); i++) {
-                char c = username.charAt(i);
+            for (char c : username.toCharArray()) {
                 if ((!Character.isLetter(c) && !Character.isDigit(c)) || Character.isUpperCase(c)) {
                     validUsername = false;
-
+                    break;
                 }
             }
         }
         return validUsername && validPassword;
     }
+
     /**
      * Attempts to check connection to the server by checking if the user client instance is initialized.
      *
@@ -122,7 +159,7 @@ public class ClientSide implements ClientSideInterface, Runnable {
         String[] stream = {name};
         boolean success = client.write(stream, SocketIO.TYPE_USER_LIST_SEARCH);
         if (success) {
-            String[] names = read();
+            String[] names = client.read();
             if (names == null) {
                 return null;
             }
@@ -138,34 +175,41 @@ public class ClientSide implements ClientSideInterface, Runnable {
         return null;
     }
     // returns true if logined, false otherwise
-    public Boolean searchNameAndPasswordLogin (String name, String password) {
+    public static int login (String name, String password) {
         String[] stream = {name, password};
-        if (client.write(stream, SocketIO.TYPE_LOGIN)) {
+        if (client.write(name, password, SocketIO.TYPE_LOGIN)) {
+
             String [] info = client.read();
+
             System.out.println("In the searchNameAndPasswordLogin Method:" + Arrays.toString(info));
             System.out.println("In the searchNameAndPasswordLogin Array size:" + info.length);
+
             String condition = info[0];
 
             if (condition == null) {
-                return false;
+                return ERROR;
             }
 
             switch (condition) {
                 case SocketIO.ERROR_USER_DNE:
-                    return null;
+                    return USER_DNE;
                 case SocketIO.ERROR_PASSWORD:
-                    return false;
+                    return INVALID_PASSWORD;
                 case SocketIO.SUCCESS_USER_LOGIN:
-                    return true;
+                    rungetAllFriends();
+                    rungetProfile();
+                    rungetIncomingFriendRequests();
+                    getBlockedUsers();
+                    signedin = true;
+                    return SUCCESS;
             }
-        } else {
-            return false;
         }
-        return false;
+
+        return ERROR;
     }
 
     // returns true if successfully signed up, false otherwise
-    public Boolean searchNameAndPasswordSignUp (String name, String password){
+    public static int signup(String name, String password){
         String[] stream = {name, password};
         if (client.write(stream, SocketIO.TYPE_SIGNUP)) {
             String [] info = client.read();
@@ -175,19 +219,19 @@ public class ClientSide implements ClientSideInterface, Runnable {
             String condition = info[0];
 
             if (condition == null) {
-                return null;
+                return ERROR;
             }
 
             switch (condition) {
                 case SocketIO.ERROR_USER_EXISTS:
-                    return false;
+                    return USER_EXISTS;
                 case SocketIO.SUCCESS_USER_SIGNUP:
-                    return true;
+                    signedin = true;
+                    return SUCCESS;
             }
-        } else {
-            return false;
         }
-        return false;
+
+        return ERROR;
     }
 
     /**
@@ -196,6 +240,7 @@ public class ClientSide implements ClientSideInterface, Runnable {
      * @return an array of strings containing the user's profile information if the operation is successful;
      *         {@code null} if the request fails or no profile data is returned.
      */
+
 
     public String[] profile(){
         String [] stream = {"String"};
@@ -208,12 +253,6 @@ public class ClientSide implements ClientSideInterface, Runnable {
         return null;
     }
 
-    public boolean getProfile() {
-        boolean success = client.write(SocketIO.TYPE_USER_INFORMATION);
-        String status = client.read()[0];
-        return status.equals(SocketIO.SUCCESS_GENERAL);
-    }
-
     public User getUser() {
         try {
             return new User(username + ".txt");
@@ -222,6 +261,7 @@ public class ClientSide implements ClientSideInterface, Runnable {
             return null;
         }
     }
+
     /**
      * Retrieves the list of friends for the current user by communicating with the server.
      *
@@ -240,24 +280,156 @@ public class ClientSide implements ClientSideInterface, Runnable {
         return null;
     }
 
-    private boolean blockUser(String user) {
+
+
+
+    private static boolean runsendMessage(String recipient, String message) {
+        boolean success = client.write(recipient, message, SocketIO.TYPE_MESSAGE);
+        String status = client.read()[0];
+        return status.equals(SocketIO.SUCCESS_GENERAL);
+
+    }
+
+    private static boolean rungetMessageHistory(String person) {
+        boolean success = client.write(person, SocketIO.TYPE_GET_MESSAGES_FROM_FRIEND);
+        String[] input = client.read();
+        messageHistory.clear();
+
+        if(input.length > 1) {
+            for (int i = 1; i < input[i].length(); i++) {
+                messageHistory.add(input[i]);
+            }
+        } else {
+            return false;
+        }
+
+        String status = input[0];
+        return status.equals(SocketIO.SUCCESS_GENERAL);
+    }
+
+    private static boolean rungetProfile() {
+        boolean success = client.write(SocketIO.TYPE_USER_INFORMATION);
+        String[] input = client.read();
+        userInformation.clear();
+        userInformation.add(input[1]);
+        userInformation.add(input[2]);
+        String status = input[0];
+        return status.equals(SocketIO.SUCCESS_GENERAL);
+    }
+
+    private static boolean rungetAllFriends() {
+        client.write(SocketIO.TYPE_FRIEND_LIST);
+        String[] input = client.read();
+
+        if(input.length - 1 > friends.size()) {
+            int counter = friends.size();
+            while(friends.size() < input.length - 1) {
+                friends.add(input[counter++]);
+            }
+        }
+        if(input.length - 1 < friends.size()) {
+            while(friends.size() > input.length - 1) {
+                friends.remove(friends.size() - 1);
+            }
+        }
+
+        String status = input[0];
+        return status.equals(SocketIO.TYPE_FRIEND_LIST);
+    }
+
+    private static boolean runblockUser(String user) {
         blockedUsers.add(user);
         client.write(user, SocketIO.TYPE_BLOCK_USER);
         String status = client.read()[0];
         return status.equals(SocketIO.SUCCESS_GENERAL);
     }
 
-    private boolean unblockUser(String user) {
+    private static boolean rununblockUser(String user) {
         blockedUsers.remove(user);
         client.write(user, SocketIO.TYPE_UNBLOCK_USER);
         String status = client.read()[0];
         return status.equals(SocketIO.SUCCESS_GENERAL);
     }
 
-    public static void logout() {
-        incomingFriendRequests = new String[0];
-        outGoingFriendRequests = new ArrayList<>();
-        blockedUsers = new ArrayList<>();
+    private static boolean runaddFriend(String user) {
+        outGoingFriendRequests.add(user);
+        client.write(user, SocketIO.TYPE_SEND_FRIEND_REQUEST);
+        String status = client.read()[0];
+        return status.equals(SocketIO.SUCCESS_GENERAL);
+    }
+
+    private static boolean rungetIncomingFriendRequests() {
+        String default_send = SocketIO.TYPE_GET_INCOMING_FRIEND_REQUESTS;
+        client.write(default_send);
+        String[] input = client.read();
+
+        if(input.length - 1 > incomingFriendRequests.size()) {
+            int counter = incomingFriendRequests.size();
+            while(incomingFriendRequests.size() < input.length - 1) {
+                incomingFriendRequests.add(input[counter++]);
+            }
+        }
+        if(input.length - 1 < incomingFriendRequests.size()) {
+            while(incomingFriendRequests.size() > input.length - 1) {
+                incomingFriendRequests.remove(incomingFriendRequests.size() - 1);
+            }
+        }
+
+        String status = input[0];
+        return status.equals(SocketIO.TYPE_GET_INCOMING_FRIEND_REQUESTS);
+    }
+
+    private static boolean getBlockedUsers() {
+        client.write(SocketIO.TYPE_GET_BLOCKED_USERS);
+        String[] input = client.read();
+        if(input[0].equals(SocketIO.TYPE_FRIEND_LIST)) {
+            String[] data = new String[input.length - 1];
+            System.arraycopy(input, 1, data, 0, input.length - 1);
+            blockedUsers.addAll(Arrays.asList(data));
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean runupdateBio(String newBio) {
+        boolean success = client.write(newBio, SocketIO.TYPE_UPDATE_USER_BIO);
+        String[] input = client.read();
+        userInformation.set(1, input[1]);
+        String status = input[0];
+        return status.equals(SocketIO.SUCCESS_GENERAL);
+    }
+
+    private static boolean runCheckBlocked(String name) {
+        boolean success = client.write(name, SocketIO.TYPE_IS_BLOCKED);
+        String[] input = client.read();
+        if(input[0].equals(SocketIO.TYPE_IS_BLOCKED)) {
+            userBlocked.set(Boolean.parseBoolean(input[1]));
+            return true;
+        } else {
+            userBlocked = null;
+            return false;
+        }
+    }
+
+    private static boolean runCheckExclusive(String name) {
+        boolean success = client.write(name, SocketIO.TYPE_CHECK_EXCLUSIVE);
+        String[] input = client.read();
+        if(input[0].equals(SocketIO.TYPE_CHECK_EXCLUSIVE)) {
+            friendExclusive.set(Boolean.parseBoolean(input[1]));
+            return true;
+        } else {
+            friendExclusive = null;
+            return false;
+        }
+    }
+
+    private static void runlogout() {
+        incomingFriendRequests.clear();
+        outGoingFriendRequests.clear();
+        blockedUsers.clear();
+        userInformation.clear();
+        messageHistory.clear();
         signedin = false;
     }
 
@@ -323,31 +495,39 @@ public class ClientSide implements ClientSideInterface, Runnable {
 
     @Override
     public void run() {
-
         while(true) {
             if (signedin) {
-                String default_send = SocketIO.TYPE_GET_INCOMING_FRIEND_REQUESTS;
-                client.write(default_send);
-                incomingFriendRequests = client.read();
-
                 if (!lock && !requests.isEmpty()) {
                     RequestNode request = requests.remove();
                     String name = request.content[0];
                     switch (request.type) {
+                        case SocketIO.TYPE_MESSAGE:
+                            runsendMessage(name, request.content[0]);
+                        case SocketIO.TYPE_GET_MESSAGES_FROM_FRIEND:
+                            rungetMessageHistory(name);
                         case SocketIO.TYPE_BLOCK_USER:
-                            blockUser(name);
-                            System.out.println("Block " + name + blockUser(name));
+                            System.out.println("Block " + name + runblockUser(name));
                             break;
+                        case SocketIO.TYPE_UPDATE_USER_BIO:
+                            System.out.println("Update user bio: " + name + runupdateBio(name));
                         case SocketIO.TYPE_SEND_FRIEND_REQUEST:
-                            System.out.println("Send Request " + name + addFriend(name));
+                            System.out.println("Send friend Request " + name + runaddFriend(name));
                             break;
                         case SocketIO.TYPE_UNBLOCK_USER:
-                            System.out.println("Unblock user " + name + unblockUser(name));
+                            System.out.println("Unblock user " + name + rununblockUser(name));
                             break;
-                        case SocketIO.TYPE_FRIEND_LIST:
-                            System.out.println("Retrieve friend list: " + String.join(" ", listOfFriends()));
+                        case SocketIO.TYPE_CHECK_EXCLUSIVE:
+                            System.out.println("Unblock user " + name + runCheckExclusive(name));
+                            break;
+                        case SocketIO.TYPE_IS_BLOCKED:
+                            System.out.println("Unblock user " + name + runCheckBlocked(name));
+                            break;
+                        case SocketIO.TYPE_GET_BLOCKED_USERS:
+                            System.out.println("Got blocked users" + name + getBlockedUsers());
                     }
                 }
+                rungetAllFriends();
+                rungetIncomingFriendRequests();
             }
         }
     }

@@ -211,4 +211,10 @@ public class Message implements Messagable {
     public void setDate(Date date) {
         this.date = date;
     }
+
+
+    public static String dataToString(String sender, String reciever, String content) {
+        return MESSAGE_SEP + "\n" + (new Date()).toString() + "\n" +
+                sender + "\n" + content + "\n" + CONVO_END;
+    }
 }

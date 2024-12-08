@@ -2,6 +2,7 @@
 
     import Exceptions.DisconnectException;
     import interfaces.ClientHandlerInterface;
+    import interfaces.IO;
     import src.*;
     import Exceptions.UserChatActiveException;
     import java.lang.Thread;
@@ -140,7 +141,9 @@
                 case SocketIO.TYPE_LOGIN:
                     handleLogin(data);
                     break;
-
+                case SocketIO.TYPE_UPDATE_USER_BIO:
+                    updateUserBio(data);
+                    break;
                 case SocketIO.TYPE_USER_INFORMATION:
                     sendUserInfo();
                     break;
@@ -205,7 +208,12 @@
                 case SocketIO.TYPE_GET_BLOCKED_USERS:
                     getBlockedUsers();
                     break;
-
+                case SocketIO.TYPE_IS_BLOCKED:
+                    checkIsBlocked(data);
+                    break;
+                case SocketIO.TYPE_CHECK_EXCLUSIVE:
+                    checkIfPeronIsFriendExclusive(data);
+                    break;
                 default:
                     break;
             }
@@ -487,4 +495,36 @@
             }
         }
 
+        public void updateUserBio(String[] data) {
+            this.user.setBio(data[0]);
+            messager.write(SocketIO.SUCCESS_GENERAL);
+        }
+
+        public void checkIsBlocked(String[] data) {
+            String name = data[0];
+            try {
+                User user = new User(name + ".txt");
+                if(user.getBlocked().contains(this.user.getName())) {
+                    messager.write("true", SocketIO.TYPE_IS_BLOCKED);
+                } else {
+                    messager.write("false", SocketIO.TYPE_IS_BLOCKED);
+                }
+            } catch (IOException e) {
+                messager.write(SocketIO.ERROR_USER_DNE);
+            }
+        }
+
+        public void checkIfPeronIsFriendExclusive(String[] data){
+            String name = data[0];
+            try {
+                User user = new User(name + ".txt");
+                if(user.getExclusiveToFriends()) {
+                    messager.write("true", SocketIO.TYPE_CHECK_EXCLUSIVE);
+                } else {
+                    messager.write("false", SocketIO.TYPE_CHECK_EXCLUSIVE);
+                }
+            } catch (IOException e) {
+                messager.write(SocketIO.ERROR_USER_DNE);
+            }
+        }
     }

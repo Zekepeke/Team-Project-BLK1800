@@ -1,6 +1,7 @@
 package src.gui.pages.auth.login;
 
 import interfaces.gui.CustomColors;
+import src.SocketIO;
 import src.client.ClientSide;
 import src.gui.components.FontLoader;
 import src.gui.components.Sprite;
@@ -16,7 +17,6 @@ import java.awt.event.*;
  */
 public class LoginPage extends JPanel implements CustomColors {
 
-    private ClientSide client;
     private Sprite macBookSprite;
     private Image imageOfMac;
 
@@ -46,7 +46,6 @@ public class LoginPage extends JPanel implements CustomColors {
         setPreferredSize(new Dimension(width, height));
         this.width = width;
         this.height = height;
-        this.client = client;
 
         // Load the image
         this.macBookSprite = new Sprite("/src/gui/assets/images/macbook.png", 5000, 5000);
@@ -77,20 +76,22 @@ public class LoginPage extends JPanel implements CustomColors {
                 System.out.println("Error: Invalid username/password");
                 loginUI.setErrorVisible(true);
             } else {
-                Boolean working = client.searchNameAndPasswordLogin(usernameString, passwordString);
+                int condition = client.login(usernameString, passwordString);
 
-                System.out.println("Testing the server search for client: " + working);
+                System.out.println("Testing the server search for client: " + condition);
 
-                if (working == null) {
+                if (condition == ClientSide.USER_DNE) {
                     loginUI.getError().setText("User not found");
                     loginUI.setErrorVisible(true);
-                } else if (!working) {
+                } else if (condition == ClientSide.INVALID_PASSWORD) {
                     loginUI.getError().setText("Enter in wrong password");
                     loginUI.setErrorVisible(true);
 
-                } else {
-                    client.setUsername(usernameString);
-                    client.setPassword(passwordString);
+                } else if(condition == ClientSide.SUCCESS) {
+                    ClientSide.username = usernameString;
+                    ClientSide.password = passwordString;
+
+                    ClientSide.command(SocketIO.TYPE_USER_INFORMATION);
 
                     JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
                     parentFrame.getContentPane().removeAll();

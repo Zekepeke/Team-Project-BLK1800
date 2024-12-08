@@ -24,13 +24,11 @@ public class FriendsPage extends JPanel implements CustomColors {
             this.height = height;
             this.user = client.getUser();
             this.client = client;
-            this.friends = client.getUser().getFriends().toArray(new String[0]);
             setPreferredSize(new Dimension(width, height));
         } catch (Exception e) {
             this.width = width;
             this.height = height;
             this.client = client;
-            this.friends = new String[0];
             setPreferredSize(new Dimension(width, height));
         }
         // Layout
@@ -61,7 +59,7 @@ public class FriendsPage extends JPanel implements CustomColors {
         });
         add(backToProfile, BorderLayout.NORTH);
         // Loop through the friends array and create a panel for each friend
-        for (String friend : friends) {
+        for (String friend : ClientSide.friends) {
             JPanel friendPanel = new JPanel();
             friendPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 

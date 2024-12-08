@@ -3,18 +3,16 @@ package src.gui.pages.profile;
 import interfaces.ProfilePageInterface;
 import interfaces.gui.CustomColors;
 import interfaces.gui.ProfileInterface;
+import src.SocketIO;
 import src.User;
 import src.client.ClientSide;
 import src.gui.MessagingPage;
 import src.gui.pages.auth.AuthenticationPages;
-import src.gui.pages.auth.login.LoginPage;
-import src.gui.pages.auth.signup.SignUpPage;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 public class profilePage extends JPanel implements CustomColors, ProfilePageInterface, ProfileInterface {
 
@@ -26,7 +24,6 @@ public class profilePage extends JPanel implements CustomColors, ProfilePageInte
     private String[] friends;
     private String[] friendRequests;
     private String[] blocked;
-    private User user;
 
     private JTextArea bioTextArea; // For editing the bio
     private JButton saveBioButton; // Save button for bio changes
@@ -36,12 +33,10 @@ public class profilePage extends JPanel implements CustomColors, ProfilePageInte
     public profilePage(int width, int height, ClientSide client) {
         this.width = width;
         this.height = height;
-        this.user = client.getUser();
-        this.client = client;
 
         // Initialize fields
-        this.username = client.getUsername();
-        this.bio = this.user.getBio();
+        this.username = ClientSide.username;
+        this.bio = ClientSide.bio;
 
         // Set layout and background
         setPreferredSize(new Dimension(width, height));
@@ -103,8 +98,7 @@ public class profilePage extends JPanel implements CustomColors, ProfilePageInte
         String updatedBio = bioTextArea.getText().trim();
         if (!updatedBio.isEmpty() && !updatedBio.equals(bio)) {
             bio = updatedBio;
-            user.setBio(bio); // Update the local User object
-            user.pushToDatabase();
+            ClientSide.command(bio, SocketIO.TYPE_UPDATE_USER_BIO); // Update the local User object
             JOptionPane.showMessageDialog(this, "Bio updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "No changes made to the bio.", "Info", JOptionPane.INFORMATION_MESSAGE);
@@ -208,7 +202,7 @@ public void navigateToFriendsPage() {
             System.out.println("Navigating to Blocked Users Page...");
             JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
             parentFrame.getContentPane().removeAll();
-            parentFrame.add(new MessagingPage(width, height, client, new User("alice.txt")));
+            parentFrame.add(new MessagingPage(width, height, new User("alice.txt")));
             parentFrame.revalidate();
             parentFrame.repaint();
         } catch (Exception e) {

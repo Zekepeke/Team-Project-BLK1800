@@ -279,4 +279,5 @@ public class SocketIO implements IO {
             logError("Failed to close socket stream", e);
             return false;
         }
+    }
 }

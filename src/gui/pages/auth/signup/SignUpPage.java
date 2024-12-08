@@ -14,7 +14,6 @@ import java.awt.event.*;
  */
 public class SignUpPage extends JPanel implements CustomColors {
 
-    private ClientSide client;
     boolean isVisible;
     boolean signUpWasVisible;
 
@@ -41,7 +40,6 @@ public class SignUpPage extends JPanel implements CustomColors {
         setPreferredSize(new Dimension(width, height));
         this.width = width;
         this.height = height;
-        this.client = client;
 
         isVisible = true;
         signUpWasVisible = false;
@@ -64,19 +62,21 @@ public class SignUpPage extends JPanel implements CustomColors {
             if (!validUsernameAndPassword) {
                 signUpUI.setErrorVisible(true);
             } else {
-                Boolean working = client.searchNameAndPasswordSignUp(usernameString, passwordString);
-                System.out.println("Testing the server search for client: " + working);
-                if (working == null) {
-                    signUpUI.getError().setText("Something went wrong");
+                int condition = ClientSide.signup(usernameString, passwordString);
+                System.out.println("Testing the server search for client: " + condition);
+
+                if(condition == ClientSide.USER_EXISTS) {
+                    signUpUI.getError().setText("That name already exists");
                     signUpUI.setErrorVisible(true);
-                } else if (working)  {
+                }
+                else if (condition == ClientSide.SUCCESS)  {
                     client.setUsername(usernameString);
                     client.setPassword(passwordString);
 
                     signUpUI.setErrorVisible(false);
                     signUpUI.setSuccessVisible(true);
-                } else {
-                    signUpUI.getError().setText("That name already exists");
+                } else if (condition == ClientSide.ERROR) {
+                    signUpUI.getError().setText("Something went wrong");
                     signUpUI.setErrorVisible(true);
                 }
             }

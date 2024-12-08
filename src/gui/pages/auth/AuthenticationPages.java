@@ -28,8 +28,6 @@ public class AuthenticationPages extends JPanel implements Runnable {
     ClientSide client;
 
     public AuthenticationPages () throws IOException {
-        Socket socket = new Socket("localhost", 8282);
-        client = new ClientSide(socket);
 
         signUpPage = new SignUpPage(width, height, client);
         loginPage = new LoginPage(width, height, client);
@@ -55,7 +53,6 @@ public class AuthenticationPages extends JPanel implements Runnable {
     public AuthenticationPages (int width, int height, ClientSide client) throws IOException {
         this.width = width;
         this.height = height;
-        this.client = client;
 
         signUpPage = new SignUpPage(width, height, client);
         loginPage = new LoginPage(width, height, client);

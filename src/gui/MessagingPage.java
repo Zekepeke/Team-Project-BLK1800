@@ -1,8 +1,8 @@
 package src.gui; //package src.gui.pages.messaging;
 
 import interfaces.MessagingPageable;
-import src.ConversationReader;
 import src.Message;
+import src.SocketIO;
 import src.User;
 import src.client.ClientSide;
 import src.gui.pages.profile.profilePage;
@@ -13,9 +13,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MessagingPage extends JPanel implements MessagingPageable {
-    private User currentUser;
     private User chatPartner;
     private ClientSide client;
     private JTextArea chatDisplayArea;
@@ -29,11 +29,9 @@ public class MessagingPage extends JPanel implements MessagingPageable {
     private int height;
     private static final String[] FILTER_OPTIONS = {"All Messages", "Sent by Me", "Received by Me"};
 
-    public MessagingPage(int width, int height, ClientSide client, User chatPartner) {
+    public MessagingPage(int width, int height, User chatPartner) {
         this.width = width;
         this.height = height;
-        this.client = client;
-        this.currentUser = client.getUser();
         this.chatPartner = chatPartner;
 
         // Set preferred size for the panel
@@ -80,10 +78,8 @@ public class MessagingPage extends JPanel implements MessagingPageable {
      */
     private void loadChatHistory() {
         chatDisplayArea.setText("");
-        ConversationReader conversationReader = new ConversationReader(currentUser.getName(), chatPartner.getName());
-        currentMessages = conversationReader.getMessages();
-
-        for (Message message : currentMessages) {
+        ClientSide.command(chatPartner.getName(), SocketIO.TYPE_GET_MESSAGES_FROM_FRIEND);
+        for (String message : ClientSide.messageHistory) {
             appendMessageToChatDisplay(message);
         }
     }
@@ -93,12 +89,14 @@ public class MessagingPage extends JPanel implements MessagingPageable {
      */
     private void filterMessages(String filterOption) {
         chatDisplayArea.setText("");
-        for (Message message : currentMessages) {
+        for (String message : ClientSide.messageHistory) {
+            String[] data = message.split("\n");
+            String sender = data[2];
             if (filterOption.equals("All Messages")) {
                 appendMessageToChatDisplay(message);
-            } else if (filterOption.equals("Sent by Me") && message.getSender().equals(currentUser)) {
+            } else if (filterOption.equals("Sent by Me") && sender.equals(ClientSide.username)) {
                 appendMessageToChatDisplay(message);
-            } else if (filterOption.equals("Received by Me") && message.getReceiver().equals(currentUser)) {
+            } else if (filterOption.equals("Received by Me") && !sender.equals(chatPartner.getName())) {
                 appendMessageToChatDisplay(message);
             }
         }
@@ -112,6 +110,17 @@ public class MessagingPage extends JPanel implements MessagingPageable {
         chatDisplayArea.setCaretPosition(chatDisplayArea.getDocument().getLength());
     }
 
+
+
+    private void appendMessageToChatDisplay(String message) {
+        String[] messageData = message.split("\n");
+        String date = messageData[0];
+        String name = messageData[1];
+        String content = messageData[2];
+        chatDisplayArea.append(date + ": " + name + "\t" + content + "\n");
+        chatDisplayArea.setCaretPosition(chatDisplayArea.getDocument().getLength());
+    }
+
     /**
      * Sends a new message and updates the chat display.
      */
@@ -120,9 +129,12 @@ public class MessagingPage extends JPanel implements MessagingPageable {
         public void actionPerformed(ActionEvent e) {
             String content = messageInputField.getText().trim();
             if (!content.isEmpty()) {
-                Message newMessage = new Message(currentUser, chatPartner, new java.util.Date(), content);
-                newMessage.pushToDatabase(); // Save to the database
-                currentMessages.add(newMessage);
+                ClientSide.command(chatPartner.getName(), SocketIO.TYPE_MESSAGE);
+                String newMessage = Message.dataToString(ClientSide.username, chatPartner.getName(), content);
+
+                ClientSide.command(chatPartner.getName(), newMessage, SocketIO.TYPE_MESSAGE);
+                ClientSide.command(chatPartner.getName(), SocketIO.TYPE_FRIEND_CONVERSATION_HISTORY);
+
                 appendMessageToChatDisplay(newMessage);
                 messageInputField.setText("");
             }
@@ -137,13 +149,14 @@ public class MessagingPage extends JPanel implements MessagingPageable {
         public void actionPerformed(ActionEvent e) {
             String newPartnerName = JOptionPane.showInputDialog("Enter the name of the new chat partner:");
             try {
-                if (newPartnerName != null && !newPartnerName.trim().isEmpty() && (currentUser.getBlocked() == null || !currentUser.getBlocked().contains(newPartnerName))) {
-                    if (!currentUser.getExclusiveToFriends() || currentUser.getFriends().contains(newPartnerName)) {
-                        try {
-                            chatPartner = new User(newPartnerName + ".txt"); // Assuming User constructor accepts file name
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
+                if (newPartnerName != null && !newPartnerName.trim().isEmpty() && (!ClientSide.blockedUsers.isEmpty() || !ClientSide.blockedUsers.contains(newPartnerName))) {
+                    ClientSide.command(SocketIO.TYPE_CHECK_EXCLUSIVE, ClientSide.username);
+
+                    ClientSide.command(ClientSide.username, SocketIO.TYPE_CHECK_EXCLUSIVE);
+
+                    if (!ClientSide.friendExclusive.get() || ClientSide.friends.contains(newPartnerName)) {
+
+                        ClientSide.command(chatPartner.getName(), SocketIO.TYPE_GET_MESSAGES_FROM_FRIEND);
                         loadChatHistory();
                     } else {
                         JOptionPane.showMessageDialog(null,

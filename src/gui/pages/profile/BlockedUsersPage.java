@@ -53,11 +53,7 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
         this.height = height;
         this.user = client.getUser();
         this.client = client;
-        if (client.getUser().getBlocked() == null) {
-            this.blockedUsers = new String[0];
-        } else {
-            this.blockedUsers = client.getUser().getBlocked().toArray(new String[0]);
-        }
+
         setPreferredSize(new Dimension(width, height));
 
         // Layout setup
@@ -88,7 +84,7 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
         add(backToProfile, BorderLayout.NORTH);
 
         // Populate blocked users list
-        for (String blockedUser : blockedUsers) {
+        for (String blockedUser : ClientSide.blockedUsers) {
             JPanel userPanel = new JPanel();
             userPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
