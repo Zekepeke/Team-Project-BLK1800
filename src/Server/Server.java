@@ -63,7 +63,7 @@ public class Server implements ServerInterface {
             }
 
             // Remove disconnected users and terminate inactive threads
-            cleanUpInactiveConversations();
+            //cleanUpInactiveConversations();
         }
     }
 

@@ -70,8 +70,8 @@ public class SignUpPage extends JPanel implements CustomColors {
                     signUpUI.setErrorVisible(true);
                 }
                 else if (condition == ClientSide.SUCCESS)  {
-                    client.setUsername(usernameString);
-                    client.setPassword(passwordString);
+                    ClientSide.username = usernameString;
+                    ClientSide.password = passwordString;
 
                     signUpUI.setErrorVisible(false);
                     signUpUI.setSuccessVisible(true);

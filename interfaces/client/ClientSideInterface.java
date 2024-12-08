@@ -13,7 +13,7 @@ public interface ClientSideInterface {
     }
 
     boolean connectToServer();
-    String[] search(String name);
+    //String[] search(String name);
     String[] profile();
     String[] listOfFriends();
 

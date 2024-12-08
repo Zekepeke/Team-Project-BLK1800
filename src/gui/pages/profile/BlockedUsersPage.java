@@ -3,6 +3,7 @@ package src.gui.pages.profile;
 import interfaces.BlockedUsersPageInterface;
 import interfaces.gui.CustomColors;
 import interfaces.gui.ProfileInterface;
+import src.SocketIO;
 import src.User;
 import src.client.ClientSide;
 
@@ -51,9 +52,6 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
     public BlockedUsersPage(int width, int height, ClientSide client) {
         this.width = width;
         this.height = height;
-        this.user = client.getUser();
-        this.client = client;
-
         setPreferredSize(new Dimension(width, height));
 
         // Layout setup
@@ -164,12 +162,11 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
     public void unblockUser(String blockedUser) {
         System.out.println("Unblocking user: " + blockedUser);
         try {
-            user.getBlocked().remove(blockedUser);
+            ClientSide.command(blockedUser, SocketIO.TYPE_UNBLOCK_USER);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(user);
-        user.pushToDatabase();
+        System.out.println(blockedUser);
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         parentFrame.getContentPane().removeAll();
         parentFrame.add(new BlockedUsersPage(width, height, client));
@@ -184,6 +181,17 @@ public class BlockedUsersPage extends JPanel implements CustomColors, BlockedUse
      */
     public void viewProfile(String blockedUser) {
         System.out.println("Viewing profile of: " + blockedUser);
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "User Information", true);
+        dialog.setSize(300, 200);
+        dialog.setLayout(new BorderLayout());
+        JPanel infoPanel = new JPanel(new GridLayout(2, 1));
+        JLabel nameLabel = new JLabel("Name: " + user, SwingConstants.CENTER);
+        JLabel bioLabel = new JLabel("<html><body style='text-align: center;'>" + "TEST" + "</body></html>", SwingConstants.CENTER);
+        infoPanel.add(nameLabel);
+        infoPanel.add(bioLabel);
+        dialog.add(infoPanel, BorderLayout.CENTER);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
         // Implement view profile logic (e.g., open a new panel)
     }
 }

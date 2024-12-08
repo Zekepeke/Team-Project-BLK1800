@@ -86,7 +86,7 @@ public class ClientSide implements ClientSideInterface, Runnable {
     }
 
     public static boolean command(String...content) {
-        return command(false, content);
+        return command(true, content);
     }
 
 
@@ -94,11 +94,13 @@ public class ClientSide implements ClientSideInterface, Runnable {
         lock = true;
         String[] data = new String[content.length - 1];
 
-        System.arraycopy(content, 1, data, 0, content.length - 1);
+        System.arraycopy(content, 0, data, 0, content.length - 1);
 
         requests.add(new RequestNode(data, content[content.length - 1]));
 
         lock = false;
+
+        start();
 
         if(block) {
             while (!requests.isEmpty()) {
@@ -155,7 +157,7 @@ public class ClientSide implements ClientSideInterface, Runnable {
      *           works correctly and returns all the searched users.
      */
 
-    public String[] search(String name){
+    public static String[] search(String name){
         String[] stream = {name};
         boolean success = client.write(stream, SocketIO.TYPE_USER_LIST_SEARCH);
         if (success) {
@@ -163,13 +165,9 @@ public class ClientSide implements ClientSideInterface, Runnable {
             if (names == null) {
                 return null;
             }
-            if (names.length == 1) {
-                return names;
-            } else {
-                System.out.println("Something went wrong with array");
-                System.out.println("searchUsers data sent back to client: " + Arrays.toString(names));
-                return null;
-            }
+            String[] data = new String[names.length - 1];
+            System.arraycopy(names, 1, data, 0, names.length - 1);
+            return data;
         }
 
         return null;
@@ -200,6 +198,7 @@ public class ClientSide implements ClientSideInterface, Runnable {
                     rungetProfile();
                     rungetIncomingFriendRequests();
                     getBlockedUsers();
+                    getOutgoingFriendRequests();
                     signedin = true;
                     return SUCCESS;
             }
@@ -382,7 +381,7 @@ public class ClientSide implements ClientSideInterface, Runnable {
     private static boolean getBlockedUsers() {
         client.write(SocketIO.TYPE_GET_BLOCKED_USERS);
         String[] input = client.read();
-        if(input[0].equals(SocketIO.TYPE_FRIEND_LIST)) {
+        if(input[0].equals(SocketIO.TYPE_GET_BLOCKED_USERS)) {
             String[] data = new String[input.length - 1];
             System.arraycopy(input, 1, data, 0, input.length - 1);
             blockedUsers.addAll(Arrays.asList(data));
@@ -395,7 +394,8 @@ public class ClientSide implements ClientSideInterface, Runnable {
     private static boolean runupdateBio(String newBio) {
         boolean success = client.write(newBio, SocketIO.TYPE_UPDATE_USER_BIO);
         String[] input = client.read();
-        userInformation.set(1, input[1]);
+        userInformation.set(1, newBio);
+        bio = newBio;
         String status = input[0];
         return status.equals(SocketIO.SUCCESS_GENERAL);
     }
@@ -420,6 +420,19 @@ public class ClientSide implements ClientSideInterface, Runnable {
             return true;
         } else {
             friendExclusive = null;
+            return false;
+        }
+    }
+
+    public static boolean getOutgoingFriendRequests() {
+        client.write(SocketIO.TYPE_GET_OUTGOING_FRIEND_REQUESTS);
+        String[] input = client.read();
+        if(input[0].equals(SocketIO.TYPE_GET_OUTGOING_FRIEND_REQUESTS)) {
+            String[] data = new String[input.length - 1];
+            System.arraycopy(input, 1, data, 0, input.length - 1);
+            outGoingFriendRequests.addAll(Arrays.asList(data));
+            return true;
+        } else {
             return false;
         }
     }
@@ -492,24 +505,35 @@ public class ClientSide implements ClientSideInterface, Runnable {
 
     }
 
-
     @Override
     public void run() {
-        while(true) {
+
+    }
+
+    public static void start() {
+        for(int i = 0; i < 1; i++) {
             if (signedin) {
                 if (!lock && !requests.isEmpty()) {
                     RequestNode request = requests.remove();
-                    String name = request.content[0];
+                    String name = null;
+
+                    if(request.content != null && request.content.length > 0) {
+                        name = request.content[0];
+                    }
+
                     switch (request.type) {
                         case SocketIO.TYPE_MESSAGE:
                             runsendMessage(name, request.content[0]);
+                            break;
                         case SocketIO.TYPE_GET_MESSAGES_FROM_FRIEND:
                             rungetMessageHistory(name);
+                            break;
                         case SocketIO.TYPE_BLOCK_USER:
                             System.out.println("Block " + name + runblockUser(name));
                             break;
                         case SocketIO.TYPE_UPDATE_USER_BIO:
                             System.out.println("Update user bio: " + name + runupdateBio(name));
+                            break;
                         case SocketIO.TYPE_SEND_FRIEND_REQUEST:
                             System.out.println("Send friend Request " + name + runaddFriend(name));
                             break;
@@ -524,10 +548,14 @@ public class ClientSide implements ClientSideInterface, Runnable {
                             break;
                         case SocketIO.TYPE_GET_BLOCKED_USERS:
                             System.out.println("Got blocked users" + name + getBlockedUsers());
+                            break;
+                        case SocketIO.TYPE_USER_INFORMATION:
+                            System.out.println("Got user information" + name + rungetProfile());
+                            break;
                     }
                 }
-                rungetAllFriends();
-                rungetIncomingFriendRequests();
+                //rungetAllFriends();
+                //rungetIncomingFriendRequests();
             }
         }
     }

@@ -36,7 +36,7 @@ class ClientSideTest {
         // Initialize the client
         Socket socket = new Socket("localhost", 8282);
         client = new ClientSide(socket);
-        client.sendHandShake();
+        //client.sendHandShake();
     }
     @AfterEach
     void tearDown() throws IOException {

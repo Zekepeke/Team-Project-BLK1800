@@ -10,6 +10,7 @@
     import java.io.IOException;
     import java.net.Socket;
     import java.util.Arrays;
+    import java.util.Date;
 
     /**
      * Handles communication between the server and a single client.
@@ -143,6 +144,7 @@
                     break;
                 case SocketIO.TYPE_UPDATE_USER_BIO:
                     updateUserBio(data);
+                    push_condition = true;
                     break;
                 case SocketIO.TYPE_USER_INFORMATION:
                     sendUserInfo();
@@ -315,7 +317,7 @@
          */
         public void sendMessage(String[] data) throws DisconnectException {
             try {
-                Message message = new Message(user, new User(data[0] + ".txt"), null, data[1]);
+                Message message = new Message(user, new User(data[0] + ".txt"), new Date(), data[1]);
                 message.pushToDatabase();
                 messager.writeCondition(SocketIO.SUCCESS_GENERAL);
             } catch (IOException e) {
@@ -363,7 +365,7 @@
             String query = data[0].toLowerCase();
             ArrayList<String> matchingNames = new ArrayList<>();
             for (String userName : User.getUsernames()) {
-                if (userName.toLowerCase().contains(query)) {
+                if (userName.toLowerCase().contains(query) && !userName.equals(this.user.getName())) {
                     matchingNames.add(userName);
                 }
             }

@@ -35,25 +35,25 @@ public class User implements UserBased {
             this.bio = br.readLine();
             String s = br.readLine();
             if (s == null) {
-                this.friends = null;
+                this.friends = new ArrayList<>();
             } else {
                 this.friends = new ArrayList<>(Arrays.asList(s.split(" ")));
             }
             s = br.readLine();
             if (s == null) {
-                this.friendRequestsIn = null;
+                this.friendRequestsIn = new ArrayList<>();
             } else {
                 this.friendRequestsIn = new ArrayList<>(Arrays.asList(s.split(" ")));
             }
             s = br.readLine();
             if (s == null) {
-                this.friendRequestsOut = null;
+                this.friendRequestsOut = new ArrayList<>();
             } else {
                 this.friendRequestsOut = new ArrayList<>(Arrays.asList(s.split(" ")));
             }
             s = br.readLine();
             if (s == null) {
-                this.blocked = null;
+                this.blocked = new ArrayList<>();
             } else {
                 this.blocked = new ArrayList<>(Arrays.asList(s.split(" ")));
             }
@@ -357,17 +357,19 @@ public class User implements UserBased {
         return name + "\n" +
                 password + "\n" +
                 bio + "\n" +
-                tauString(friends) + "\n" +
-                tauString(friendRequestsIn) + "\n" +
-                tauString(friendRequestsOut) + "\n" +
-                tauString(blocked);
+                String.join(" ", friends) + "\n" +
+                String.join(" ", friendRequestsIn) + "\n" +
+                String.join(" ", friendRequestsOut) + "\n" +
+                String.join(" ", blocked) + "\n";
     }
 
     private String tauString(ArrayList<String> a){
         if (a==null) {return "";}
         String s = "";
         for (int i = 0; i < a.size(); i++) {
-            s += a.get(i) + " ";
+            if(!a.get(i).isEmpty()) {
+                s += a.get(i) + " ";
+            }
         }
         return s;
     }

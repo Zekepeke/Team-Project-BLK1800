@@ -36,7 +36,6 @@ import java.awt.event.ActionListener;
 public class FriendRequestsPage extends JPanel implements CustomColors, FriendRequestsPageInterface, ProfileInterface {
 
     private ClientSide client;
-    private String[] friends;
     private Color backgroundColor = BACKGROUND;
     private User user;
     private int width;
@@ -53,8 +52,6 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
 
         this.width = width;
         this.height = height;
-        this.user = client.getUser();
-        this.client = client;
 
         setPreferredSize(new Dimension(width, height));
 

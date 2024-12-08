@@ -6,7 +6,9 @@ import interfaces.gui.ProfileInterface;
 import src.SocketIO;
 import src.User;
 import src.client.ClientSide;
+import src.gui.MessagePage;
 import src.gui.MessagingPage;
+import src.gui.SearchPage;
 import src.gui.pages.auth.AuthenticationPages;
 
 import javax.swing.*;
@@ -182,8 +184,16 @@ public void navigateToFriendsPage() {
         parentFrame.repaint();
     }
     public void navigateToSearchUsersPage() {
-        System.out.println("Navigating to Search Users Page...");
-        // Implement navigation logic (e.g., switch to another JPanel or load a new page)
+        try {
+            System.out.println("Navigating to Search Users Page...");
+            JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            parentFrame.getContentPane().removeAll();
+            parentFrame.add(new SearchPage(width, height, null));
+            parentFrame.revalidate();
+            parentFrame.repaint();
+        } catch (Exception e) {
+            System.out.println("OH NO!");
+        }
     }
     public void logout()  {
         try {
@@ -202,7 +212,7 @@ public void navigateToFriendsPage() {
             System.out.println("Navigating to Blocked Users Page...");
             JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
             parentFrame.getContentPane().removeAll();
-            parentFrame.add(new MessagingPage(width, height, new User("alice.txt")));
+            parentFrame.add(new MessagePage(width, height, null));
             parentFrame.revalidate();
             parentFrame.repaint();
         } catch (Exception e) {
