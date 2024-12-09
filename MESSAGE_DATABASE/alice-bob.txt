@@ -1,25 +1,9 @@
 MESSAGE_SEP
-Tue Nov 05 21:24:55 EST 2024
-alice
-Hello, Bob!
-
-bruh
-MESSAGE_SEP
-Tue Nov 05 21:25:00 EST 2024
+Sun Dec 08 23:40:26 EST 2024
 bob
-Hello, Alice!
-
-yo
+fart
 MESSAGE_SEP
-Fri Dec 06 17:02:08 EST 2024
-alice
-hey
-MESSAGE_SEP
-Fri Dec 06 17:10:54 EST 2024
-alice
-boss
-MESSAGE_SEP
-Fri Dec 06 17:11:26 EST 2024
-alice
-yo
+Sun Dec 08 23:40:30 EST 2024
+bob
+cool
 CONVO_END

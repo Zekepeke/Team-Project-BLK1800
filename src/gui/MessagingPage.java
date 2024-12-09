@@ -72,7 +72,9 @@ public class MessagingPage extends JPanel implements MessagingPageable {
         add(filterPanel, BorderLayout.NORTH);
 
         // Load initial chat history
+
         loadChatHistory();
+
     }
 
     /**
