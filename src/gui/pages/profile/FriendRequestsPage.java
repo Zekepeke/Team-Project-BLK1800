@@ -3,8 +3,10 @@ package src.gui.pages.profile;
 import interfaces.FriendRequestsPageInterface;
 import interfaces.gui.CustomColors;
 import interfaces.gui.ProfileInterface;
+import src.SocketIO;
 import src.User;
 import src.client.ClientSide;
+import src.client.UserTransmission;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,7 +51,7 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
      * @param client the client-side application instance to manage user data and interactions
      */
     public FriendRequestsPage(int width, int height, ClientSide client) {
-
+        ClientSide.command(SocketIO.TYPE_GET_INCOMING_FRIEND_REQUESTS);
         this.width = width;
         this.height = height;
 
@@ -82,7 +84,9 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
         add(backToProfile, BorderLayout.NORTH);
 
         // Iterate over friend requests and create UI components for each
-        for (String friend : ClientSide.friends) {
+        for (String thing : ClientSide.incomingFriendRequests) {
+            UserTransmission user = new UserTransmission(thing);
+            String friend = user.getUserName();
             JPanel friendPanel = new JPanel();
             friendPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
@@ -101,21 +105,21 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
             removeButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    removeFriend(friend);
+                    removeFriend(thing);
                 }
             });
 
             addButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    addFriend(friend);
+                    addFriend(thing);
                 }
             });
 
             viewProfileButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    viewProfile(friend);
+                    viewProfile(thing);
                 }
             });
 
@@ -192,10 +196,9 @@ public class FriendRequestsPage extends JPanel implements CustomColors, FriendRe
      * @param friend the name of the friend to be added
      */
     public void addFriend(String friend) {
-        System.out.println("Blocking friend: " + friend);
+        System.out.println("Adding friend: " + friend);
         try {
-            user.getFriendRequestsIn().remove(friend);
-            user.getFriends().add(friend);
+            ClientSide.command(friend, SocketIO.TYPE_ACCEPT_FRIEND_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
         }

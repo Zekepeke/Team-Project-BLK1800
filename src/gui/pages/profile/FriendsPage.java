@@ -1,8 +1,10 @@
 package src.gui.pages.profile;
 
 import interfaces.gui.CustomColors;
+import src.SocketIO;
 import src.User;
 import src.client.ClientSide;
+import src.client.UserTransmission;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,13 +24,10 @@ public class FriendsPage extends JPanel implements CustomColors {
         try {
             this.width = width;
             this.height = height;
-            this.user = client.getUser();
-            this.client = client;
             setPreferredSize(new Dimension(width, height));
         } catch (Exception e) {
             this.width = width;
             this.height = height;
-            this.client = client;
             setPreferredSize(new Dimension(width, height));
         }
         // Layout
@@ -59,12 +58,14 @@ public class FriendsPage extends JPanel implements CustomColors {
         });
         add(backToProfile, BorderLayout.NORTH);
         // Loop through the friends array and create a panel for each friend
+        ClientSide.command(SocketIO.TYPE_FRIEND_LIST);
         for (String friend : ClientSide.friends) {
+            UserTransmission user = new UserTransmission(friend);
             JPanel friendPanel = new JPanel();
             friendPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
             // Friend name label
-            JLabel friendLabel = new JLabel(friend);
+            JLabel friendLabel = new JLabel(user.getUserName());
             friendLabel.setFont(new Font("Arial", Font.PLAIN, 18));
 
             friendLabel.setForeground(GRAY_100);
@@ -167,6 +168,7 @@ public class FriendsPage extends JPanel implements CustomColors {
 
     private void viewProfile(String friend) {
         System.out.println("Viewing profile of: " + friend);
+
         // Implement view profile logic (e.g., open friend's profile page)
     }
 }

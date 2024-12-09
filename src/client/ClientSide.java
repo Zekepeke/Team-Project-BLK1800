@@ -317,18 +317,22 @@ public class ClientSide implements ClientSideInterface, Runnable {
     }
 
     private static boolean rungetAllFriends() {
-        client.write(SocketIO.TYPE_FRIEND_LIST);
+        String default_send = SocketIO.TYPE_FRIEND_LIST;
+        client.write(default_send);
         String[] input = client.read();
-
-        if(input.length - 1 > friends.size()) {
-            int counter = friends.size();
-            while(friends.size() < input.length - 1) {
-                friends.add(input[counter++]);
+        if(input.length > 1) {
+            String[] data = new String[input.length - 1];
+            System.arraycopy(input, 1, data, 0, input.length - 1);
+            if (data.length > friends.size()) {
+                int counter = friends.size();
+                while (friends.size() < data.length) {
+                    friends.add(data[counter++]);
+                }
             }
-        }
-        if(input.length - 1 < friends.size()) {
-            while(friends.size() > input.length - 1) {
-                friends.remove(friends.size() - 1);
+            if (data.length < friends.size()) {
+                while (friends.size() > input.length - 1) {
+                    friends.remove(friends.size() - 1);
+                }
             }
         }
 
@@ -337,8 +341,9 @@ public class ClientSide implements ClientSideInterface, Runnable {
     }
 
     private static boolean runblockUser(String user) {
+        UserTransmission sender = UserTransmission.convertToUser(user);
         blockedUsers.add(user);
-        client.write(user, SocketIO.TYPE_BLOCK_USER);
+        client.write(sender.getUserName(), SocketIO.TYPE_BLOCK_USER);
         String status = client.read()[0];
         return status.equals(SocketIO.SUCCESS_GENERAL);
     }
@@ -351,8 +356,9 @@ public class ClientSide implements ClientSideInterface, Runnable {
     }
 
     private static boolean runaddFriend(String user) {
+        UserTransmission sender = UserTransmission.convertToUser(user);
         outGoingFriendRequests.add(user);
-        client.write(user, SocketIO.TYPE_SEND_FRIEND_REQUEST);
+        client.write(sender.getUserName(), SocketIO.TYPE_SEND_FRIEND_REQUEST);
         String status = client.read()[0];
         return status.equals(SocketIO.SUCCESS_GENERAL);
     }
@@ -361,16 +367,19 @@ public class ClientSide implements ClientSideInterface, Runnable {
         String default_send = SocketIO.TYPE_GET_INCOMING_FRIEND_REQUESTS;
         client.write(default_send);
         String[] input = client.read();
-
-        if(input.length - 1 > incomingFriendRequests.size()) {
-            int counter = incomingFriendRequests.size();
-            while(incomingFriendRequests.size() < input.length - 1) {
-                incomingFriendRequests.add(input[counter++]);
+        if(input.length > 1) {
+            String[] data = new String[input.length - 1];
+            System.arraycopy(input, 1, data, 0, input.length - 1);
+            if (data.length > incomingFriendRequests.size()) {
+                int counter = incomingFriendRequests.size();
+                while (incomingFriendRequests.size() < data.length) {
+                    incomingFriendRequests.add(data[counter++]);
+                }
             }
-        }
-        if(input.length - 1 < incomingFriendRequests.size()) {
-            while(incomingFriendRequests.size() > input.length - 1) {
-                incomingFriendRequests.remove(incomingFriendRequests.size() - 1);
+            if (data.length < incomingFriendRequests.size()) {
+                while (incomingFriendRequests.size() > input.length - 1) {
+                    incomingFriendRequests.remove(incomingFriendRequests.size() - 1);
+                }
             }
         }
 
@@ -424,6 +433,17 @@ public class ClientSide implements ClientSideInterface, Runnable {
         }
     }
 
+    private static boolean acceptFriendReqiest(String name) {
+        UserTransmission user = UserTransmission.convertToUser(name);
+
+        friends.add(name);
+        outGoingFriendRequests.remove(name);
+
+        client.write(user.getUserName(), SocketIO.TYPE_ACCEPT_FRIEND_REQUEST);
+        String status = client.read()[0];
+        return status.equals(SocketIO.SUCCESS_GENERAL);
+
+    }
     public static boolean getOutgoingFriendRequests() {
         client.write(SocketIO.TYPE_GET_OUTGOING_FRIEND_REQUESTS);
         String[] input = client.read();
@@ -552,10 +572,13 @@ public class ClientSide implements ClientSideInterface, Runnable {
                         case SocketIO.TYPE_USER_INFORMATION:
                             System.out.println("Got user information" + name + rungetProfile());
                             break;
+                        case SocketIO.TYPE_ACCEPT_FRIEND_REQUEST:
+                            System.out.println("Accepted friend" + name + acceptFriendReqiest(name));
+                            break;
                     }
                 }
-                //rungetAllFriends();
-                //rungetIncomingFriendRequests();
+                rungetAllFriends();
+                rungetIncomingFriendRequests();
             }
         }
     }

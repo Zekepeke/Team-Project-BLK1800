@@ -3,8 +3,6 @@ package interfaces;
 import src.Message;
 
 import java.util.ArrayList;
-import java.text.ParseException;
-import java.util.Date;
 
 public interface ConversationReaderInterface {
     /**

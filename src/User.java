@@ -354,13 +354,40 @@ public class User implements UserBased {
 
     @Override
     public String toString() {
-        return name + "\n" +
+
+        while(friends.remove("")){;}
+        while(friends.remove(" ")){;}
+        while(friendRequestsIn.remove(" ")){;}
+        while(friendRequestsIn.remove("")){;}
+        while(friendRequestsOut.remove(" ")){;}
+        while(friendRequestsOut.remove("")){;}
+        while(blocked.remove("")){;}
+        while(blocked.remove(" ")){;}
+
+        String returner =  name + "\n" +
                 password + "\n" +
-                bio + "\n" +
-                String.join(" ", friends) + "\n" +
-                String.join(" ", friendRequestsIn) + "\n" +
-                String.join(" ", friendRequestsOut) + "\n" +
-                String.join(" ", blocked) + "\n";
+                bio + "\n";
+
+        if(!friends.isEmpty()) {
+            returner += String.join(" ", friends);
+        }
+        returner += "\n";
+        if(!friendRequestsIn.isEmpty()) {
+            returner += String.join(" ", friendRequestsIn);
+        }
+        returner += "\n";
+
+        if(!friendRequestsOut.isEmpty()) {
+            returner += String.join(" ", friendRequestsOut);
+        }
+        returner += "\n";
+
+        if(!blocked.isEmpty()) {
+            returner += String.join(" ", blocked);
+        }
+        returner += "\n";
+
+        return returner;
     }
 
     private String tauString(ArrayList<String> a){

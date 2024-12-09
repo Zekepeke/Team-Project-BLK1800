@@ -1,10 +1,10 @@
 package src.gui;
 
 import interfaces.MessagingPageable;
-import src.Message;
 import src.SocketIO;
 import src.User;
 import src.client.ClientSide;
+import src.client.UserTransmission;
 import src.gui.pages.profile.profilePage;
 
 import javax.swing.*;
@@ -53,14 +53,16 @@ public class SearchPage extends JPanel implements MessagingPageable {
 
     private void addUserPane(String user) {
         // Create a custom pane for the user
-        if(!ClientSide.blockedUsers.contains(user)) {
+        UserTransmission other = UserTransmission.convertToUser(user);
+
+        if(!ClientSide.blockedUsers.contains(user) && !other.isUserBlocked()) {
             JPanel userPane = new JPanel(new BorderLayout());
             userPane.setPreferredSize(new Dimension(width - 20, 50)); // Fixed size
             userPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
             userPane.setBackground(Color.LIGHT_GRAY);
 
             // Add user label
-            JLabel userLabel = new JLabel(user, SwingConstants.LEFT);
+            JLabel userLabel = new JLabel(other.getUserName(), SwingConstants.LEFT);
             userLabel.setFont(new Font("Arial", Font.BOLD, 16));
             userLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // Padding for label
             userPane.add(userLabel, BorderLayout.CENTER);
@@ -70,7 +72,7 @@ public class SearchPage extends JPanel implements MessagingPageable {
             JButton viewButton = new JButton("View");
             viewButton.setPreferredSize(new Dimension(80, 35)); // Increased button size for better visibility
             viewButton.setFont(new Font("Arial", Font.PLAIN, 14)); // Adjust font size for better readability
-            viewButton.addActionListener(e -> showUserDialog(user, "This is a customizable bio for " + user));
+            viewButton.addActionListener(showUserDialog(other));
             buttonPanel.add(viewButton);
             buttonPanel.setOpaque(false); // Transparent background
             userPane.add(buttonPanel, BorderLayout.EAST);
@@ -82,14 +84,19 @@ public class SearchPage extends JPanel implements MessagingPageable {
         }
     }
 
-    private void showUserDialog(String user, String bio) {
+    private ActionListener showUserDialog(UserTransmission user) {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "User Information", true);
         dialog.setSize(300, 200);
         dialog.setLayout(new BorderLayout());
 
         JPanel infoPanel = new JPanel(new GridLayout(2, 1));
-        JLabel nameLabel = new JLabel("Name: " + user, SwingConstants.CENTER);
-        JLabel bioLabel = new JLabel("<html><body style='text-align: center;'>" + bio + "</body></html>", SwingConstants.CENTER);
+        JLabel nameLabel = new JLabel("Name: " + user.getUserName(), SwingConstants.CENTER);
+        JLabel bioLabel;
+        if(user.getBio().isEmpty()) {
+            bioLabel = new JLabel("<html><body style='text-align: center;'>" + "No bio" + "</body></html>", SwingConstants.CENTER);
+        }
+        bioLabel = new JLabel("<html><body style='text-align: center;'>" + "Bio: "+ user.getBio() + "</body></html>", SwingConstants.CENTER);
+
         infoPanel.add(nameLabel);
         infoPanel.add(bioLabel);
 
@@ -99,21 +106,22 @@ public class SearchPage extends JPanel implements MessagingPageable {
         JButton cancelButton = new JButton("Cancel");
 
         addButton.addActionListener(e -> {
-            if(!ClientSide.outGoingFriendRequests.contains(user)) {
-                ClientSide.command(user, SocketIO.TYPE_SEND_FRIEND_REQUEST);
-                JOptionPane.showMessageDialog(dialog, user + " has been added!");
+            String userString = user.toString();
+            if(!ClientSide.outGoingFriendRequests.contains(user.toString())) {
+                ClientSide.command(user.toString(), SocketIO.TYPE_SEND_FRIEND_REQUEST);
+                JOptionPane.showMessageDialog(dialog, user.getUserName() + " has been added!");
             } else {
-                JOptionPane.showMessageDialog(dialog, user + " is already added!");
+                JOptionPane.showMessageDialog(dialog, user.getUserName() + " is already added!");
             }
             dialog.dispose();
         });
 
         blockButton.addActionListener(e -> {
-            if(!ClientSide.blockedUsers.contains(user)) {
-                ClientSide.command(user, SocketIO.TYPE_BLOCK_USER);
-                JOptionPane.showMessageDialog(dialog, user + " has been blocked!");
+            if(!ClientSide.blockedUsers.contains(user.toString())) {
+                ClientSide.command(user.toString(), SocketIO.TYPE_BLOCK_USER);
+                JOptionPane.showMessageDialog(dialog, user.getUserName() + " has been blocked!");
             } else {
-                JOptionPane.showMessageDialog(dialog, user + " is already blocked!");
+                JOptionPane.showMessageDialog(dialog, user.getUserName() + " is already blocked!");
             }
             dialog.dispose();
         });
@@ -128,6 +136,7 @@ public class SearchPage extends JPanel implements MessagingPageable {
 
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
+        return null;
     }
 
     private class SearchButtonListener implements ActionListener {

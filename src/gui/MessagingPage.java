@@ -3,7 +3,6 @@ package src.gui; //package src.gui.pages.messaging;
 import interfaces.MessagingPageable;
 import src.Message;
 import src.SocketIO;
-import src.User;
 import src.client.ClientSide;
 import src.gui.pages.profile.profilePage;
 
@@ -11,9 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class MessagingPage extends JPanel implements MessagingPageable {
     private String chatPartner;

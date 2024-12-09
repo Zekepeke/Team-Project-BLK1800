@@ -5,6 +5,9 @@
     import interfaces.IO;
     import src.*;
     import Exceptions.UserChatActiveException;
+    import src.client.UserTransmission;
+
+    import javax.swing.*;
     import java.lang.Thread;
     import java.util.ArrayList;
     import java.io.IOException;
@@ -18,6 +21,7 @@
      */
     public class ClientCommunicationHandler extends Thread implements ClientHandlerInterface {
         private static Object o = new Object();
+        int counter = 0;
         private final int THREAD_NUMBER;
         public enum State {
             SEND_HANDSHAKE,
@@ -29,6 +33,15 @@
         private final Socket userSocket;
         private final SocketIO messager;
         private User user;
+
+        public boolean recreateUser() {
+            try {
+                this.user = new User(this.user.getName() + ".txt");
+                return true;
+            } catch (IOException e) {
+                return false;
+            }
+        }
 
         /**
          * Constructs a handler for client communication.
@@ -301,6 +314,7 @@
          * Sends the current user's information to the client.
          */
         public void sendUserInfo() throws DisconnectException {
+
             if(this.user == null) {
                 messager.writeCondition(SocketIO.ERROR_USER_DNE);
                 return;
@@ -348,12 +362,22 @@
          * Sends the list of the current user's friends to the client.
          */
         public void sendFriendList() throws DisconnectException {
+            recreateUser();
             ArrayList<String> friends = this.user.getFriends();
             if(friends == null) {
                 messager.write(null, SocketIO.TYPE_GET_FRIEND_LIST);
                 return;
             }
-            messager.write(friends.toArray(new String[0]), SocketIO.TYPE_GET_FRIEND_LIST);
+            ArrayList<String> transmissions = new ArrayList<>();
+            for(String friend : friends) {
+                try {
+                    User user = new User(friend + ".txt");
+                    transmissions.add(new UserTransmission(user.getName(), user.getBio(), user.getBlocked().contains(this.user.getName()), user.getExclusiveToFriends()).toString());
+                } catch (IOException ignored) {
+
+                }
+            }
+            messager.write(transmissions.toArray(new String[0]), SocketIO.TYPE_GET_FRIEND_LIST);
         }
 
         /**
@@ -366,7 +390,12 @@
             ArrayList<String> matchingNames = new ArrayList<>();
             for (String userName : User.getUsernames()) {
                 if (userName.toLowerCase().contains(query) && !userName.equals(this.user.getName())) {
-                    matchingNames.add(userName);
+                    try {
+                        User user = new User(userName + ".txt");
+                        matchingNames.add(new UserTransmission(user.getName(), user.getBio(), user.getBlocked().contains(this.user.getName()), user.getExclusiveToFriends()).toString());
+                    } catch (IOException ignored) {
+
+                    }
                 }
             }
             messager.write(matchingNames.toArray(new String[0]), SocketIO.TYPE_USER_LIST_SEARCH);
@@ -378,6 +407,7 @@
          * @param data The data containing the friend's username.
          */
         public void sendConversationHistory(String[] data) throws DisconnectException {
+            recreateUser();
             try {
                 User friend = new User(data[0] + ".txt");
                 ConversationReader reader = new ConversationReader(this.user.getName(), friend.getName());
@@ -396,12 +426,28 @@
          * @param data The data containing the list of new blocked users.
          */
         public void updateBlockedUsers(String[] data) throws DisconnectException {
+            recreateUser();
             this.user.setBlocked(new ArrayList<>(Arrays.asList(data)));
             messager.writeCondition(SocketIO.SUCCESS_GENERAL);
         }
 
         public void getBlockedUsers() throws DisconnectException {
-            messager.write(this.user.getBlocked().toArray(new String[0]), SocketIO.TYPE_GET_BLOCKED_USERS);
+            recreateUser();
+            ArrayList<String> blocked = this.user.getBlocked();
+            if(blocked == null) {
+                messager.write(null, SocketIO.TYPE_GET_BLOCKED_USERS);
+                return;
+            }
+            ArrayList<String> transmissions = new ArrayList<>();
+            for(String blockedUser : blocked) {
+                try {
+                    User user = new User(blockedUser + ".txt");
+                    transmissions.add(new UserTransmission(user.getName(), user.getBio(), user.getBlocked().contains(this.user.getName()), user.getExclusiveToFriends()).toString());
+                } catch (IOException ignored) {
+
+                }
+            }
+            messager.write(transmissions.toArray(new String[0]), SocketIO.TYPE_GET_BLOCKED_USERS);
         }
 
         /**
@@ -410,6 +456,7 @@
          * @param data The data containing the recipient's username.
          */
         public void sendFriendRequest(String[] data) throws DisconnectException {
+            recreateUser();
             String name = data[0];
             User recipient;
 
@@ -438,6 +485,7 @@
          * @param data The data containing the specified user's username.
          */
         public void acceptFriendRequest(String[] data) throws DisconnectException {
+            recreateUser();
             String name = data[0];
             User newFriend;
 
@@ -450,10 +498,12 @@
 
             // accepting the friend request sent by another user
             if(this.user.acceptFriendRequest(newFriend)) {
-
+                this.user.getFriendRequestsOut().remove(newFriend.getName());
                 // updating the friends list of the person that sent the friend request (accepted their request)
                 newFriend.getFriends().add(this.user.getName());
+                newFriend.getFriendRequestsOut().remove(this.user.getName());
                 newFriend.pushToDatabase();
+                this.user.getFriendRequestsIn().remove(newFriend.getName());
                 messager.writeCondition(SocketIO.SUCCESS_GENERAL);
             } else {
                 messager.writeCondition(SocketIO.ERROR_GENERAL);
@@ -465,7 +515,26 @@
          *
          */
         public void sendIncomingFriendRequests() throws DisconnectException {
-            messager.write(this.user.getFriendRequestsIn().toArray(new String[0]), SocketIO.TYPE_GET_INCOMING_FRIEND_REQUESTS);
+            recreateUser();
+            ArrayList<String> requests = this.user.getFriendRequestsIn();
+
+            if(requests == null) {
+                messager.write(null, SocketIO.TYPE_GET_INCOMING_FRIEND_REQUESTS);
+                return;
+            }
+            ArrayList<String> transmissions = new ArrayList<>();
+            for(String request : requests) {
+                if(!this.user.getBlocked().contains(request)) {
+                    try {
+                        User user = new User(request + ".txt");
+                        transmissions.add(new UserTransmission(user.getName(), user.getBio(), user.getBlocked().contains(this.user.getName()), user.getExclusiveToFriends()).toString());
+                    } catch (IOException ignored) {
+
+                    }
+                }
+            }
+            messager.write(transmissions.toArray(new String[0]), SocketIO.TYPE_GET_INCOMING_FRIEND_REQUESTS);
+            counter++;
         }
 
         /**
@@ -473,10 +542,26 @@
          *
          */
         public void sendOutgoingFriendRequests() throws DisconnectException {
-            messager.write(this.user.getFriendRequestsOut().toArray(new String[0]), SocketIO.TYPE_GET_OUTGOING_FRIEND_REQUESTS);
+            recreateUser();
+            ArrayList<String> requests = this.user.getFriendRequestsOut();
+            if(requests == null) {
+                messager.write(null, SocketIO.TYPE_GET_OUTGOING_FRIEND_REQUESTS);
+                return;
+            }
+            ArrayList<String> transmissions = new ArrayList<>();
+            for(String request : requests) {
+                try {
+                    User user = new User(request + ".txt");
+                    transmissions.add(new UserTransmission(user.getName(), user.getBio(), user.getBlocked().contains(this.user.getName()), user.getExclusiveToFriends()).toString());
+                } catch (IOException ignored) {
+
+                }
+            }
+            messager.write(transmissions.toArray(new String[0]), SocketIO.TYPE_GET_OUTGOING_FRIEND_REQUESTS);
         }
 
         public void blockUnblockUser(String[] data, String type) throws DisconnectException {
+            recreateUser();
             String username = data[0];
             try {
                 if(type.equals(SocketIO.TYPE_UNBLOCK_USER)) {
@@ -484,6 +569,9 @@
                 }
                 else if(type.equals(SocketIO.TYPE_BLOCK_USER)) {
                     this.user.block(new User(username + ".txt"));
+                    this.user.getFriendRequestsIn().remove(username);
+                    this.user.getFriendRequestsOut().remove(username);
+                    this.user.getFriends().remove(username);
                 }
 
                 else if(type.equals(SocketIO.TYPE_UNBLOCK_ALL_USERS)) {
@@ -498,11 +586,13 @@
         }
 
         public void updateUserBio(String[] data) {
+            recreateUser();
             this.user.setBio(data[0]);
             messager.write(SocketIO.SUCCESS_GENERAL);
         }
 
         public void checkIsBlocked(String[] data) {
+            recreateUser();
             String name = data[0];
             try {
                 User user = new User(name + ".txt");
@@ -517,6 +607,7 @@
         }
 
         public void checkIfPeronIsFriendExclusive(String[] data){
+            recreateUser();
             String name = data[0];
             try {
                 User user = new User(name + ".txt");
