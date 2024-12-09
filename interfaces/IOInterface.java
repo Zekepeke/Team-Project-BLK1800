@@ -1,7 +1,7 @@
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public interface IO {
+public interface IOInterface {
 
     String DELIMITER_START = "DELIMITER_START";
     String DELIMITER_END = "DELIMITER_END";

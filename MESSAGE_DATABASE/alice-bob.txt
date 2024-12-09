@@ -1,0 +1,25 @@
+MESSAGE_SEP
+Tue Nov 05 21:24:55 EST 2024
+alice
+Hello, Bob!
+
+bruh
+MESSAGE_SEP
+Tue Nov 05 21:25:00 EST 2024
+bob
+Hello, Alice!
+
+yo
+MESSAGE_SEP
+Fri Dec 06 17:02:08 EST 2024
+alice
+hey
+MESSAGE_SEP
+Fri Dec 06 17:10:54 EST 2024
+alice
+boss
+MESSAGE_SEP
+Fri Dec 06 17:11:26 EST 2024
+alice
+yo
+CONVO_END
