@@ -37,7 +37,7 @@ public class MessageTest {
         date = new Date();
         message = new Message(sender, receiver, date, "Hello, Bob!");
         // Test file name generation based on sender and receiver names
-        assertEquals("MESSAGE_DATABASE/Alice-Bob.txt", message.getFileName());
+        assertEquals("MESSAGE_DATABASE/alice-bob.txt", message.getFileName());
         // Test message content, sender, receiver, and date
         assertEquals("Hello, Bob!", message.getContent());
         assertEquals(sender, message.getSender());
@@ -53,7 +53,7 @@ public class MessageTest {
     @org.junit.Test
     public void testGetFileName() {
 
-        assertEquals(message.getFileName(), "MESSAGE_DATABASE/Alice-Bob.txt");
+        assertEquals(message.getFileName(), "MESSAGE_DATABASE/alice-bob.txt");
     }
     @org.junit.Test
     public void testSetFileName() {
@@ -93,7 +93,7 @@ public class MessageTest {
 
     @Test
     public void testPushToDatabase() throws IOException {
-        try( PrintWriter p = new PrintWriter(new FileWriter("MESSAGE_DATABASE/Alice-Bob.txt"));){
+        try(PrintWriter p = new PrintWriter(new FileWriter("MESSAGE_DATABASE/alice-bob.txt"));){
             p.printf("");
         } catch (IOException e){
             System.out.println("Oh no!!");

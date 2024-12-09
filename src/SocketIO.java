@@ -1,9 +1,8 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+package src;
+
+import interfaces.IOInterface;
+
+import java.io.*;
 import java.net.Socket;
 
 /**
@@ -13,7 +12,7 @@ import java.net.Socket;
  * Handles socket-based input/output communication with a client.
  * Implements the IO interface for input-output stream management.
  */
-public class SocketIO implements IO {
+public class SocketIO implements IOInterface {
 
     private static final String IMG_TOKEN = "|img|";
     private static final String ERROR_INVALID_INFORMATION = "[ERROR] Invalid information received.";
